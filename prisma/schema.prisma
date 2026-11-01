@@ -1,0 +1,114 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  TEKNISI
+  CUSTOMER
+}
+
+enum TicketStatus {
+  OPEN
+  ASSIGNED
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+model User {
+  id              String      @id @default(cuid())
+  name            String
+  email           String      @unique
+  password        String
+  role            Role        @default(CUSTOMER)
+  phone           String?
+  image           String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  createdTickets  Ticket[]    @relation("CustomerTickets")
+  assignedTickets Ticket[]    @relation("TechnicianTickets")
+  ticketLogs      TicketLog[]
+  feedbacks       Feedback[]
+
+  @@map("users")
+}
+
+model Ticket {
+  id               String        @id @default(cuid())
+  ticketNumber     String        @unique
+  title            String
+  description      String
+  status           TicketStatus  @default(OPEN)
+  priority         Priority      @default(MEDIUM)
+  category         String
+  damagePhotoUrl   String?
+  resolvedPhotoUrl String?
+  resolutionNotes  String?
+
+  customerId       String
+  customer         User          @relation("CustomerTickets", fields: [customerId], references: [id], onDelete: Cascade)
+
+  technicianId     String?
+  technician       User?         @relation("TechnicianTickets", fields: [technicianId], references: [id], onDelete: SetNull)
+
+  logs             TicketLog[]
+  feedback         Feedback?
+
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  resolvedAt       DateTime?
+  closedAt         DateTime?
+
+  @@index([status])
+  @@index([customerId])
+  @@index([technicianId])
+  @@map("tickets")
+}
+
+model TicketLog {
+  id             String        @id @default(cuid())
+  ticketId       String
+  ticket         Ticket        @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  userId         String
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  action         String
+  previousStatus TicketStatus?
+  newStatus      TicketStatus?
+  notes          String?
+
+  createdAt      DateTime      @default(now())
+
+  @@index([ticketId])
+  @@map("ticket_logs")
+}
+
+model Feedback {
+  id         String   @id @default(cuid())
+  ticketId   String   @unique
+  ticket     Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  customerId String
+  customer   User     @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  rating     Int
+  comment    String?
+  createdAt  DateTime @default(now())
+
+  @@map("feedbacks")
+}
