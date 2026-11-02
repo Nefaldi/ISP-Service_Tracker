@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { startProgress, resolveTicket } from "@/actions/ticket.actions";
+import { startProgress, resolveTicket, uploadPhotoAction } from "@/actions/ticket.actions";
 import { Button } from "@/components/ui/button";
-import { Play, CheckCircle } from "lucide-react";
+import { Play, CheckCircle, UploadCloud } from "lucide-react";
 
 interface TechnicianActionsProps {
   ticketId: string;
@@ -17,6 +17,7 @@ export function TechnicianActions({ ticketId, status }: TechnicianActionsProps) 
   const [showResolveModal, setShowResolveModal] = useState(false);
   const [resolutionNotes, setResolutionNotes] = useState("");
   const [resolvedPhotoUrl, setResolvedPhotoUrl] = useState("");
+  const [fileToUpload, setFileToUpload] = useState<File | null>(null);
 
   const handleStart = async () => {
     setIsLoading(true);
@@ -32,14 +33,35 @@ export function TechnicianActions({ ticketId, status }: TechnicianActionsProps) 
   const handleResolve = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+
+    let finalPhotoUrl = resolvedPhotoUrl;
+
+    if (fileToUpload) {
+      try {
+        const uploadData = new FormData();
+        uploadData.append("file", fileToUpload);
+        uploadData.append("folder", "resolutions");
+
+        const uploadRes = await uploadPhotoAction(uploadData);
+        if (uploadRes.success && uploadRes.publicUrl) {
+          finalPhotoUrl = uploadRes.publicUrl;
+        } else {
+          console.warn("Upload bukti gagal, lanjut simpan catatan:", uploadRes.error);
+        }
+      } catch (err) {
+        console.warn("Upload exception:", err);
+      }
+    }
+
     const res = await resolveTicket({
       ticketId,
       resolutionNotes,
-      resolvedPhotoUrl: resolvedPhotoUrl || undefined,
+      resolvedPhotoUrl: finalPhotoUrl || undefined,
     });
     setIsLoading(false);
     if (res.success) {
       setShowResolveModal(false);
+      setFileToUpload(null);
       router.refresh();
     } else {
       alert(res.error || "Gagal menyelesaikan tiket.");
@@ -100,15 +122,34 @@ export function TechnicianActions({ ticketId, status }: TechnicianActionsProps) 
 
                   <div>
                     <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 mb-1">
-                      URL Foto Bukti Hasil Kerja (S3 / Cloud)
+                      Unggah Foto Bukti Hasil Kerja (Supabase Storage / Cloud)
                     </label>
-                    <div className="flex gap-2">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <label className="flex items-center gap-1.5 px-3 py-1.5 border border-dashed border-zinc-300 dark:border-zinc-700 rounded-lg cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800 text-xs font-medium text-zinc-600 dark:text-zinc-300">
+                          <UploadCloud className="h-4 w-4" />
+                          <span>Pilih Foto Bukti</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => {
+                              if (e.target.files?.[0]) {
+                                setFileToUpload(e.target.files[0]);
+                              }
+                            }}
+                          />
+                        </label>
+                        <span className="text-xs text-zinc-500 truncate max-w-[200px]">
+                          {fileToUpload ? fileToUpload.name : "Belum ada file dipilih"}
+                        </span>
+                      </div>
                       <input
                         type="url"
-                        placeholder="https://..."
+                        placeholder="Atau tempel URL gambar eksternal (https://...)"
                         value={resolvedPhotoUrl}
                         onChange={(e) => setResolvedPhotoUrl(e.target.value)}
-                        className="w-full px-3 py-2 text-sm rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 focus:ring-2 focus:ring-emerald-500 outline-none"
+                        className="w-full px-3 py-1.5 text-xs rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 focus:ring-2 focus:ring-emerald-500 outline-none"
                       />
                     </div>
                   </div>

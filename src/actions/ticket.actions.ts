@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { sseBroker } from "@/lib/sse-broker";
 import { getPresignedUploadUrl } from "@/lib/s3";
+import { uploadToStorage } from "@/lib/storage";
 import { Priority, TicketStatus } from "@prisma/client";
 
 // Zod Validation Schemas
@@ -402,5 +403,42 @@ export async function requestPresignedUpload(
   } catch (error) {
     console.error("requestPresignedUpload error:", error);
     return { success: false, error: "Gagal membuat URL upload S3." };
+  }
+}
+
+/**
+ * Storage Helper: Upload photo directly to Supabase Storage via Server Action
+ */
+export async function uploadPhotoAction(formData: FormData) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, error: "Unauthorized. Silakan login." };
+  }
+
+  const file = formData.get("file") as File | null;
+  const folder = (formData.get("folder") as "damages" | "resolutions") || "damages";
+
+  if (!file || file.size === 0) {
+    return { success: false, error: "Berkas foto tidak ditemukan." };
+  }
+
+  if (file.size > 10 * 1024 * 1024) {
+    return { success: false, error: "Ukuran berkas maksimal 10MB." };
+  }
+
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    const result = await uploadToStorage(
+      arrayBuffer,
+      file.name,
+      file.type || "image/jpeg",
+      folder
+    );
+
+    return { success: true, publicUrl: result.publicUrl };
+  } catch (err: unknown) {
+    console.error("uploadPhotoAction error:", err);
+    const message = err instanceof Error ? err.message : "Gagal mengunggah foto bukti.";
+    return { success: false, error: message };
   }
 }

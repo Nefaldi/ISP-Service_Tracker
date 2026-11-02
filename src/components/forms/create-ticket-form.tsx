@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createTicket, requestPresignedUpload } from "@/actions/ticket.actions";
+import { createTicket, uploadPhotoAction } from "@/actions/ticket.actions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Priority } from "@prisma/client";
@@ -30,22 +30,21 @@ export function CreateTicketForm() {
 
     let finalPhotoUrl = damagePhotoUrl;
 
-    // If customer selected a file, demonstrate Presigned S3 upload flow
+    // If customer selected a file, upload to Supabase Storage
     if (fileToUpload) {
       try {
-        const presignedRes = await requestPresignedUpload(
-          fileToUpload.name,
-          fileToUpload.type,
-          "damages"
-        );
+        const uploadData = new FormData();
+        uploadData.append("file", fileToUpload);
+        uploadData.append("folder", "damages");
 
-        if (presignedRes.success && presignedRes.data) {
-          // In production, we upload directly to S3 via PUT presignedRes.data.uploadUrl
-          // If S3 bucket credentials are mocked/dummy in dev, we use publicUrl
-          finalPhotoUrl = presignedRes.data.publicUrl;
+        const uploadRes = await uploadPhotoAction(uploadData);
+        if (uploadRes.success && uploadRes.publicUrl) {
+          finalPhotoUrl = uploadRes.publicUrl;
+        } else {
+          console.warn("Upload foto gagal, melanjutkan tanpa foto:", uploadRes.error);
         }
       } catch (err) {
-        console.warn("Presigned upload warning (using standard flow):", err);
+        console.warn("Upload exception:", err);
       }
     }
 
