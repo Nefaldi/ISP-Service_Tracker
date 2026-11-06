@@ -4,7 +4,7 @@ Sistem Informasi Web Service Tracker dan Manajemen Tiket Helpdesk Berbasis Role 
 
 ---
 
-## 🚀 Fitur Utama & Arsitektur Sistem
+##  Fitur Utama & Arsitektur Sistem
 
 Berdasarkan dokumen `spesifikasi_tech_stack_full_stack_next_js.md`, sistem ini mengintegrasikan:
 
