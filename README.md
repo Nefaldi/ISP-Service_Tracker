@@ -48,7 +48,7 @@ Berdasarkan dokumen `spesifikasi_tech_stack_full_stack_next_js.md`, sistem ini m
 
 ---
 
-## 📁 Struktur Direktori Proyek
+##  Struktur Direktori Proyek
 
 ```text
 .
@@ -134,7 +134,7 @@ Buka browser pada: [http://localhost:3000](http://localhost:3000)
 
 ---
 
-## 🔑 Akun Demo Bawaan (Quick Login)
+##  Akun Demo Bawaan (Quick Login)
 
 Pada halaman login (`/login`), terdapat tombol klik instan untuk mengisi kredensial:
 
@@ -146,7 +146,7 @@ Pada halaman login (`/login`), terdapat tombol klik instan untuk mengisi kredens
 
 ---
 
-## 🔄 Matriks Siklus Hidup Tiket & Alur Aksi
+##  Matriks Siklus Hidup Tiket & Alur Aksi
 
 1. **Open:**
    - Pelanggan membuat tiket melalui formulir di `/customer` (`createTicket()`).
