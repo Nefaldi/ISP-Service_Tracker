@@ -112,4 +112,4 @@ model Feedback {
   createdAt  DateTime @default(now())
 
   @@map("feedbacks")
-}
+
