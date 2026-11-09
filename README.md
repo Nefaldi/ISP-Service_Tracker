@@ -93,7 +93,7 @@ Berdasarkan dokumen `spesifikasi_tech_stack_full_stack_next_js.md`, sistem ini m
 │   └── middleware.ts           # Next.js Middleware Guard (RBAC)
 ├── .env.example
 ├── package.json
-└── tsconfig.json
+└── tsconfig.jso
 ```
 
 ---
