@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatDateTime } from "@/lib/utils";
-import { Ticket, Clock, Star, ArrowRight, ShieldCheck, Activity, Users } from "lucide-react";
+import { Ticket, Clock, Star, ArrowRight, ShieldCheck, Activity, Users, BarChart3 } from "lucide-react";
 
 export default async function AdminDashboardPage() {
   // Aggregate statistics using Prisma
@@ -43,7 +43,13 @@ export default async function AdminDashboardPage() {
             Monitoring performa SLA, penugasan teknisi, dan alur siklus hidup tiket
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <Link href="/admin/reports">
+            <Button variant="outline" className="gap-2">
+              <BarChart3 className="h-4 w-4 text-blue-600" />
+              <span>Laporan SLA</span>
+            </Button>
+          </Link>
           <Link href="/admin/users">
             <Button variant="outline" className="gap-2">
               <Users className="h-4 w-4" />

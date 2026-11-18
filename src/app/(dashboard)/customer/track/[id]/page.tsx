@@ -13,6 +13,8 @@ import {
   Activity,
   FileCheck,
   Image as ImageIcon,
+  Phone,
+  MessageSquare,
 } from "lucide-react";
 
 interface TrackPageProps {
@@ -181,20 +183,30 @@ export default async function CustomerTrackTicketPage({ params }: TrackPageProps
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                 <div>
                   <h4 className="text-xs font-semibold uppercase text-zinc-500 mb-2 flex items-center gap-1.5">
-                    <ImageIcon className="h-3.5 w-3.5" />
+                    <ImageIcon className="h-3.5 w-3.5 text-blue-500" />
                     <span>Foto Bukti Kerusakan</span>
                   </h4>
                   {ticket.damagePhotoUrl ? (
-                    <a
-                      href={ticket.damagePhotoUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block p-3 rounded-lg border border-dashed border-zinc-300 hover:border-blue-500 text-xs text-blue-600 truncate dark:border-zinc-700"
-                    >
-                      Buka Foto S3 Kerusakan ↗
-                    </a>
+                    <div className="space-y-2">
+                      <div className="relative aspect-video rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 group">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={ticket.damagePhotoUrl}
+                          alt="Foto Kerusakan"
+                          className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                        />
+                      </div>
+                      <a
+                        href={ticket.damagePhotoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block text-xs text-blue-600 hover:underline"
+                      >
+                        Buka Foto Ukuran Penuh ↗
+                      </a>
+                    </div>
                   ) : (
-                    <div className="p-3 rounded-lg border border-zinc-200 text-xs text-zinc-400 dark:border-zinc-800">
+                    <div className="p-4 rounded-lg border border-dashed border-zinc-200 text-xs text-zinc-400 text-center dark:border-zinc-800">
                       Tidak ada foto lampiran
                     </div>
                   )}
@@ -202,21 +214,31 @@ export default async function CustomerTrackTicketPage({ params }: TrackPageProps
 
                 <div>
                   <h4 className="text-xs font-semibold uppercase text-zinc-500 mb-2 flex items-center gap-1.5">
-                    <ImageIcon className="h-3.5 w-3.5" />
-                    <span>Foto Hasil Kerja Teknisi</span>
+                    <ImageIcon className="h-3.5 w-3.5 text-emerald-500" />
+                    <span>Foto Bukti Hasil Kerja</span>
                   </h4>
                   {ticket.resolvedPhotoUrl ? (
-                    <a
-                      href={ticket.resolvedPhotoUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block p-3 rounded-lg border border-dashed border-emerald-300 hover:border-emerald-500 text-xs text-emerald-600 truncate dark:border-emerald-800"
-                    >
-                      Buka Foto S3 Bukti Selesai ↗
-                    </a>
+                    <div className="space-y-2">
+                      <div className="relative aspect-video rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 group">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={ticket.resolvedPhotoUrl}
+                          alt="Foto Hasil Kerja"
+                          className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                        />
+                      </div>
+                      <a
+                        href={ticket.resolvedPhotoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block text-xs text-emerald-600 hover:underline"
+                      >
+                        Buka Foto Ukuran Penuh ↗
+                      </a>
+                    </div>
                   ) : (
-                    <div className="p-3 rounded-lg border border-zinc-200 text-xs text-zinc-400 dark:border-zinc-800">
-                      Menunggu foto penyelesaian
+                    <div className="p-4 rounded-lg border border-dashed border-zinc-200 text-xs text-zinc-400 text-center dark:border-zinc-800">
+                      Menunggu foto penyelesaian dari teknisi
                     </div>
                   )}
                 </div>
@@ -287,13 +309,41 @@ export default async function CustomerTrackTicketPage({ params }: TrackPageProps
               <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800">
                 <span className="text-zinc-400 font-medium">Teknisi Lapangan</span>
                 {ticket.technician ? (
-                  <>
-                    <p className="font-bold text-zinc-800 dark:text-zinc-200 text-sm mt-0.5">
+                  <div className="space-y-1.5 mt-0.5">
+                    <p className="font-bold text-zinc-800 dark:text-zinc-200 text-sm">
                       {ticket.technician.name}
                     </p>
                     <p className="text-zinc-500">{ticket.technician.email}</p>
-                    <p className="text-zinc-500">{ticket.technician.phone || "-"}</p>
-                  </>
+                    {ticket.technician.phone && (
+                      <div className="pt-1 flex items-center justify-between gap-2">
+                        <span className="text-zinc-600 dark:text-zinc-300 font-medium">
+                          {ticket.technician.phone}
+                        </span>
+                        <div className="flex items-center gap-1">
+                          <a
+                            href={`https://wa.me/${ticket.technician.phone
+                              .replace(/[^0-9]/g, "")
+                              .replace(/^0/, "62")}?text=Halo%20${encodeURIComponent(
+                              ticket.technician.name
+                            )},%20saya%20pelanggan%20terkait%20tiket%20%23${ticket.ticketNumber}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[11px] font-semibold hover:bg-emerald-200 transition-colors"
+                          >
+                            <MessageSquare className="h-3 w-3" />
+                            <span>WA</span>
+                          </a>
+                          <a
+                            href={`tel:${ticket.technician.phone}`}
+                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-[11px] font-semibold hover:bg-blue-200 transition-colors"
+                          >
+                            <Phone className="h-3 w-3" />
+                            <span>Telp</span>
+                          </a>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 ) : (
                   <p className="text-zinc-400 italic mt-0.5">Belum ditugaskan oleh Admin</p>
                 )}

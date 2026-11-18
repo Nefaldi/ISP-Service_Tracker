@@ -50,6 +50,12 @@ export function Navbar({ user }: NavbarProps) {
                   >
                     Pengguna
                   </Link>
+                  <Link
+                    href="/admin/reports"
+                    className="text-zinc-600 hover:text-blue-600 dark:text-zinc-300"
+                  >
+                    Laporan SLA
+                  </Link>
                 </>
               )}
 
