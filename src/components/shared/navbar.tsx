@@ -44,6 +44,12 @@ export function Navbar({ user }: NavbarProps) {
                   >
                     Tiket Helpdesk
                   </Link>
+                  <Link
+                    href="/admin/users"
+                    className="text-zinc-600 hover:text-blue-600 dark:text-zinc-300"
+                  >
+                    Pengguna
+                  </Link>
                 </>
               )}
 

@@ -98,9 +98,18 @@ export default async function CustomerTrackTicketPage({ params }: TrackPageProps
       {/* Real-time Lifecycle Tracker Progress Stepper */}
       <Card className="border-blue-100 bg-white dark:bg-zinc-900 shadow-md">
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-semibold uppercase tracking-wider text-zinc-500">
-            Status Alur Pengerjaan (Live SSE Tracker)
-          </CardTitle>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <CardTitle className="text-sm font-semibold uppercase tracking-wider text-zinc-500">
+              Status Alur Pengerjaan (Live SSE Tracker)
+            </CardTitle>
+            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-medium dark:bg-emerald-950/40 dark:border-emerald-900 dark:text-emerald-300">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <span>Koneksi Real-Time Aktif</span>
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-2">

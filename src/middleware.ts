@@ -6,7 +6,9 @@ export default auth((req) => {
   const isLoggedIn = !!req.auth;
   const userRole = req.auth?.user?.role;
 
-  const isAuthPage = nextUrl.pathname.startsWith("/login");
+  const isAuthPage =
+    nextUrl.pathname.startsWith("/login") ||
+    nextUrl.pathname.startsWith("/register");
   const isAdminRoute = nextUrl.pathname.startsWith("/admin");
   const isTechnicianRoute = nextUrl.pathname.startsWith("/technician");
   const isCustomerRoute = nextUrl.pathname.startsWith("/customer");
@@ -58,5 +60,6 @@ export const config = {
     "/technician/:path*",
     "/customer/:path*",
     "/login",
+    "/register",
   ],
 };

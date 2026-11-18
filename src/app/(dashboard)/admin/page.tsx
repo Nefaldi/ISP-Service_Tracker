@@ -4,11 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatDateTime } from "@/lib/utils";
-import { Ticket, Clock, Star, ArrowRight, ShieldCheck, Activity } from "lucide-react";
+import { Ticket, Clock, Star, ArrowRight, ShieldCheck, Activity, Users } from "lucide-react";
 
 export default async function AdminDashboardPage() {
   // Aggregate statistics using Prisma
-  const [totalTickets, openTickets, inProgressTickets, resolvedTickets, feedbacks, recentLogs] =
+  const [totalTickets, openTickets, inProgressTickets, resolvedTickets, feedbacks, recentLogs, totalUsers] =
     await Promise.all([
       prisma.ticket.count(),
       prisma.ticket.count({ where: { status: "OPEN" } }),
@@ -26,6 +26,7 @@ export default async function AdminDashboardPage() {
           user: { select: { name: true, role: true } },
         },
       }),
+      prisma.user.count(),
     ]);
 
   const avgRating = feedbacks._avg.rating ? feedbacks._avg.rating.toFixed(1) : "0.0";
@@ -42,12 +43,20 @@ export default async function AdminDashboardPage() {
             Monitoring performa SLA, penugasan teknisi, dan alur siklus hidup tiket
           </p>
         </div>
-        <Link href="/admin/tickets">
-          <Button variant="primary" className="gap-2">
-            <span>Kelola Semua Tiket</span>
-            <ArrowRight className="h-4 w-4" />
-          </Button>
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link href="/admin/users">
+            <Button variant="outline" className="gap-2">
+              <Users className="h-4 w-4" />
+              <span>Pengguna ({totalUsers})</span>
+            </Button>
+          </Link>
+          <Link href="/admin/tickets">
+            <Button variant="primary" className="gap-2">
+              <span>Kelola Semua Tiket</span>
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Metrics Grid */}

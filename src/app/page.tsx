@@ -48,11 +48,18 @@ export default async function HomePage() {
                 </Link>
               </div>
             ) : (
-              <Link href="/login">
-                <Button variant="primary" size="sm">
-                  Masuk ke Portal
-                </Button>
-              </Link>
+              <div className="flex items-center gap-2">
+                <Link href="/register">
+                  <Button variant="outline" size="sm">
+                    Daftar
+                  </Button>
+                </Link>
+                <Link href="/login">
+                  <Button variant="primary" size="sm">
+                    Masuk
+                  </Button>
+                </Link>
+              </div>
             )}
           </div>
         </div>
@@ -81,15 +88,11 @@ export default async function HomePage() {
               <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
-          <a
-            href="https://github.com"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <Link href="/register">
             <Button variant="outline" size="lg">
-              Dokumentasi Arsitektur
+              Daftar Akun Baru
             </Button>
-          </a>
+          </Link>
         </div>
       </section>
 

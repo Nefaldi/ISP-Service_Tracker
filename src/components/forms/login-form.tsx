@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -103,6 +104,15 @@ export function LoginForm() {
           <Button type="submit" className="w-full" isLoading={isLoading}>
             Masuk
           </Button>
+
+          <div className="text-center pt-1">
+            <span className="text-xs text-zinc-500">
+              Belum memiliki akun?{" "}
+              <Link href="/register" className="font-semibold text-blue-600 hover:underline">
+                Daftar akun baru
+              </Link>
+            </span>
+          </div>
         </form>
 
         <div className="mt-6 border-t border-zinc-200 pt-5 dark:border-zinc-800">
