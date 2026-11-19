@@ -16,6 +16,7 @@ import {
   FileText,
   Search,
   ExternalLink,
+  Inbox,
 } from "lucide-react";
 
 export interface TechTaskItem {
@@ -75,6 +76,20 @@ export function TechnicianTasksList({ initialTasks }: TechnicianTasksListProps) 
       return matchKeyword && matchTab;
     });
   }, [initialTasks, searchTerm, filterTab]);
+
+  // Clean empty state matching reference UI
+  if (initialTasks.length === 0) {
+    return (
+      <div className="py-20 sm:py-24 flex flex-col items-center justify-center text-center">
+        <div className="h-14 w-14 rounded-full bg-[#F1F5F9] text-[#94A3B8] flex items-center justify-center mb-3">
+          <Inbox className="h-6 w-6 stroke-[1.75]" />
+        </div>
+        <p className="text-[14px] text-[#64748B]">
+          Belum ada tugas lapangan yang ditugaskan.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -158,15 +173,12 @@ export function TechnicianTasksList({ initialTasks }: TechnicianTasksListProps) 
 
       {/* Task Cards List */}
       {filteredTasks.length === 0 ? (
-        <div className="py-12 text-center rounded-[12px] border border-[#E2E8F0] bg-white p-6">
-          <Clock className="h-8 w-8 text-[#94A3B8] mx-auto mb-2" />
-          <h3 className="text-[16px] font-semibold text-[#0F172A]">
-            Tidak ada tugas lapangan
-          </h3>
-          <p className="text-[13px] text-[#64748B] mt-1">
-            {filterTab === "ACTIVE"
-              ? "Tidak ada tugas perbaikan yang sedang aktif saat ini."
-              : "Belum ada tugas pada kategori ini."}
+        <div className="py-12 flex flex-col items-center justify-center text-center">
+          <div className="h-12 w-12 rounded-full bg-[#F1F5F9] text-[#94A3B8] flex items-center justify-center mb-2">
+            <Inbox className="h-5 w-5 stroke-[1.75]" />
+          </div>
+          <p className="text-[14px] text-[#64748B]">
+            Tidak ada tugas yang sesuai kriteria pencarian.
           </p>
         </div>
       ) : (

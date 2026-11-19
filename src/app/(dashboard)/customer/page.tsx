@@ -1,6 +1,5 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { CreateTicketForm } from "@/components/forms/create-ticket-form";
 import { CustomerTicketsList } from "@/components/shared/customer-tickets-list";
 import { ReportSummaryCard } from "@/components/shared/report-summary-card";
 import { AreaMapCard } from "@/components/shared/area-map-card";
@@ -37,37 +36,27 @@ export default async function CustomerPortalPage() {
   ).length;
 
   return (
-    <div className="space-y-6">
-      {/* Page Title */}
-      <div>
-        <h1 className="text-[28px] font-bold tracking-tight text-[#0F172A]">
-          Portal Pelanggan
-        </h1>
-        <p className="text-[14px] text-[#475569] mt-1">
-          Laporkan kendala jaringan atau layanan Anda dan pantau status perbaikannya secara real-time
-        </p>
-      </div>
-
+    <div className="w-full">
       {/* 2-Column Responsive Layout matching reference UI */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-        {/* Left / Main Column (2 spans): Laporan Terakhir Anda */}
-        <div className="lg:col-span-2 space-y-4">
-          <Card>
-            <CardHeader className="pb-3 border-b border-[#E2E8F0] mb-4">
-              <CardTitle className="text-[18px]">
-                Laporan Terakhir Anda ({tickets.length})
+        {/* Left Column (Wide 2 spans): Laporan Terakhir Anda */}
+        <div className="lg:col-span-2">
+          <Card className="border border-[#E2E8F0] bg-white shadow-xs rounded-[12px] min-h-[460px]">
+            <CardHeader className="p-5 pb-3">
+              <CardTitle className="text-[17px] font-bold text-[#064E3B]">
+                Laporan Terakhir Anda
               </CardTitle>
-              <CardDescription className="text-[14px]">
-                Pantau tahapan penanganan laporan Anda dan buka Live Tracker untuk memantau pengerjaan
+              <CardDescription className="text-[13px] text-[#64748B] mt-0.5">
+                Pantau tahapan penanganan laporan Anda
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-5 pt-0">
               <CustomerTicketsList initialTickets={tickets} />
             </CardContent>
           </Card>
         </div>
 
-        {/* Right / Sidebar Column (1 span): Ringkasan Laporan, Peta Area, & Form Buat Tiket */}
+        {/* Right Column (1 span): Ringkasan Laporan & Peta Area Pengawasan */}
         <div className="lg:col-span-1 space-y-5">
           {/* Ringkasan Laporan Card */}
           <ReportSummaryCard
@@ -84,11 +73,7 @@ export default async function CustomerPortalPage() {
           {/* Peta Area Pengawasan Card */}
           <AreaMapCard
             locationTag="Fakultas Teknik"
-            subtitle="Wilayah Distribusi Jaringan FO Kampus"
           />
-
-          {/* Form Buat Laporan Baru */}
-          <CreateTicketForm />
         </div>
       </div>
     </div>

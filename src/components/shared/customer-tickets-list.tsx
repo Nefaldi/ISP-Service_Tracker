@@ -5,7 +5,7 @@ import Link from "next/link";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { formatDateTime } from "@/lib/utils";
-import { Search, ArrowRight, Clock, CheckCircle2 } from "lucide-react";
+import { Search, ArrowRight, Clock, CheckCircle2, Inbox } from "lucide-react";
 
 export interface CustomerTicketItem {
   id: string;
@@ -61,6 +61,20 @@ export function CustomerTicketsList({ initialTickets }: CustomerTicketsListProps
     });
   }, [initialTickets, searchTerm, tab]);
 
+  // When user has no tickets at all, display the clean empty state matching reference UI
+  if (initialTickets.length === 0) {
+    return (
+      <div className="py-20 sm:py-24 flex flex-col items-center justify-center text-center">
+        <div className="h-14 w-14 rounded-full bg-[#F1F5F9] text-[#94A3B8] flex items-center justify-center mb-3">
+          <Inbox className="h-6 w-6 stroke-[1.75]" />
+        </div>
+        <p className="text-[14px] text-[#64748B]">
+          Belum ada laporan yang Anda buat.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       {/* Search and Tabs */}
@@ -69,7 +83,7 @@ export function CustomerTicketsList({ initialTickets }: CustomerTicketsListProps
           <button
             type="button"
             onClick={() => setTab("ACTIVE")}
-            className={`h-[36px] px-3.5 rounded-[8px] text-[13px] font-semibold transition-colors flex items-center gap-1.5 ${
+            className={`h-[36px] px-3.5 rounded-[8px] text-[13px] font-semibold transition-colors flex items-center gap-1.5 cursor-pointer ${
               tab === "ACTIVE"
                 ? "bg-[#1D4ED8] text-white"
                 : "bg-[#F1F5F9] text-[#475569] hover:bg-[#E2E8F0]"
@@ -81,7 +95,7 @@ export function CustomerTicketsList({ initialTickets }: CustomerTicketsListProps
           <button
             type="button"
             onClick={() => setTab("HISTORY")}
-            className={`h-[36px] px-3.5 rounded-[8px] text-[13px] font-semibold transition-colors flex items-center gap-1.5 ${
+            className={`h-[36px] px-3.5 rounded-[8px] text-[13px] font-semibold transition-colors flex items-center gap-1.5 cursor-pointer ${
               tab === "HISTORY"
                 ? "bg-[#0F172A] text-white"
                 : "bg-[#F1F5F9] text-[#475569] hover:bg-[#E2E8F0]"
@@ -93,7 +107,7 @@ export function CustomerTicketsList({ initialTickets }: CustomerTicketsListProps
           <button
             type="button"
             onClick={() => setTab("ALL")}
-            className={`h-[36px] px-2.5 text-[13px] font-medium text-[#64748B] hover:text-[#0F172A] ${
+            className={`h-[36px] px-2.5 text-[13px] font-medium text-[#64748B] hover:text-[#0F172A] cursor-pointer ${
               tab === "ALL" ? "underline font-bold text-[#0F172A]" : ""
             }`}
           >
@@ -116,15 +130,12 @@ export function CustomerTicketsList({ initialTickets }: CustomerTicketsListProps
 
       {/* List of Tickets */}
       {filteredTickets.length === 0 ? (
-        <div className="py-12 text-center rounded-[12px] border border-[#E2E8F0] bg-white">
-          <Clock className="h-8 w-8 text-[#94A3B8] mx-auto mb-2" />
-          <h4 className="text-[16px] font-semibold text-[#0F172A]">
-            Belum ada tiket
-          </h4>
-          <p className="text-[13px] text-[#64748B] mt-1">
-            {tab === "ACTIVE"
-              ? "Tidak ada laporan gangguan yang sedang aktif."
-              : "Belum ada riwayat tiket yang terselesaikan."}
+        <div className="py-12 flex flex-col items-center justify-center text-center">
+          <div className="h-12 w-12 rounded-full bg-[#F1F5F9] text-[#94A3B8] flex items-center justify-center mb-2">
+            <Inbox className="h-5 w-5 stroke-[1.75]" />
+          </div>
+          <p className="text-[14px] text-[#64748B]">
+            Tidak ada laporan yang sesuai pencarian.
           </p>
         </div>
       ) : (
