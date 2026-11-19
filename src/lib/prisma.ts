@@ -1,6 +1,14 @@
 import { PrismaClient } from "@prisma/client";
 import { mockStore } from "./mock-store";
 
+// Ensure DATABASE_URL exists during build time on platforms like Vercel
+if (!process.env.DATABASE_URL) {
+  process.env.DATABASE_URL = "postgresql://postgres:postgres@127.0.0.1:5432/fallback?schema=public";
+}
+if (!process.env.DIRECT_URL) {
+  process.env.DIRECT_URL = process.env.DATABASE_URL;
+}
+
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
   isDatabaseDown?: boolean;

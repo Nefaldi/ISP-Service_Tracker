@@ -1,4 +1,5 @@
 import NextAuth from "next-auth";
+import { authConfig } from "./auth.config";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
@@ -38,17 +39,7 @@ const FALLBACK_DEMO_USERS = [
 ];
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  trustHost: true,
-  secret:
-    process.env.AUTH_SECRET ||
-    process.env.NEXTAUTH_SECRET ||
-    "super-secret-auth-key-change-this-in-production-min-32-chars",
-  session: {
-    strategy: "jwt",
-  },
-  pages: {
-    signIn: "/login",
-  },
+  ...authConfig,
   providers: [
     Credentials({
       name: "Credentials",
@@ -110,22 +101,4 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-        token.role = user.role;
-        token.phone = user.phone;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id as string;
-        session.user.role = token.role as "ADMIN" | "TEKNISI" | "CUSTOMER";
-        session.user.phone = (token.phone as string) || null;
-      }
-      return session;
-    },
-  },
 });
