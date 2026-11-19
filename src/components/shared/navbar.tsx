@@ -19,7 +19,8 @@ export function Navbar({ user }: NavbarProps) {
   const isTechnicianTasks = pathname?.startsWith("/technician/tasks");
   const isCustomerReports =
     pathname?.startsWith("/customer/reports") ||
-    pathname?.startsWith("/customer/tickets");
+    pathname?.startsWith("/customer/tickets") ||
+    pathname?.startsWith("/customer/track");
 
   // Determine display role subtitle matching reference UI
   let roleSubtitle = "Civitas Akademik / Pelapor";

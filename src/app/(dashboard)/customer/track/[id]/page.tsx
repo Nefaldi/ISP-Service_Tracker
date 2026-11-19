@@ -9,7 +9,6 @@ import { TicketStepper } from "@/components/shared/ticket-stepper";
 import { CustomerReviewCard } from "@/components/forms/customer-review-card";
 import { formatDateTime } from "@/lib/utils";
 import {
-  ArrowLeft,
   Clock,
   Wrench,
   Plus,
@@ -64,18 +63,6 @@ export default async function CustomerTrackTicketPage({ params }: TrackPageProps
   }
 
   const role = session?.user?.role;
-  const backHref =
-    role === "ADMIN"
-      ? "/admin/tickets"
-      : role === "TEKNISI"
-      ? "/technician/tasks"
-      : "/customer";
-  const backLabel =
-    role === "ADMIN"
-      ? "Kembali ke Manajemen Tiket"
-      : role === "TEKNISI"
-      ? "Kembali ke Daftar Tugas"
-      : "Kembali ke Portal Pelanggan";
 
   // SLA Calculation
   // Standard target: CRITICAL=2h, HIGH=4h, MEDIUM=8h, LOW=24h
@@ -109,14 +96,6 @@ export default async function CustomerTrackTicketPage({ params }: TrackPageProps
     <div className="space-y-6">
       {/* 2. Judul Tiket (UI_CONTEXT 4.2) */}
       <div>
-        <Link
-          href={backHref}
-          className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#475569] hover:text-[#0F172A] mb-3 transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          <span>{backLabel}</span>
-        </Link>
-
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">

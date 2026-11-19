@@ -1,9 +1,7 @@
-import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { TechnicianTasksList } from "@/components/shared/technician-tasks-list";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ArrowLeft } from "lucide-react";
 
 export const metadata = {
   title: "Daftar Tugas Lapangan - Service Tracker Teknisi",
@@ -56,13 +54,6 @@ export default async function TechnicianTasksPage() {
   return (
     <div className="space-y-6">
       <div>
-        <Link
-          href="/technician"
-          className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#475569] hover:text-[#0F172A] mb-2 transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          <span>Kembali ke Portal Teknisi</span>
-        </Link>
         <h1 className="text-[28px] font-bold tracking-tight text-[#0F172A]">
           Daftar Tugas Perbaikan Lapangan
         </h1>
