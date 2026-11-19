@@ -18,7 +18,6 @@ import {
   MessageSquare,
   Star,
   Activity,
-  ArrowRight,
 } from "lucide-react";
 
 export interface CustomerTicketItem {
@@ -486,10 +485,9 @@ export function CustomerTicketsList({
 
                         <Link
                           href={`/customer/track/${ticket.id}`}
-                          className="h-[36px] px-4 rounded-[8px] bg-[#1D4ED8] hover:bg-[#1E40AF] text-white text-[12px] font-semibold flex items-center justify-center gap-1.5 transition-colors shrink-0 shadow-xs"
+                          className="h-[36px] px-4 rounded-[8px] bg-[#1D4ED8] hover:bg-[#1E40AF] text-white text-[12px] font-semibold flex items-center justify-center transition-colors shrink-0 shadow-xs"
                         >
                           <span>Buka Live Tracker</span>
-                          <ArrowRight className="h-3.5 w-3.5 stroke-[2.5]" />
                         </Link>
                       </div>
                     </div>

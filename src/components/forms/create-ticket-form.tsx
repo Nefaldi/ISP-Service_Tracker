@@ -7,7 +7,7 @@ import { createTicket, uploadPhotoAction } from "@/actions/ticket.actions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Priority } from "@prisma/client";
-import { UploadCloud, CheckCircle2, AlertCircle, X, ArrowRight, PlusCircle } from "lucide-react";
+import { UploadCloud, CheckCircle2, AlertCircle, X, PlusCircle } from "lucide-react";
 
 export function CreateTicketForm() {
   const router = useRouter();
@@ -117,10 +117,9 @@ export function CreateTicketForm() {
           <div className="space-y-2">
             <Link
               href={`/customer/track/${createdTicket.id}`}
-              className="w-full h-[46px] rounded-[8px] bg-[#1D4ED8] hover:bg-[#1E40AF] text-white text-[14px] font-semibold flex items-center justify-center gap-2 shadow-xs transition-colors"
+              className="w-full h-[46px] rounded-[8px] bg-[#1D4ED8] hover:bg-[#1E40AF] text-white text-[14px] font-semibold flex items-center justify-center shadow-xs transition-colors"
             >
               <span>Pantau Status Tiket (Live Tracker)</span>
-              <ArrowRight className="h-4 w-4" />
             </Link>
 
             <Button
