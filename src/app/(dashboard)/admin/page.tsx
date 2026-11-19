@@ -9,9 +9,6 @@ import {
   Users,
   Clock,
   Star,
-  ArrowRight,
-  AlertTriangle,
-  CheckCircle2,
   ChevronRight,
 } from "lucide-react";
 
@@ -20,10 +17,6 @@ export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Portal Administrator - Service Tracker",
 };
-
-function getFourHoursAgo() {
-  return new Date(Date.now() - 4 * 60 * 60 * 1000);
-}
 
 export default async function AdminDashboardPage() {
   // Ambil data agregasi & tiket menggunakan Prisma
@@ -77,15 +70,6 @@ export default async function AdminDashboardPage() {
     phone: t.phone,
     activeTaskCount: t.assignedTickets ? t.assignedTickets.length : 0,
   }));
-
-  // SLA Warning Count: tiket aktif lebih dari 4 jam
-  const fourHoursAgo = getFourHoursAgo();
-  const slaWarningCount = await prisma.ticket.count({
-    where: {
-      status: { in: ["OPEN", "ASSIGNED", "IN_PROGRESS"] },
-      createdAt: { lt: fourHoursAgo },
-    },
-  });
 
   // Hitung rata-rata durasi penyelesaian (SLA jam)
   let totalResolutionHours = 0;
@@ -260,23 +244,12 @@ export default async function AdminDashboardPage() {
           {/* Card Tiket Masuk Terbaru */}
           <Card className="border border-[#E2E8F0]/60 bg-white shadow-2xs rounded-[12px] min-h-[460px]">
             <CardHeader className="px-5 pt-3.5 pb-2">
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-[16px] font-bold text-[#0B2A6F] leading-snug">
-                    Tiket Masuk Terbaru
-                  </CardTitle>
-                  <CardDescription className="text-[12px] text-[#64748B] mt-0.5">
-                    Pantau tahapan penanganan laporan dan kelola penugasan teknisi
-                  </CardDescription>
-                </div>
-                <Link
-                  href="/admin/tickets"
-                  className="text-[12px] font-semibold text-[#1D4ED8] hover:underline hidden sm:inline-flex items-center gap-1"
-                >
-                  <span>Lihat Semua Tiket</span>
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
-              </div>
+              <CardTitle className="text-[16px] font-bold text-[#0B2A6F] leading-snug">
+                Tiket Masuk Terbaru
+              </CardTitle>
+              <CardDescription className="text-[12px] text-[#64748B] mt-0.5">
+                Pantau tahapan penanganan laporan dan kelola penugasan teknisi
+              </CardDescription>
             </CardHeader>
             <CardContent className="px-5 pb-5 pt-1">
               <AdminTicketsList
@@ -288,7 +261,7 @@ export default async function AdminDashboardPage() {
           </Card>
         </div>
 
-        {/* Kolom Kanan (1 Span): Ringkasan Tiket, Kartu Kinerja SLA, dan Peta Pengawasan */}
+        {/* Kolom Kanan (1 Span): Ringkasan Tiket dan Peta Pengawasan */}
         <div className="lg:col-span-1 space-y-5">
           {/* Ringkasan Tiket Card */}
           <ReportSummaryCard
@@ -301,85 +274,6 @@ export default async function AdminDashboardPage() {
             resolvedLabel="Selesai"
             resolvedCount={resolvedTicketsCount}
           />
-
-          {/* Indikator Mutu Layanan & SLA Card */}
-          <Card className="border border-[#E2E8F0]/60 bg-white shadow-2xs rounded-[12px]">
-            <CardHeader className="py-2.5 px-4 border-b border-[#F1F5F9]">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-[14px] font-bold text-[#0B2A6F]">
-                  Indikator Mutu Layanan
-                </CardTitle>
-                <Link
-                  href="/admin/reports"
-                  className="text-[12px] font-medium text-[#1D4ED8] hover:underline"
-                >
-                  Detail
-                </Link>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-3 p-4">
-              {/* SLA Status Item */}
-              <div className="p-3 rounded-[8px] border border-[#E2E8F0] bg-[#F8FAFC] flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div
-                    className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ${
-                      slaWarningCount > 0
-                        ? "bg-[#FEF2F2] text-[#DC2626]"
-                        : "bg-[#EFF6FF] text-[#1D4ED8]"
-                    }`}
-                  >
-                    {slaWarningCount > 0 ? (
-                      <AlertTriangle className="h-4 w-4" />
-                    ) : (
-                      <CheckCircle2 className="h-4 w-4" />
-                    )}
-                  </div>
-                  <div>
-                    <span className="text-[13px] font-semibold text-[#0F172A] block leading-tight">
-                      Kepatuhan SLA
-                    </span>
-                    <span className="text-[11px] text-[#64748B]">
-                      {slaWarningCount > 0
-                        ? `${slaWarningCount} tiket perlu atensi segera`
-                        : "Semua respon sesuai target"}
-                    </span>
-                  </div>
-                </div>
-                <span
-                  className={`text-[12px] font-bold px-2 py-0.5 rounded-[4px] ${
-                    slaWarningCount > 0
-                      ? "bg-[#FEE2E2] text-[#DC2626]"
-                      : "bg-[#DBEAFE] text-[#1D4ED8]"
-                  }`}
-                >
-                  {slaWarningCount > 0 ? "Perlu Respon" : "Aman"}
-                </span>
-              </div>
-
-              {/* CSAT Item */}
-              <div className="p-3 rounded-[8px] border border-[#FDE68A]/60 bg-[#FFFBEB] flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className="h-8 w-8 rounded-full bg-[#FEF3C7] text-[#D97706] flex items-center justify-center shrink-0">
-                    <Star className="h-4 w-4 fill-current" />
-                  </div>
-                  <div>
-                    <span className="text-[13px] font-semibold text-[#0F172A] block leading-tight">
-                      Kepuasan (CSAT)
-                    </span>
-                    <span className="text-[11px] text-[#92400E]">
-                      Dari {feedbacks._count.rating} ulasan pelanggan
-                    </span>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <span className="text-[16px] font-bold text-[#B45309]">
-                    {avgCsat}
-                  </span>
-                  <span className="text-[11px] text-[#92400E] block">/ 5.0</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
 
           {/* Peta Area Pengawasan Card (Konsisten dengan Customer & Teknisi) */}
           <AreaMapCard

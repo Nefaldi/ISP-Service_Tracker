@@ -20,7 +20,6 @@ import {
   Star,
   ExternalLink,
   Clock,
-  ArrowRight,
 } from "lucide-react";
 
 export interface AdminTicketItem {
@@ -443,19 +442,6 @@ export function AdminTicketsList({
               </div>
             );
           })}
-        </div>
-      )}
-
-      {/* Link to All Tickets if limited */}
-      {limit && filteredTickets.length > limit && (
-        <div className="text-center pt-2">
-          <Link
-            href="/admin/tickets"
-            className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#1D4ED8] hover:underline"
-          >
-            <span>Lihat semua {filteredTickets.length} tiket di Manajemen Tiket</span>
-            <ArrowRight className="h-4 w-4" />
-          </Link>
         </div>
       )}
     </div>
