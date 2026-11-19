@@ -1,7 +1,5 @@
-import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { AdminTicketsTable } from "@/components/shared/admin-tickets-table";
-import { ArrowLeft } from "lucide-react";
 
 export const metadata = {
   title: "Manajemen Tiket - Service Tracker Admin",
@@ -44,17 +42,10 @@ export default async function AdminTicketsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <Link
-          href="/admin"
-          className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#475569] hover:text-[#0F172A] mb-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          <span>Kembali ke Ikhtisar</span>
-        </Link>
-        <h1 className="text-[28px] font-bold tracking-tight text-[#0F172A]">
+        <h1 className="text-[24px] sm:text-[28px] font-bold tracking-tight text-[#0B2A6F]">
           Manajemen Tiket Helpdesk
         </h1>
-        <p className="text-[14px] text-[#475569] mt-1">
+        <p className="text-[13px] sm:text-[14px] text-[#475569] mt-1">
           Daftar seluruh tiket gangguan layanan, penugasan teknisi, dan ekspor data CSV
         </p>
       </div>

@@ -1,7 +1,6 @@
-import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ArrowLeft, Clock, CheckCircle2, Star, Users } from "lucide-react";
+import { Clock, CheckCircle2, Star, Users } from "lucide-react";
 
 export const metadata = {
   title: "Laporan SLA & CSAT - Service Tracker Admin",
@@ -101,17 +100,10 @@ export default async function AdminReportsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <Link
-          href="/admin"
-          className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#475569] hover:text-[#0F172A] mb-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          <span>Kembali ke Ikhtisar</span>
-        </Link>
-        <h1 className="text-[28px] font-bold tracking-tight text-[#0F172A]">
+        <h1 className="text-[24px] sm:text-[28px] font-bold tracking-tight text-[#0B2A6F]">
           Laporan Kepatuhan SLA & Analitik CSAT
         </h1>
-        <p className="text-[14px] text-[#475569] mt-1">
+        <p className="text-[13px] sm:text-[14px] text-[#475569] mt-1">
           Rekapitulasi durasi penanganan gangguan, performa teknisi lapangan, dan skor kepuasan pelanggan
         </p>
       </div>
