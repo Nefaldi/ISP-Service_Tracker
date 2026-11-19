@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
 
 @theme {
   --font-sans: var(--font-inter), Arial, Helvetica, sans-serif;
@@ -40,4 +41,19 @@ body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+}
+
+/* Custom Leaflet Styling */
+.custom-leaflet-popup .leaflet-popup-content-wrapper {
+  border-radius: 10px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #E2E8F0;
+  padding: 4px;
+}
+.custom-leaflet-popup .leaflet-popup-content {
+  margin: 10px 12px;
+  line-height: 1.4;
+}
+.custom-leaflet-popup .leaflet-popup-tip {
+  background: white;
 }

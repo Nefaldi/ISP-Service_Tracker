@@ -1,9 +1,26 @@
-import Image from "next/image";
+"use client";
+
+import dynamic from "next/dynamic";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
 
 interface AreaMapCardProps {
   locationTag?: string;
 }
+
+// Dynamically import Leaflet interactive map with ssr: false
+const InteractiveAreaMap = dynamic(
+  () => import("@/components/shared/interactive-area-map"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-full h-[260px] bg-[#F8FAFC] flex flex-col items-center justify-center gap-2 text-[#64748B]">
+        <Loader2 className="h-5 w-5 animate-spin text-[#059669]" />
+        <span className="text-[12px] font-medium">Memuat peta interaktif...</span>
+      </div>
+    ),
+  }
+);
 
 export function AreaMapCard({
   locationTag = "Fakultas Teknik",
@@ -21,16 +38,7 @@ export function AreaMapCard({
         </div>
       </CardHeader>
       <CardContent className="p-0">
-        <div className="relative w-full h-[190px] bg-[#FEF9C3]/20 overflow-hidden">
-          <Image
-            src="/campus-map.png"
-            alt="Peta Area Pengawasan Fakultas Teknik"
-            width={243}
-            height={187}
-            className="w-full h-full object-cover"
-            priority
-          />
-        </div>
+        <InteractiveAreaMap />
       </CardContent>
     </Card>
   );
