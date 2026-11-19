@@ -89,14 +89,6 @@ export function CustomerTicketsList({
     }));
   };
 
-  const counts = useMemo(() => {
-    return {
-      all: initialTickets.length,
-      active: initialTickets.filter((t) => t.status !== "CLOSED").length,
-      history: initialTickets.filter((t) => t.status === "CLOSED").length,
-    };
-  }, [initialTickets]);
-
   const filteredTickets = useMemo(() => {
     return initialTickets.filter((ticket) => {
       const keyword = searchTerm.toLowerCase().trim();
@@ -148,7 +140,7 @@ export function CustomerTicketsList({
             }`}
           >
             <Clock className="h-4 w-4" />
-            <span>Sedang Berjalan ({counts.active})</span>
+            <span>Sedang Berjalan</span>
           </button>
           <button
             type="button"
@@ -160,7 +152,7 @@ export function CustomerTicketsList({
             }`}
           >
             <CheckCircle2 className="h-4 w-4" />
-            <span>Riwayat Selesai ({counts.history})</span>
+            <span>Riwayat Selesai</span>
           </button>
           <button
             type="button"
@@ -169,7 +161,7 @@ export function CustomerTicketsList({
               tab === "ALL" ? "underline font-bold text-[#0F172A]" : ""
             }`}
           >
-            Semua ({counts.all})
+            Semua
           </button>
         </div>
 

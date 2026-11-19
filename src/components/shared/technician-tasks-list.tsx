@@ -51,16 +51,6 @@ export function TechnicianTasksList({
   const [searchTerm, setSearchTerm] = useState("");
   const [filterTab, setFilterTab] = useState<"ACTIVE" | "ASSIGNED" | "IN_PROGRESS" | "RESOLVED" | "ALL">("ACTIVE");
 
-  const counts = useMemo(() => {
-    return {
-      all: initialTasks.length,
-      active: initialTasks.filter((t) => t.status === "ASSIGNED" || t.status === "IN_PROGRESS").length,
-      assigned: initialTasks.filter((t) => t.status === "ASSIGNED").length,
-      inProgress: initialTasks.filter((t) => t.status === "IN_PROGRESS").length,
-      resolved: initialTasks.filter((t) => t.status === "RESOLVED" || t.status === "CLOSED").length,
-    };
-  }, [initialTasks]);
-
   const filteredTasks = useMemo(() => {
     return initialTasks.filter((task) => {
       const keyword = searchTerm.toLowerCase().trim();
@@ -115,7 +105,7 @@ export function TechnicianTasksList({
             }`}
           >
             <Clock className="h-4 w-4" />
-            <span>Sedang Berjalan ({counts.active})</span>
+            <span>Sedang Berjalan</span>
           </button>
 
           <button
@@ -127,7 +117,7 @@ export function TechnicianTasksList({
                 : "bg-[#F1F5F9] text-[#475569] hover:bg-[#E2E8F0]"
             }`}
           >
-            <span>Ditugaskan ({counts.assigned})</span>
+            <span>Ditugaskan</span>
           </button>
 
           <button
@@ -140,7 +130,7 @@ export function TechnicianTasksList({
             }`}
           >
             <AlertTriangle className="h-4 w-4" />
-            <span>Dikerjakan ({counts.inProgress})</span>
+            <span>Dikerjakan</span>
           </button>
 
           <button
@@ -153,7 +143,7 @@ export function TechnicianTasksList({
             }`}
           >
             <CheckCircle2 className="h-4 w-4" />
-            <span>Riwayat Selesai ({counts.resolved})</span>
+            <span>Riwayat Selesai</span>
           </button>
 
           <button
@@ -163,7 +153,7 @@ export function TechnicianTasksList({
               filterTab === "ALL" ? "underline font-bold text-[#0F172A]" : ""
             }`}
           >
-            Semua ({counts.all})
+            Semua
           </button>
         </div>
 
