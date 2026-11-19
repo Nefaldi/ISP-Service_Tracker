@@ -16,10 +16,10 @@ import {
   ChevronDown,
   Check,
   Wrench,
-  User,
-  Star,
-  ExternalLink,
   Clock,
+  ExternalLink,
+  MessageSquare,
+  Star,
 } from "lucide-react";
 
 export interface AdminTicketItem {
@@ -66,7 +66,7 @@ const PROGRESS_STEPS = [
   { key: "ASSIGNED", label: "Teknisi Ditugaskan", desc: "Teknisi telah ditunjuk" },
   { key: "IN_PROGRESS", label: "Pengerjaan Lapangan", desc: "Teknisi menangani gangguan" },
   { key: "RESOLVED", label: "Perbaikan Selesai", desc: "Pekerjaan selesai diuji" },
-  { key: "CLOSED", label: "Tiket Ditutup", desc: "Terkonfirmasi & ditutup" },
+  { key: "CLOSED", label: "Tiket Ditutup", desc: "Terkonfirmasi & selesai" },
 ];
 
 function getStatusIndex(status: string): number {
@@ -89,10 +89,10 @@ function getStatusIndex(status: string): number {
 export function AdminTicketsList({
   initialTickets,
   technicians,
-  limit,
+  limit = 3,
 }: AdminTicketsListProps) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterTab, setFilterTab] = useState<"ACTIVE" | "OPEN" | "IN_PROGRESS" | "RESOLVED" | "ALL">("ACTIVE");
+  const [tab, setTab] = useState<"ACTIVE" | "UNASSIGNED" | "RESOLVED" | "ALL">("ACTIVE");
   const [expandedIds, setExpandedIds] = useState<Record<string, boolean>>({});
 
   const toggleExpand = (id: string) => {
@@ -114,331 +114,438 @@ export function AdminTicketsList({
         (ticket.technician?.name && ticket.technician.name.toLowerCase().includes(keyword));
 
       let matchTab = true;
-      if (filterTab === "ACTIVE") {
+      if (tab === "ACTIVE") {
         matchTab = ticket.status === "OPEN" || ticket.status === "ASSIGNED" || ticket.status === "IN_PROGRESS";
-      } else if (filterTab === "OPEN") {
+      } else if (tab === "UNASSIGNED") {
         matchTab = ticket.status === "OPEN";
-      } else if (filterTab === "IN_PROGRESS") {
-        matchTab = ticket.status === "ASSIGNED" || ticket.status === "IN_PROGRESS";
-      } else if (filterTab === "RESOLVED") {
+      } else if (tab === "RESOLVED") {
         matchTab = ticket.status === "RESOLVED" || ticket.status === "CLOSED";
       }
 
       return matchKeyword && matchTab;
     });
-  }, [initialTickets, searchTerm, filterTab]);
+  }, [initialTickets, searchTerm, tab]);
 
-  const displayedTickets = limit ? filteredTickets.slice(0, limit) : filteredTickets;
+  const displayedTickets = useMemo(() => {
+    return limit ? filteredTickets.slice(0, limit) : filteredTickets;
+  }, [filteredTickets, limit]);
+
+  // Clean empty state jika belum ada tiket sama sekali
+  if (initialTickets.length === 0) {
+    return (
+      <div className="py-20 sm:py-24 flex flex-col items-center justify-center text-center">
+        <div className="h-14 w-14 rounded-full bg-[#F1F5F9] text-[#94A3B8] flex items-center justify-center mb-3">
+          <Inbox className="h-6 w-6 stroke-[1.75]" />
+        </div>
+        <p className="text-[14px] text-[#64748B]">
+          Belum ada tiket laporan yang masuk.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
-      {/* Search Input & Filter Tabs */}
-      <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
-        {/* Search Input */}
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#94A3B8]" />
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Cari tiket, pelanggan, atau teknisi..."
-            className="w-full h-[36px] pl-9 pr-3 text-[13px] rounded-[8px] border border-[#E2E8F0] bg-white placeholder-[#94A3B8] text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#1D4ED8]"
-          />
-        </div>
-
-        {/* Filter Tabs */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+      {/* Search and Tabs Filter - Model Persis Seperti Container Customer */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-3 border-b border-[#F1F5F9]">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
           <button
             type="button"
-            onClick={() => setFilterTab("ACTIVE")}
-            className={`px-3 py-1.5 text-[12px] font-semibold rounded-[6px] transition-colors whitespace-nowrap cursor-pointer ${
-              filterTab === "ACTIVE"
-                ? "bg-[#1D4ED8] text-white"
-                : "bg-[#F1F5F9] text-[#64748B] hover:text-[#0F172A]"
+            onClick={() => setTab("ACTIVE")}
+            className={`h-[36px] px-3.5 rounded-[8px] text-[13px] font-semibold whitespace-nowrap transition-colors flex items-center justify-center cursor-pointer ${
+              tab === "ACTIVE"
+                ? "bg-[#1D4ED8] text-white shadow-2xs"
+                : "bg-[#F1F5F9] text-[#475569] hover:bg-[#E2E8F0] hover:text-[#0F172A]"
             }`}
           >
-            Aktif
+            Sedang Berjalan
           </button>
           <button
             type="button"
-            onClick={() => setFilterTab("OPEN")}
-            className={`px-3 py-1.5 text-[12px] font-semibold rounded-[6px] transition-colors whitespace-nowrap cursor-pointer ${
-              filterTab === "OPEN"
-                ? "bg-[#1D4ED8] text-white"
-                : "bg-[#F1F5F9] text-[#64748B] hover:text-[#0F172A]"
+            onClick={() => setTab("UNASSIGNED")}
+            className={`h-[36px] px-3.5 rounded-[8px] text-[13px] font-semibold whitespace-nowrap transition-colors flex items-center justify-center cursor-pointer ${
+              tab === "UNASSIGNED"
+                ? "bg-[#1D4ED8] text-white shadow-2xs"
+                : "bg-[#F1F5F9] text-[#475569] hover:bg-[#E2E8F0] hover:text-[#0F172A]"
             }`}
           >
             Perlu Ditugaskan
           </button>
           <button
             type="button"
-            onClick={() => setFilterTab("IN_PROGRESS")}
-            className={`px-3 py-1.5 text-[12px] font-semibold rounded-[6px] transition-colors whitespace-nowrap cursor-pointer ${
-              filterTab === "IN_PROGRESS"
-                ? "bg-[#1D4ED8] text-white"
-                : "bg-[#F1F5F9] text-[#64748B] hover:text-[#0F172A]"
+            onClick={() => setTab("RESOLVED")}
+            className={`h-[36px] px-3.5 rounded-[8px] text-[13px] font-semibold whitespace-nowrap transition-colors flex items-center justify-center cursor-pointer ${
+              tab === "RESOLVED"
+                ? "bg-[#1D4ED8] text-white shadow-2xs"
+                : "bg-[#F1F5F9] text-[#475569] hover:bg-[#E2E8F0] hover:text-[#0F172A]"
             }`}
           >
-            Diproses
+            Riwayat Selesai
           </button>
           <button
             type="button"
-            onClick={() => setFilterTab("RESOLVED")}
-            className={`px-3 py-1.5 text-[12px] font-semibold rounded-[6px] transition-colors whitespace-nowrap cursor-pointer ${
-              filterTab === "RESOLVED"
-                ? "bg-[#1D4ED8] text-white"
-                : "bg-[#F1F5F9] text-[#64748B] hover:text-[#0F172A]"
-            }`}
-          >
-            Selesai
-          </button>
-          <button
-            type="button"
-            onClick={() => setFilterTab("ALL")}
-            className={`px-3 py-1.5 text-[12px] font-semibold rounded-[6px] transition-colors whitespace-nowrap cursor-pointer ${
-              filterTab === "ALL"
-                ? "bg-[#1D4ED8] text-white"
-                : "bg-[#F1F5F9] text-[#64748B] hover:text-[#0F172A]"
+            onClick={() => setTab("ALL")}
+            className={`h-[36px] px-3.5 rounded-[8px] text-[13px] font-semibold whitespace-nowrap transition-colors flex items-center justify-center cursor-pointer ${
+              tab === "ALL"
+                ? "bg-[#1D4ED8] text-white shadow-2xs"
+                : "bg-[#F1F5F9] text-[#475569] hover:bg-[#E2E8F0] hover:text-[#0F172A]"
             }`}
           >
             Semua
           </button>
         </div>
+
+        <div className="relative w-full sm:w-[240px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#64748B]" />
+          <input
+            type="text"
+            aria-label="Cari tiket admin"
+            placeholder="Cari nomor, judul, atau nama..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full h-[36px] pl-9 pr-3 rounded-[8px] border border-[#CBD5E1] bg-white text-[13px] text-[#0F172A] placeholder:text-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#1D4ED8]"
+          />
+        </div>
       </div>
 
-      {/* Ticket Cards List */}
+      {/* List of Tickets */}
       {displayedTickets.length === 0 ? (
-        <div className="py-12 text-center rounded-[10px] border border-dashed border-[#CBD5E1] bg-[#F8FAFC]">
-          <Inbox className="mx-auto h-8 w-8 text-[#94A3B8] mb-2" />
-          <h4 className="text-[14px] font-bold text-[#475569]">
-            Tidak ada tiket yang sesuai
-          </h4>
-          <p className="text-[12px] text-[#64748B] mt-1 max-w-sm mx-auto">
-            {searchTerm
-              ? `Tidak ditemukan tiket dengan kata kunci "${searchTerm}".`
-              : "Belum ada tiket pada kategori filter ini."}
+        <div className="py-12 flex flex-col items-center justify-center text-center">
+          <div className="h-12 w-12 rounded-full bg-[#F1F5F9] text-[#94A3B8] flex items-center justify-center mb-2">
+            <Inbox className="h-5 w-5 stroke-[1.75]" />
+          </div>
+          <p className="text-[14px] text-[#64748B]">
+            Tidak ada tiket yang sesuai pencarian atau filter.
           </p>
         </div>
       ) : (
         <div className="space-y-3.5">
           {displayedTickets.map((ticket) => {
-            const currentStepIdx = getStatusIndex(ticket.status);
             const isExpanded = !!expandedIds[ticket.id];
+            const currentIdx = getStatusIndex(ticket.status);
+            const targetHours =
+              ticket.priority === "CRITICAL"
+                ? 2
+                : ticket.priority === "HIGH"
+                ? 4
+                : ticket.priority === "MEDIUM"
+                ? 8
+                : 24;
 
             return (
               <div
                 key={ticket.id}
-                className="rounded-[10px] border border-[#E2E8F0] bg-white p-4 transition-all hover:border-[#CBD5E1] hover:shadow-2xs"
+                className="rounded-[12px] border border-[#E2E8F0]/60 bg-white overflow-hidden shadow-2xs hover:border-[#CBD5E1] transition-all"
               >
-                {/* Header Card: Ticket Number, Badges, Date */}
-                <div className="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-[#F1F5F9]">
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-[13px] font-bold text-[#1D4ED8]">
-                      #{ticket.ticketNumber}
-                    </span>
-                    <StatusBadge status={ticket.status} />
-                    <Badge variant="priority" value={ticket.priority} className="text-[11px] py-0 px-2 font-medium" />
-                    <span className="text-[11px] text-[#64748B] bg-[#F1F5F9] px-2 py-0.5 rounded-[4px]">
-                      {ticket.category}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-[12px] text-[#64748B]">
-                    <Clock className="h-3.5 w-3.5" />
-                    <span>{formatDateTime(ticket.createdAt)}</span>
-                  </div>
-                </div>
-
-                {/* Main Content: Title, Customer, Technician */}
-                <div className="pt-3 pb-2">
-                  <h3 className="text-[15px] font-bold text-[#0F172A] leading-snug">
-                    {ticket.title}
-                  </h3>
-
-                  <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[13px] text-[#475569]">
-                    <div className="flex items-center gap-1.5">
-                      <User className="h-3.5 w-3.5 text-[#64748B]" />
-                      <span className="font-medium text-[#0F172A]">Pelapor:</span>
-                      <span>{ticket.customer.name}</span>
-                    </div>
-
-                    <div className="flex items-center gap-1.5">
-                      <Wrench className="h-3.5 w-3.5 text-[#64748B]" />
-                      <span className="font-medium text-[#0F172A]">Teknisi:</span>
-                      {ticket.technician ? (
-                        <span className="font-semibold text-[#1D4ED8]">
-                          {ticket.technician.name}
-                        </span>
-                      ) : (
-                        <span className="text-[#DC2626] font-medium bg-[#FEF2F2] px-2 py-0.5 rounded-[4px] border border-[#FECACA] text-[11px]">
-                          Belum ditugaskan
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Stepper Progress Visual (5 Tahap Konsisten) */}
-                <div className="mt-2 pt-2.5 pb-1 border-t border-[#F8FAFC]">
-                  <div className="grid grid-cols-5 gap-1.5 sm:gap-2">
-                    {PROGRESS_STEPS.map((step, idx) => {
-                      const isCompleted = idx < currentStepIdx;
-                      const isCurrent = idx === currentStepIdx;
-
-                      return (
-                        <div key={step.key} className="flex flex-col items-center text-center">
-                          <div
-                            className={`h-6 w-6 rounded-full flex items-center justify-center text-[11px] font-bold transition-all ${
-                              isCompleted
-                                ? "bg-[#1D4ED8] text-white"
-                                : isCurrent
-                                ? "bg-[#DBEAFE] text-[#1D4ED8] ring-2 ring-[#1D4ED8]"
-                                : "bg-[#F1F5F9] text-[#94A3B8]"
-                            }`}
-                          >
-                            {isCompleted ? <Check className="h-3.5 w-3.5" /> : idx + 1}
-                          </div>
-                          <span
-                            className={`mt-1 text-[10px] sm:text-[11px] font-medium leading-tight line-clamp-1 ${
-                              isCurrent
-                                ? "text-[#1D4ED8] font-bold"
-                                : isCompleted
-                                ? "text-[#0F172A]"
-                                : "text-[#94A3B8]"
-                            }`}
-                          >
-                            {step.label}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Expanded Details Section */}
-                {isExpanded && (
-                  <div className="mt-3 pt-3 border-t border-[#E2E8F0] space-y-3 text-[13px] bg-[#F8FAFC] -mx-4 -mb-4 p-4 rounded-b-[10px]">
-                    <div>
-                      <span className="font-semibold text-[#0F172A] block mb-1">
-                        Deskripsi Gangguan:
+                {/* Main Card Header */}
+                <div className="p-3.5 sm:p-4 space-y-2.5">
+                  {/* Baris Atas: Kode tiket + Status + Priority di kiri, Tanggal tepat di pojok kanan atas */}
+                  <div className="flex items-start sm:items-center justify-between gap-3">
+                    <div className="flex flex-wrap items-center gap-2 min-w-0">
+                      <span className="font-mono text-xs font-bold text-[#1D4ED8]">
+                        #{ticket.ticketNumber}
                       </span>
-                      <p className="text-[#334155] whitespace-pre-wrap leading-relaxed">
+                      <StatusBadge status={ticket.status} />
+                      <Badge variant="priority" value={ticket.priority} />
+                      <span className="text-xs text-[#64748B] hidden sm:inline">
+                        &bull; {ticket.category}
+                      </span>
+                    </div>
+
+                    <span className="text-[12px] text-[#64748B] shrink-0 font-medium whitespace-nowrap">
+                      {formatDateTime(ticket.createdAt)}
+                    </span>
+                  </div>
+
+                  {/* Baris Utama: Judul & Deskripsi di kiri, Tombol Dropdown di kanan */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-0.5">
+                    <div className="space-y-1 flex-1 min-w-0">
+                      <h3 className="text-[16px] font-semibold text-[#0F172A] leading-snug">
+                        {ticket.title}
+                      </h3>
+
+                      <p className="text-[13px] text-[#475569] line-clamp-2">
                         {ticket.description}
                       </p>
                     </div>
 
-                    {/* Photos if any */}
-                    <div className="flex flex-wrap gap-3 pt-1">
-                      {ticket.damagePhotoUrl && (
-                        <div>
-                          <span className="text-[11px] font-semibold text-[#64748B] block mb-1">
-                            Foto Laporan:
-                          </span>
-                          <div className="relative h-20 w-28 rounded-[6px] overflow-hidden border border-[#CBD5E1]">
-                            <Image
-                              src={ticket.damagePhotoUrl}
-                              alt="Foto Laporan"
-                              fill
-                              className="object-cover"
-                            />
-                          </div>
-                        </div>
-                      )}
-
-                      {ticket.resolvedPhotoUrl && (
-                        <div>
-                          <span className="text-[11px] font-semibold text-[#64748B] block mb-1">
-                            Bukti Perbaikan:
-                          </span>
-                          <div className="relative h-20 w-28 rounded-[6px] overflow-hidden border border-[#CBD5E1]">
-                            <Image
-                              src={ticket.resolvedPhotoUrl}
-                              alt="Bukti Perbaikan"
-                              fill
-                              className="object-cover"
-                            />
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Resolution Notes */}
-                    {ticket.resolutionNotes && (
-                      <div className="p-2.5 rounded-[6px] bg-white border border-[#E2E8F0]">
-                        <span className="text-[12px] font-semibold text-[#0F172A] block mb-0.5">
-                          Catatan Perbaikan Teknisi:
-                        </span>
-                        <p className="text-[12px] text-[#475569]">
-                          {ticket.resolutionNotes}
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Feedback Rating */}
-                    {ticket.feedback && (
-                      <div className="p-2.5 rounded-[6px] bg-[#FEF3C7]/40 border border-[#FDE68A] flex items-center justify-between">
-                        <div className="flex items-center gap-1.5">
-                          <Star className="h-4 w-4 fill-amber-400 text-amber-500" />
-                          <span className="text-[12px] font-bold text-[#92400E]">
-                            Ulasan Pelanggan: {ticket.feedback.rating}/5
-                          </span>
-                        </div>
-                        {ticket.feedback.comment && (
-                          <span className="text-[12px] text-[#78350F] italic">
-                            &quot;{ticket.feedback.comment}&quot;
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Footer Actions */}
-                <div className="mt-3 pt-2.5 border-t border-[#F1F5F9] flex items-center justify-between gap-2">
-                  <button
-                    type="button"
-                    onClick={() => toggleExpand(ticket.id)}
-                    className="inline-flex items-center gap-1 text-[12px] font-medium text-[#475569] hover:text-[#0F172A] cursor-pointer"
-                  >
-                    <span>{isExpanded ? "Tutup detail" : "Lihat detail"}</span>
-                    <ChevronDown
-                      className={`h-3.5 w-3.5 transition-transform ${
-                        isExpanded ? "rotate-180" : ""
-                      }`}
-                    />
-                  </button>
-
-                  <div className="flex items-center gap-2">
-                    {ticket.status === "OPEN" ? (
-                      <AssignTechnicianDialog
-                        ticketId={ticket.id}
-                        ticketNumber={ticket.ticketNumber}
-                        ticketTitle={ticket.title}
-                        currentTechnicianId={ticket.technicianId}
-                        technicians={technicians}
-                        isReassign={false}
-                      />
-                    ) : ticket.status === "ASSIGNED" ? (
-                      <AssignTechnicianDialog
-                        ticketId={ticket.id}
-                        ticketNumber={ticket.ticketNumber}
-                        ticketTitle={ticket.title}
-                        currentTechnicianId={ticket.technicianId}
-                        technicians={technicians}
-                        isReassign={true}
-                      />
-                    ) : null}
-
-                    <Link href={`/admin/tickets/${ticket.id}`}>
+                    {/* Tombol Dropdown: Detail & Penugasan */}
+                    <div className="shrink-0 self-end sm:self-center">
                       <button
                         type="button"
-                        className="h-[34px] px-3 rounded-[6px] border border-[#CBD5E1] bg-white text-[12px] font-semibold text-[#0F172A] hover:bg-[#F8FAFC] inline-flex items-center gap-1 transition-colors cursor-pointer"
+                        onClick={() => toggleExpand(ticket.id)}
+                        aria-expanded={isExpanded}
+                        className="h-[34px] px-3.5 rounded-[8px] text-[12px] font-semibold flex items-center gap-1.5 transition-colors cursor-pointer border border-[#CBD5E1] bg-[#F8FAFC] hover:bg-[#F1F5F9] text-[#0F172A] shadow-2xs"
                       >
-                        <span>Pantau</span>
-                        <ExternalLink className="h-3.5 w-3.5 text-[#64748B]" />
+                        <span>{isExpanded ? "Tutup Progres" : "Detail & Penugasan"}</span>
+                        <ChevronDown
+                          className={`h-3.5 w-3.5 text-[#64748B] transition-transform duration-200 ${
+                            isExpanded ? "rotate-180" : ""
+                          }`}
+                        />
                       </button>
-                    </Link>
+                    </div>
+                  </div>
+
+                  {/* Baris Informasi Ringkas Bawah: Pelapor, Teknisi & SLA */}
+                  <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[#F8FAFC] text-[12px]">
+                    <div className="flex items-center gap-4 text-[#64748B]">
+                      <span>
+                        Pelapor: <strong className="text-[#0F172A]">{ticket.customer.name}</strong>
+                      </span>
+                      <span>
+                        Teknisi:{" "}
+                        {ticket.technician ? (
+                          <strong className="text-[#1D4ED8]">{ticket.technician.name}</strong>
+                        ) : (
+                          <span className="text-[#DC2626] font-semibold bg-[#FEF2F2] px-2 py-0.5 rounded-[4px] border border-[#FECACA] text-[11px]">
+                            Belum ditugaskan
+                          </span>
+                        )}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <div className="rounded-[6px] bg-[#EFF6FF] border border-[#BFDBFE] px-2.5 py-1 text-[11px] text-[#1D4ED8] font-medium flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        <span>SLA: {targetHours} Jam</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
+
+                {/* Dropdown Panel: Detail & Progres Laporan - Model Persis Seperti Container Customer */}
+                {isExpanded && (
+                  <div className="border-t border-[#F1F5F9] bg-[#F8FAFC] p-4 sm:p-5 space-y-5 animate-in fade-in-50 duration-200">
+                    {/* 1. Alur Progres Stepper 5 Tahap */}
+                    <div>
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-[12px] font-bold text-[#0B2A6F] uppercase tracking-wider">
+                          Tahapan Penanganan Gangguan
+                        </span>
+                        <span className="text-[11px] font-medium text-[#64748B]">
+                          Tahap {currentIdx + 1} dari 5
+                        </span>
+                      </div>
+
+                      {/* Responsive Step Tracker Kotak Modern */}
+                      <div className="grid grid-cols-1 sm:grid-cols-5 gap-2 relative">
+                        {PROGRESS_STEPS.map((step, idx) => {
+                          const isDone = idx < currentIdx;
+                          const isActive = idx === currentIdx;
+                          const isUpcoming = idx > currentIdx;
+
+                          return (
+                            <div
+                              key={step.key}
+                              className={`p-2.5 rounded-[8px] border transition-all ${
+                                isActive
+                                  ? "bg-white border-[#1D4ED8] shadow-xs ring-2 ring-[#DBEAFE]"
+                                  : isDone
+                                  ? "bg-[#EFF6FF] border-[#BFDBFE]"
+                                  : "bg-white border-[#E2E8F0] opacity-60"
+                              }`}
+                            >
+                              <div className="flex items-center gap-2 mb-1">
+                                {isDone && (
+                                  <div className="h-5 w-5 rounded-full bg-[#2563EB] text-white flex items-center justify-center shrink-0">
+                                    <Check className="h-3 w-3 stroke-[3]" />
+                                  </div>
+                                )}
+                                {isActive && (
+                                  <div className="h-5 w-5 rounded-full bg-[#1D4ED8] text-white flex items-center justify-center text-[10px] font-bold shrink-0">
+                                    {idx + 1}
+                                  </div>
+                                )}
+                                {isUpcoming && (
+                                  <div className="h-5 w-5 rounded-full bg-[#E2E8F0] text-[#64748B] flex items-center justify-center text-[10px] font-bold shrink-0">
+                                    {idx + 1}
+                                  </div>
+                                )}
+                                <span
+                                  className={`text-[12px] font-bold truncate ${
+                                    isActive
+                                      ? "text-[#1D4ED8]"
+                                      : isDone
+                                      ? "text-[#1D4ED8]"
+                                      : "text-[#64748B]"
+                                  }`}
+                                >
+                                  {step.label}
+                                </span>
+                              </div>
+                              <p className="text-[11px] text-[#64748B] line-clamp-1">
+                                {step.desc}
+                              </p>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* 2. Grid Informasi Detail Laporan & Pelaksana */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+                      {/* Kolom Kiri: Detail Informasi Pengaduan */}
+                      <div className="space-y-3 bg-white p-3.5 rounded-[10px] border border-[#E2E8F0]">
+                        <h4 className="text-[12px] font-bold text-[#0F172A] flex items-center gap-1.5 pb-2 border-b border-[#F1F5F9]">
+                          <MessageSquare className="h-3.5 w-3.5 text-[#1D4ED8]" />
+                          <span>Informasi Pengaduan</span>
+                        </h4>
+
+                        <div className="space-y-2 text-[12px]">
+                          <div>
+                            <span className="text-[#64748B]">Deskripsi Masalah:</span>
+                            <p className="text-[#0F172A] mt-0.5 whitespace-pre-wrap leading-relaxed">
+                              {ticket.description}
+                            </p>
+                          </div>
+
+                          <div className="flex justify-between pt-1 border-t border-[#F8FAFC]">
+                            <span className="text-[#64748B]">Pelapor:</span>
+                            <span className="font-semibold text-[#0F172A]">
+                              {ticket.customer.name} ({ticket.customer.email})
+                            </span>
+                          </div>
+
+                          <div className="flex justify-between">
+                            <span className="text-[#64748B]">Waktu Dibuat:</span>
+                            <span className="font-medium text-[#0F172A]">
+                              {formatDateTime(ticket.createdAt)}
+                            </span>
+                          </div>
+
+                          {ticket.damagePhotoUrl && (
+                            <div className="pt-2 border-t border-[#F8FAFC]">
+                              <span className="text-[#64748B] block mb-1">
+                                Foto Bukti Kerusakan:
+                              </span>
+                              <a
+                                href={ticket.damagePhotoUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-block relative w-20 h-20 rounded-[6px] overflow-hidden border border-[#CBD5E1] hover:opacity-90"
+                              >
+                                <Image
+                                  src={ticket.damagePhotoUrl}
+                                  alt="Bukti kerusakan"
+                                  fill
+                                  className="object-cover"
+                                />
+                              </a>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Kolom Kanan: Pelaksana & Penyelesaian Teknisi (Fitur Role Admin) */}
+                      <div className="space-y-3 bg-white p-3.5 rounded-[10px] border border-[#E2E8F0]">
+                        <h4 className="text-[12px] font-bold text-[#0F172A] flex items-center gap-1.5 pb-2 border-b border-[#F1F5F9]">
+                          <Wrench className="h-3.5 w-3.5 text-[#2563EB]" />
+                          <span>Pelaksana & Hasil Kerja</span>
+                        </h4>
+
+                        <div className="space-y-2.5 text-[12px]">
+                          {ticket.technician ? (
+                            <div>
+                              <span className="text-[#64748B]">Teknisi Penanggung Jawab:</span>
+                              <div className="mt-0.5 font-semibold text-[#0F172A] flex items-center justify-between">
+                                <span>{ticket.technician.name}</span>
+                                <span className="text-[11px] text-[#64748B] font-normal">
+                                  {ticket.technician.phone || ticket.technician.email}
+                                </span>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="p-2.5 rounded-[6px] bg-[#FEF2F2] border border-[#FECACA] text-[12px] text-[#DC2626] font-medium">
+                              Belum ada teknisi yang ditugaskan untuk tiket ini.
+                            </div>
+                          )}
+
+                          {ticket.resolutionNotes && (
+                            <div className="pt-2 border-t border-[#F8FAFC]">
+                              <span className="text-[#1D4ED8] font-semibold block mb-0.5">
+                                Catatan Perbaikan Teknisi:
+                              </span>
+                              <p className="text-[#0F172A] bg-[#EFF6FF] p-2.5 rounded-[6px] border border-[#BFDBFE] whitespace-pre-wrap">
+                                {ticket.resolutionNotes}
+                              </p>
+                            </div>
+                          )}
+
+                          {ticket.resolvedPhotoUrl && (
+                            <div className="pt-2 border-t border-[#F8FAFC]">
+                              <span className="text-[#64748B] block mb-1">
+                                Foto Bukti Hasil Kerja:
+                              </span>
+                              <a
+                                href={ticket.resolvedPhotoUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-block relative w-20 h-20 rounded-[6px] overflow-hidden border border-[#BFDBFE] hover:opacity-90"
+                              >
+                                <Image
+                                  src={ticket.resolvedPhotoUrl}
+                                  alt="Bukti hasil kerja"
+                                  fill
+                                  className="object-cover"
+                                />
+                              </a>
+                            </div>
+                          )}
+
+                          {ticket.feedback && (
+                            <div className="pt-2 border-t border-[#F8FAFC]">
+                              <div className="flex items-center gap-1.5 text-amber-500 font-bold">
+                                <Star className="h-3.5 w-3.5 fill-current" />
+                                <span>Ulasan Pelanggan: {ticket.feedback.rating}/5</span>
+                              </div>
+                              {ticket.feedback.comment && (
+                                <p className="text-[11px] text-[#78350F] italic mt-0.5">
+                                  &quot;{ticket.feedback.comment}&quot;
+                                </p>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 3. Panel Aksi Role Admin di Bawah Dropdown */}
+                    <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-[#E2E8F0]">
+                      <div className="flex items-center gap-2">
+                        {ticket.status === "OPEN" ? (
+                          <AssignTechnicianDialog
+                            ticketId={ticket.id}
+                            ticketNumber={ticket.ticketNumber}
+                            ticketTitle={ticket.title}
+                            currentTechnicianId={ticket.technicianId}
+                            technicians={technicians}
+                            isReassign={false}
+                          />
+                        ) : ticket.status === "ASSIGNED" ? (
+                          <AssignTechnicianDialog
+                            ticketId={ticket.id}
+                            ticketNumber={ticket.ticketNumber}
+                            ticketTitle={ticket.title}
+                            currentTechnicianId={ticket.technicianId}
+                            technicians={technicians}
+                            isReassign={true}
+                          />
+                        ) : null}
+                      </div>
+
+                      <Link href={`/admin/tickets/${ticket.id}`}>
+                        <button
+                          type="button"
+                          className="h-[36px] px-3.5 rounded-[8px] bg-white border border-[#CBD5E1] hover:bg-[#F8FAFC] text-[12px] font-semibold text-[#0F172A] inline-flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
+                        >
+                          <span>Buka Detail Penuh</span>
+                          <ExternalLink className="h-3.5 w-3.5 text-[#64748B]" />
+                        </button>
+                      </Link>
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })}
