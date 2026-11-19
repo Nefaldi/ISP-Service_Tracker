@@ -11,6 +11,7 @@ export default auth((req) => {
   const isAdminRoute = nextUrl.pathname.startsWith("/admin");
   const isTechnicianRoute = nextUrl.pathname.startsWith("/technician");
   const isCustomerRoute = nextUrl.pathname.startsWith("/customer");
+  const isProfileRoute = nextUrl.pathname.startsWith("/profile");
 
   // If authenticated user visits login page, redirect to appropriate role portal
   if (isLoginPage && isLoggedIn) {
@@ -32,7 +33,7 @@ export default auth((req) => {
   }
 
   // If not authenticated, redirect to login with callback
-  if (!isLoggedIn && (isAdminRoute || isTechnicianRoute || isCustomerRoute)) {
+  if (!isLoggedIn && (isAdminRoute || isTechnicianRoute || isCustomerRoute || isProfileRoute)) {
     const callbackUrl = encodeURIComponent(nextUrl.pathname + nextUrl.search);
     return NextResponse.redirect(
       new URL(`/login?callbackUrl=${callbackUrl}`, nextUrl)

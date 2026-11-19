@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { LogOut, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -26,14 +27,17 @@ export function AdminHeader({ user }: AdminHeaderProps) {
       </div>
 
       <div className="flex items-center gap-3">
-        <div className="hidden sm:flex flex-col text-right">
+        <Link
+          href="/admin/profile"
+          className="hidden sm:flex flex-col text-right hover:opacity-80 transition-opacity"
+        >
           <span className="text-[14px] font-semibold text-[#0F172A] leading-tight">
             {user?.name || "Admin Helpdesk"}
           </span>
           <span className="text-[12px] text-[#475569]">
             {user?.email || "admin@tracker.com"}
           </span>
-        </div>
+        </Link>
 
         <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-[#EFF6FF] text-[#1D4ED8] border border-[#BFDBFE]">
           <ShieldCheck className="h-3.5 w-3.5" />

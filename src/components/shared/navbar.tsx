@@ -162,6 +162,21 @@ export function Navbar({ user }: NavbarProps) {
                     </Link>
                   )}
 
+                  <Link
+                    href={
+                      user.role === "CUSTOMER"
+                        ? "/customer/profile"
+                        : user.role === "TEKNISI"
+                        ? "/technician/profile"
+                        : "/admin/profile"
+                    }
+                    onClick={() => setDropdownOpen(false)}
+                    className="flex items-center gap-2 px-3.5 py-2 text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors"
+                  >
+                    <User className="h-4 w-4 text-[#059669]" />
+                    <span>Profil Saya</span>
+                  </Link>
+
                   <div className="my-1 border-t border-[#F1F5F9]" />
 
                   <button

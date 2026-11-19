@@ -662,6 +662,46 @@ export const mockStore = {
       store.users.push(newUser);
       return newUser;
     },
+
+    async update(args: {
+      where: { id?: string; email?: string };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      data: Record<string, any>;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      select?: Record<string, any>;
+    }) {
+      const store = getStore();
+      const index = store.users.findIndex((u) => {
+        if (args.where.id && u.id === args.where.id) return true;
+        if (args.where.email && u.email.toLowerCase() === args.where.email.toLowerCase()) return true;
+        return false;
+      });
+      if (index === -1) {
+        throw new Error("User not found.");
+      }
+      const existing = store.users[index];
+      const updated: MockUser = {
+        ...existing,
+        ...args.data,
+        updatedAt: new Date(),
+      };
+      store.users[index] = updated;
+      return updated;
+    },
+
+    async delete(args: { where: { id?: string; email?: string } }) {
+      const store = getStore();
+      const index = store.users.findIndex((u) => {
+        if (args.where.id && u.id === args.where.id) return true;
+        if (args.where.email && u.email.toLowerCase() === args.where.email.toLowerCase()) return true;
+        return false;
+      });
+      if (index === -1) {
+        throw new Error("User not found.");
+      }
+      const [deleted] = store.users.splice(index, 1);
+      return deleted;
+    },
   },
 
   feedback: {
