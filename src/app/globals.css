@@ -17,7 +17,7 @@
   --color-border-input: #94A3B8;
   --color-bg-app: #F6F7F9;
   --color-surface: #FFFFFF;
-  --color-success-700: #047857;
+  --color-success-700: #1D4ED8;
 
   /* Status Colors */
   --color-status-open-text: #92400E;
@@ -26,8 +26,8 @@
   --color-status-assigned-bg: #DBEAFE;
   --color-status-inprogress-text: #5B21B6;
   --color-status-inprogress-bg: #EDE9FE;
-  --color-status-resolved-text: #065F46;
-  --color-status-resolved-bg: #D1FAE5;
+  --color-status-resolved-text: #1D4ED8;
+  --color-status-resolved-bg: #EFF6FF;
   --color-status-closed-text: #334155;
   --color-status-closed-bg: #E2E8F0;
 }

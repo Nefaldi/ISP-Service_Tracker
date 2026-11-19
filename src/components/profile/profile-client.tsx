@@ -182,17 +182,17 @@ export function ProfileClient({ user: initialUser }: ProfileClientProps) {
         {/* HEADER SECTION: User Card */}
         <div className="bg-white rounded-[12px] p-4 sm:p-6 md:p-7 border border-[#E2E8F0]/70 shadow-xs flex flex-row items-center gap-4 sm:gap-6 transition-colors">
           <div className="relative shrink-0">
-            <div className="w-18 h-18 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full overflow-hidden border-3 border-[#F1F5F9] shadow-xs bg-[#ECFDF5] flex items-center justify-center text-[#065F46] text-2xl sm:text-3xl md:text-4xl font-bold uppercase select-none">
+            <div className="w-18 h-18 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full overflow-hidden border-3 border-[#F1F5F9] shadow-xs bg-[#EFF6FF] flex items-center justify-center text-[#1D4ED8] text-2xl sm:text-3xl md:text-4xl font-bold uppercase select-none">
               {user.name.charAt(0)}
             </div>
             <div
-              className="absolute bottom-1 right-1 sm:bottom-1.5 sm:right-1.5 w-3.5 h-3.5 sm:w-4 sm:h-4 bg-[#10B981] border-2 border-white rounded-full"
+              className="absolute bottom-1 right-1 sm:bottom-1.5 sm:right-1.5 w-3.5 h-3.5 sm:w-4 sm:h-4 bg-[#3B82F6] border-2 border-white rounded-full"
               title="Aktif"
             />
           </div>
 
           <div className="flex-1 text-left min-w-0">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#ECFDF5] text-[#065F46] border border-[#A7F3D0] text-[11px] font-semibold tracking-wide mb-1.5 uppercase">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#EFF6FF] text-[#1D4ED8] border border-[#BFDBFE] text-[11px] font-semibold tracking-wide mb-1.5 uppercase">
               <ShieldCheck className="w-3.5 h-3.5" />
               <span>{user.role}</span>
             </div>
@@ -217,7 +217,7 @@ export function ProfileClient({ user: initialUser }: ProfileClientProps) {
                   onClick={() => setActiveTab("personal")}
                   className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-[8px] transition-all text-[13px] font-semibold cursor-pointer text-left ${
                     activeTab === "personal"
-                      ? "bg-[#064E3B] text-white shadow-xs"
+                      ? "bg-[#1D4ED8] text-white shadow-xs"
                       : "text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A]"
                   }`}
                 >
@@ -230,7 +230,7 @@ export function ProfileClient({ user: initialUser }: ProfileClientProps) {
                   onClick={() => setActiveTab("edit")}
                   className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-[8px] transition-all text-[13px] font-semibold cursor-pointer text-left ${
                     activeTab === "edit"
-                      ? "bg-[#064E3B] text-white shadow-xs"
+                      ? "bg-[#1D4ED8] text-white shadow-xs"
                       : "text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A]"
                   }`}
                 >
@@ -243,7 +243,7 @@ export function ProfileClient({ user: initialUser }: ProfileClientProps) {
                   onClick={() => setActiveTab("account")}
                   className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-[8px] transition-all text-[13px] font-semibold cursor-pointer text-left ${
                     activeTab === "account"
-                      ? "bg-[#064E3B] text-white shadow-xs"
+                      ? "bg-[#1D4ED8] text-white shadow-xs"
                       : "text-[#475569] hover:bg-[#F8FAFC] hover:text-[#0F172A]"
                   }`}
                 >
@@ -272,7 +272,7 @@ export function ProfileClient({ user: initialUser }: ProfileClientProps) {
               {activeTab === "personal" && (
                 <div>
                   <h2 className="text-base sm:text-lg font-bold text-[#0F172A] mb-4 flex items-center gap-2">
-                    <UserIcon className="w-4.5 h-4.5 text-[#059669]" />
+                    <UserIcon className="w-4.5 h-4.5 text-[#2563EB]" />
                     <span>Informasi Pribadi</span>
                   </h2>
 
@@ -343,7 +343,7 @@ export function ProfileClient({ user: initialUser }: ProfileClientProps) {
               {activeTab === "edit" && (
                 <div>
                   <h2 className="text-base sm:text-lg font-bold text-[#0F172A] mb-4 flex items-center gap-2">
-                    <Edit className="w-4.5 h-4.5 text-[#059669]" />
+                    <Edit className="w-4.5 h-4.5 text-[#2563EB]" />
                     <span>Edit Profil</span>
                   </h2>
 
@@ -357,7 +357,7 @@ export function ProfileClient({ user: initialUser }: ProfileClientProps) {
                         value={editName}
                         onChange={(e) => setEditName(e.target.value)}
                         required
-                        className="w-full px-3.5 py-2 rounded-[8px] border border-[#CBD5E1] text-[#0F172A] text-sm focus:outline-none focus:ring-2 focus:ring-[#059669] focus:border-transparent transition-all"
+                        className="w-full px-3.5 py-2 rounded-[8px] border border-[#CBD5E1] text-[#0F172A] text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent transition-all"
                       />
                     </div>
 
@@ -385,7 +385,7 @@ export function ProfileClient({ user: initialUser }: ProfileClientProps) {
                         value={editPhone}
                         onChange={(e) => setEditPhone(e.target.value)}
                         placeholder="Contoh: 081234567890"
-                        className="w-full px-3.5 py-2 rounded-[8px] border border-[#CBD5E1] text-[#0F172A] text-sm focus:outline-none focus:ring-2 focus:ring-[#059669] focus:border-transparent transition-all placeholder:text-[#94A3B8]"
+                        className="w-full px-3.5 py-2 rounded-[8px] border border-[#CBD5E1] text-[#0F172A] text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent transition-all placeholder:text-[#94A3B8]"
                       />
                       <p className="text-[11px] text-[#64748B] mt-1">
                         Gunakan nomor aktif untuk koordinasi teknisi via WhatsApp.
@@ -408,12 +408,12 @@ export function ProfileClient({ user: initialUser }: ProfileClientProps) {
                       <div
                         className={`p-3 rounded-[8px] text-[13px] flex items-center gap-2 ${
                           editStatus.type === "success"
-                            ? "bg-[#ECFDF5] text-[#065F46] border border-[#A7F3D0]"
+                            ? "bg-[#EFF6FF] text-[#1D4ED8] border border-[#BFDBFE]"
                             : "bg-[#FEF2F2] text-[#991B1B] border border-[#FECACA]"
                         }`}
                       >
                         {editStatus.type === "success" ? (
-                          <CheckCircle2 className="h-4 w-4 shrink-0 text-[#059669]" />
+                          <CheckCircle2 className="h-4 w-4 shrink-0 text-[#2563EB]" />
                         ) : (
                           <AlertTriangle className="h-4 w-4 shrink-0 text-[#DC2626]" />
                         )}
@@ -437,7 +437,7 @@ export function ProfileClient({ user: initialUser }: ProfileClientProps) {
                       <button
                         type="submit"
                         disabled={isPendingEdit}
-                        className="flex-1 px-4 py-2 rounded-[8px] bg-[#064E3B] hover:bg-[#043d2e] text-white font-medium transition-colors text-sm shadow-xs flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+                        className="flex-1 px-4 py-2 rounded-[8px] bg-[#1D4ED8] hover:bg-[#1E40AF] text-white font-medium transition-colors text-sm shadow-xs flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
                       >
                         {isPendingEdit && <Loader2 className="h-4 w-4 animate-spin" />}
                         <span>Simpan Perubahan</span>
@@ -451,7 +451,7 @@ export function ProfileClient({ user: initialUser }: ProfileClientProps) {
               {activeTab === "account" && (
                 <div>
                   <h2 className="text-base sm:text-lg font-bold text-[#0F172A] mb-4 flex items-center gap-2">
-                    <Key className="w-4.5 h-4.5 text-[#059669]" />
+                    <Key className="w-4.5 h-4.5 text-[#2563EB]" />
                     <span>Pengaturan Akun</span>
                   </h2>
 
@@ -579,7 +579,7 @@ export function ProfileClient({ user: initialUser }: ProfileClientProps) {
                     onChange={(e) => setOldPassword(e.target.value)}
                     placeholder="Masukkan kata sandi lama"
                     required
-                    className="w-full px-3.5 pr-10 py-2 rounded-[8px] border border-[#CBD5E1] text-sm focus:outline-none focus:ring-2 focus:ring-[#059669] focus:border-transparent"
+                    className="w-full px-3.5 pr-10 py-2 rounded-[8px] border border-[#CBD5E1] text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent"
                   />
                   <button
                     type="button"
@@ -605,7 +605,7 @@ export function ProfileClient({ user: initialUser }: ProfileClientProps) {
                     placeholder="Minimal 6 karakter"
                     required
                     minLength={6}
-                    className="w-full px-3.5 pr-10 py-2 rounded-[8px] border border-[#CBD5E1] text-sm focus:outline-none focus:ring-2 focus:ring-[#059669] focus:border-transparent"
+                    className="w-full px-3.5 pr-10 py-2 rounded-[8px] border border-[#CBD5E1] text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent"
                   />
                   <button
                     type="button"
@@ -631,7 +631,7 @@ export function ProfileClient({ user: initialUser }: ProfileClientProps) {
                     placeholder="Ulangi kata sandi baru"
                     required
                     minLength={6}
-                    className="w-full px-3.5 pr-10 py-2 rounded-[8px] border border-[#CBD5E1] text-sm focus:outline-none focus:ring-2 focus:ring-[#059669] focus:border-transparent"
+                    className="w-full px-3.5 pr-10 py-2 rounded-[8px] border border-[#CBD5E1] text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent"
                   />
                   <button
                     type="button"
@@ -648,12 +648,12 @@ export function ProfileClient({ user: initialUser }: ProfileClientProps) {
                 <div
                   className={`p-3 rounded-[8px] text-[12px] flex items-center gap-2 ${
                     pwdStatus.type === "success"
-                      ? "bg-[#ECFDF5] text-[#065F46] border border-[#A7F3D0]"
+                      ? "bg-[#EFF6FF] text-[#1D4ED8] border border-[#BFDBFE]"
                       : "bg-[#FEF2F2] text-[#991B1B] border border-[#FECACA]"
                   }`}
                 >
                   {pwdStatus.type === "success" ? (
-                    <CheckCircle2 className="h-4 w-4 shrink-0 text-[#059669]" />
+                    <CheckCircle2 className="h-4 w-4 shrink-0 text-[#2563EB]" />
                   ) : (
                     <AlertTriangle className="h-4 w-4 shrink-0 text-[#DC2626]" />
                   )}
@@ -672,7 +672,7 @@ export function ProfileClient({ user: initialUser }: ProfileClientProps) {
                 <button
                   type="submit"
                   disabled={isPendingPwd}
-                  className="flex-1 px-4 py-2 rounded-[8px] bg-[#064E3B] hover:bg-[#043d2e] text-white font-medium transition-colors text-sm shadow-xs flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+                  className="flex-1 px-4 py-2 rounded-[8px] bg-[#1D4ED8] hover:bg-[#1E40AF] text-white font-medium transition-colors text-sm shadow-xs flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
                 >
                   {isPendingPwd && <Loader2 className="h-4 w-4 animate-spin" />}
                   <span>Simpan</span>

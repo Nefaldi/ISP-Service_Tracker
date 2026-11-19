@@ -109,16 +109,16 @@ export default function InteractiveAreaMap() {
     // 1. Boundary Polygon Group (Area Pengawasan KMZ)
     const boundaryCoords = kmzNetworkData.boundary as [number, number][];
     const boundaryLayer = L.polygon(boundaryCoords, {
-      color: "#059669",
+      color: "#2563EB",
       weight: 2.5,
       dashArray: "6, 6",
-      fillColor: "#10B981",
+      fillColor: "#3B82F6",
       fillOpacity: 0.08,
     });
     boundaryLayer.bindTooltip("Area Pengawasan Jaringan FO (KMZ 15 Jan 2026)", {
       direction: "center",
       className:
-        "bg-white/95 text-[#064E3B] font-semibold text-xs px-2.5 py-1 rounded shadow-xs border border-[#E2E8F0]",
+        "bg-white/95 text-[#0B2A6F] font-semibold text-xs px-2.5 py-1 rounded shadow-xs border border-[#E2E8F0]",
     });
     const boundaryGroup = L.layerGroup([boundaryLayer]).addTo(map);
     boundaryGroupRef.current = boundaryGroup;
@@ -130,14 +130,14 @@ export default function InteractiveAreaMap() {
 
       // Glow effect
       const glow = L.polyline(coords, {
-        color: "#34D399",
+        color: "#60A5FA",
         weight: 6,
         opacity: 0.4,
       });
 
       // Core line
       const line = L.polyline(coords, {
-        color: "#059669",
+        color: "#2563EB",
         weight: 3,
         opacity: 0.95,
       });
@@ -145,8 +145,8 @@ export default function InteractiveAreaMap() {
       line.bindPopup(
         `
         <div style="font-family: inherit; font-size: 12px; color: #0F172A; min-width: 170px;">
-          <span style="font-size: 10px; font-weight: 700; color: #059669; text-transform: uppercase;">Kabel FO Distribusi</span>
-          <div style="font-weight: 700; font-size: 13px; color: #064E3B; margin-top: 2px;">${cable.name}</div>
+          <span style="font-size: 10px; font-weight: 700; color: #2563EB; text-transform: uppercase;">Kabel FO Distribusi</span>
+          <div style="font-weight: 700; font-size: 13px; color: #0B2A6F; margin-top: 2px;">${cable.name}</div>
           <div style="font-size: 11px; color: #64748B; margin-top: 4px;">Panjang rute: ${coords.length} titik koordinat</div>
         </div>
       `,
@@ -268,8 +268,8 @@ export default function InteractiveAreaMap() {
     kmzNetworkData.odpList.forEach((odp) => {
       const coords: [number, number] = [odp.lat, odp.lng];
       const isKantor = odp.name.toUpperCase().includes("KANTOR");
-      const markerColor = isKantor ? "#0284C7" : "#059669";
-      const bgColor = isKantor ? "#F0F9FF" : "#ECFDF5";
+      const markerColor = isKantor ? "#0284C7" : "#2563EB";
+      const bgColor = isKantor ? "#F0F9FF" : "#EFF6FF";
 
       const odpIcon = L.divIcon({
         className: "custom-leaflet-marker",
@@ -292,7 +292,7 @@ export default function InteractiveAreaMap() {
           <span style="font-size: 10px; font-weight: 700; color: ${markerColor}; background: ${bgColor}; padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">
             ${isKantor ? "Kantor Operasional" : "ODP (Distribution Point)"}
           </span>
-          <div style="font-weight: 700; font-size: 13px; color: #064E3B; margin: 4px 0 2px;">${odp.name}</div>
+          <div style="font-weight: 700; font-size: 13px; color: #0B2A6F; margin: 4px 0 2px;">${odp.name}</div>
           <div style="border-top: 1px solid #E2E8F0; margin-top: 6px; padding-top: 6px; font-size: 11px;">
             <span style="color: #64748B;">Koordinat:</span> <span style="font-mono; font-weight: 600;">${odp.lat}, ${odp.lng}</span>
           </div>
@@ -470,10 +470,10 @@ export default function InteractiveAreaMap() {
       <div className="absolute top-2.5 left-2.5 z-10 flex flex-wrap items-center gap-1.5 pointer-events-none">
         <div className="bg-white/95 backdrop-blur-xs px-2.5 py-1 rounded-[6px] shadow-xs border border-[#E2E8F0] flex items-center gap-1.5">
           <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#10B981] opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#059669]"></span>
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#3B82F6] opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#2563EB]"></span>
           </span>
-          <span className="text-[11px] font-semibold text-[#064E3B]">
+          <span className="text-[11px] font-semibold text-[#0B2A6F]">
             KMZ FO Network (15 Jan 2026)
           </span>
         </div>
@@ -489,7 +489,7 @@ export default function InteractiveAreaMap() {
             title="Pilih Jenis Basemap"
             className="h-[28px] px-2.5 rounded-[6px] bg-white hover:bg-[#F8FAFC] border border-[#CBD5E1] text-[#0F172A] text-[11px] font-semibold shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
           >
-            <MapIcon className="h-3.5 w-3.5 text-[#059669]" />
+            <MapIcon className="h-3.5 w-3.5 text-[#2563EB]" />
             <span>{BASEMAP_CONFIGS[basemapType].name}</span>
           </button>
 
@@ -500,7 +500,7 @@ export default function InteractiveAreaMap() {
                 onClick={() => handleBasemapChange("streets")}
                 className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-[#F1F5F9] transition-colors cursor-pointer ${
                   basemapType === "streets"
-                    ? "font-bold text-[#059669] bg-[#F0FDF4]"
+                    ? "font-bold text-[#2563EB] bg-[#EFF6FF]"
                     : "text-[#475569]"
                 }`}
               >
@@ -512,7 +512,7 @@ export default function InteractiveAreaMap() {
                 onClick={() => handleBasemapChange("satellite")}
                 className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-[#F1F5F9] transition-colors cursor-pointer ${
                   basemapType === "satellite"
-                    ? "font-bold text-[#059669] bg-[#F0FDF4]"
+                    ? "font-bold text-[#2563EB] bg-[#EFF6FF]"
                     : "text-[#475569]"
                 }`}
               >
@@ -524,7 +524,7 @@ export default function InteractiveAreaMap() {
                 onClick={() => handleBasemapChange("esri")}
                 className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-[#F1F5F9] transition-colors cursor-pointer ${
                   basemapType === "esri"
-                    ? "font-bold text-[#059669] bg-[#F0FDF4]"
+                    ? "font-bold text-[#2563EB] bg-[#EFF6FF]"
                     : "text-[#475569]"
                 }`}
               >
@@ -543,7 +543,7 @@ export default function InteractiveAreaMap() {
             title="Tampilkan/Sembunyikan Titik ODP"
             className={`h-[26px] px-2 rounded-[5px] text-[11px] font-semibold flex items-center gap-1 transition-colors cursor-pointer ${
               showODP
-                ? "bg-[#059669] text-white"
+                ? "bg-[#1D4ED8] text-white"
                 : "bg-[#F1F5F9] text-[#64748B] hover:text-[#0F172A]"
             }`}
           >
@@ -598,7 +598,7 @@ export default function InteractiveAreaMap() {
       {selectedItem && (
         <div className="bg-white px-3.5 py-2 border-t border-[#E2E8F0] flex items-center justify-between text-[11px] shrink-0 z-10">
           <div className="flex items-center gap-2 min-w-0">
-            <Activity className="h-3.5 w-3.5 text-[#059669] shrink-0" />
+            <Activity className="h-3.5 w-3.5 text-[#2563EB] shrink-0" />
             <span className="font-bold text-[#0F172A] truncate">
               {selectedItem.name}
             </span>
@@ -606,7 +606,7 @@ export default function InteractiveAreaMap() {
               &bull; {selectedItem.category}
             </span>
             {selectedItem.details && (
-              <span className="text-[#059669] font-medium hidden md:inline truncate">
+              <span className="text-[#2563EB] font-medium hidden md:inline truncate">
                 ({selectedItem.details})
               </span>
             )}

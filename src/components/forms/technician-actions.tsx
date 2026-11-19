@@ -89,10 +89,10 @@ export function TechnicianActions({ ticketId, status }: TechnicianActionsProps) 
         <>
           <Button
             type="button"
-            variant="success"
+            variant="primary"
             size="mobile-action"
             onClick={() => setShowResolveModal(true)}
-            className="h-[52px] bg-[#047857] hover:bg-[#065F46] text-white font-semibold rounded-[10px] cursor-pointer"
+            className="h-[52px] bg-[#1D4ED8] hover:bg-[#1E40AF] text-white font-semibold rounded-[10px] cursor-pointer"
           >
             <CheckCircle2 className="h-5 w-5" />
             <span>Selesaikan Tugas (Tandai Selesai)</span>
@@ -134,7 +134,7 @@ export function TechnicianActions({ ticketId, status }: TechnicianActionsProps) 
                       value={resolutionNotes}
                       onChange={(e) => setResolutionNotes(e.target.value)}
                       placeholder="Contoh: Penggantian drop core 15m dan konfigurasi ulang redaman optik ke -18 dBm..."
-                      className="w-full h-[88px] resize-none px-3.5 py-2.5 rounded-[8px] border border-[#94A3B8] bg-white text-[14px] text-[#0F172A] placeholder:text-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#047857]"
+                      className="w-full h-[88px] resize-none px-3.5 py-2.5 rounded-[8px] border border-[#94A3B8] bg-white text-[14px] text-[#0F172A] placeholder:text-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
                     />
                   </div>
 
@@ -147,7 +147,7 @@ export function TechnicianActions({ ticketId, status }: TechnicianActionsProps) 
                       Foto Bukti Hasil Kerja (Opsional)
                     </label>
 
-                    <div className="relative h-[96px] border-2 border-dashed border-[#94A3B8] rounded-[8px] flex flex-col items-center justify-center text-center hover:border-[#047857] transition-colors bg-[#F8FAFC]">
+                    <div className="relative h-[96px] border-2 border-dashed border-[#94A3B8] rounded-[8px] flex flex-col items-center justify-center text-center hover:border-[#2563EB] transition-colors bg-[#F8FAFC]">
                       <input
                         id="tech-proof-photo"
                         type="file"
@@ -161,7 +161,7 @@ export function TechnicianActions({ ticketId, status }: TechnicianActionsProps) 
                       />
 
                       {fileToUpload ? (
-                        <div className="flex items-center gap-2 text-xs font-semibold text-[#047857] px-2">
+                        <div className="flex items-center gap-2 text-xs font-semibold text-[#2563EB] px-2">
                           <span className="truncate max-w-[240px]">{fileToUpload.name}</span>
                           <button
                             type="button"
@@ -169,7 +169,7 @@ export function TechnicianActions({ ticketId, status }: TechnicianActionsProps) 
                               e.stopPropagation();
                               setFileToUpload(null);
                             }}
-                            className="p-1 hover:bg-[#D1FAE5] rounded-full text-[#DC2626]"
+                            className="p-1 hover:bg-[#DBEAFE] rounded-full text-[#DC2626]"
                             aria-label="Hapus foto terpilih"
                           >
                             <X className="h-4 w-4" />
@@ -189,14 +189,14 @@ export function TechnicianActions({ ticketId, status }: TechnicianActionsProps) 
                     </div>
                   </div>
 
-                  {/* Tombol aksi utama hijau 52px (UI_CONTEXT 4.4) */}
+                  {/* Tombol aksi utama biru 52px */}
                   <div className="pt-2">
                     <Button
                       type="submit"
-                      variant="success"
+                      variant="primary"
                       size="mobile-action"
                       isLoading={isLoading}
-                      className="h-[52px] bg-[#047857] hover:bg-[#065F46] text-white font-semibold rounded-[10px] cursor-pointer"
+                      className="h-[52px] bg-[#1D4ED8] hover:bg-[#1E40AF] text-white font-semibold rounded-[10px] cursor-pointer"
                     >
                       Konfirmasi & Selesaikan Tugas
                     </Button>
@@ -209,7 +209,7 @@ export function TechnicianActions({ ticketId, status }: TechnicianActionsProps) 
       )}
 
       {status === "RESOLVED" && (
-        <div className="h-[44px] flex items-center justify-center rounded-[8px] bg-[#D1FAE5] text-[#065F46] text-[13px] font-semibold border border-[#A7F3D0]">
+        <div className="h-[44px] flex items-center justify-center rounded-[8px] bg-[#EFF6FF] text-[#1D4ED8] text-[13px] font-semibold border border-[#BFDBFE]">
           Menunggu Verifikasi Pelanggan
         </div>
       )}

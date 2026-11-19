@@ -64,7 +64,7 @@ export function Navbar({ user }: NavbarProps) {
           </Link>
 
           <div className="flex flex-col leading-tight">
-            <h1 className="text-[18px] sm:text-[20px] font-bold text-[#064E3B] tracking-tight">
+            <h1 className="text-[18px] sm:text-[20px] font-bold text-[#0B2A6F] tracking-tight">
               Halo, {displayName}
             </h1>
             <p className="text-[12px] sm:text-[13px] text-[#64748B]">
@@ -80,7 +80,7 @@ export function Navbar({ user }: NavbarProps) {
               href={profileHref}
               aria-label="Profil Pengguna"
               title="Profil Saya"
-              className="h-[38px] w-[38px] rounded-full border border-[#CBD5E1] bg-white flex items-center justify-center text-[#475569] hover:border-[#059669] hover:text-[#059669] hover:bg-[#F8FAFC] transition-all shadow-xs active:scale-95 cursor-pointer"
+              className="h-[38px] w-[38px] rounded-full border border-[#CBD5E1] bg-white flex items-center justify-center text-[#475569] hover:border-[#2563EB] hover:text-[#2563EB] hover:bg-[#F8FAFC] transition-all shadow-xs active:scale-95 cursor-pointer"
             >
               <User className="h-4 w-4" />
             </Link>
@@ -99,14 +99,14 @@ export function Navbar({ user }: NavbarProps) {
           ) : user?.role === "TEKNISI" ? (
             <Link
               href="/technician/tasks"
-              className="h-[38px] px-3.5 rounded-[8px] bg-[#14532D] hover:bg-[#166534] text-white text-[13px] font-semibold flex items-center gap-1.5 shadow-xs transition-colors"
+              className="h-[38px] px-3.5 rounded-[8px] bg-[#1D4ED8] hover:bg-[#1E40AF] text-white text-[13px] font-semibold flex items-center gap-1.5 shadow-xs transition-colors"
             >
               <span>Daftar Tugas</span>
             </Link>
           ) : user?.role === "ADMIN" ? (
             <Link
               href="/admin"
-              className="h-[38px] px-3.5 rounded-[8px] bg-[#14532D] hover:bg-[#166534] text-white text-[13px] font-semibold flex items-center gap-1.5 shadow-xs transition-colors"
+              className="h-[38px] px-3.5 rounded-[8px] bg-[#1D4ED8] hover:bg-[#1E40AF] text-white text-[13px] font-semibold flex items-center gap-1.5 shadow-xs transition-colors"
             >
               <span>Portal Admin</span>
             </Link>

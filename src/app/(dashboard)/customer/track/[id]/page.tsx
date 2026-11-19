@@ -219,10 +219,10 @@ export default async function CustomerTrackTicketPage({ params }: TrackPageProps
 
               {ticket.resolutionNotes && (
                 <div>
-                  <span className="block text-xs font-semibold uppercase tracking-wider text-[#065F46] mb-1">
+                  <span className="block text-xs font-semibold uppercase tracking-wider text-[#1D4ED8] mb-1">
                     Catatan Penyelesaian Teknisi
                   </span>
-                  <p className="text-[15px] text-[#0F172A] bg-[#D1FAE5]/40 p-3.5 rounded-[8px] border border-[#A7F3D0] whitespace-pre-line">
+                  <p className="text-[15px] text-[#0F172A] bg-[#EFF6FF] p-3.5 rounded-[8px] border border-[#BFDBFE] whitespace-pre-line">
                     {ticket.resolutionNotes}
                   </p>
                 </div>
@@ -263,7 +263,7 @@ export default async function CustomerTrackTicketPage({ params }: TrackPageProps
 
                 <div>
                   <span className="block text-xs font-semibold uppercase tracking-wider text-[#64748B] mb-2 flex items-center gap-1.5">
-                    <ImageIcon className="h-4 w-4 text-[#065F46]" />
+                    <ImageIcon className="h-4 w-4 text-[#1D4ED8]" />
                     <span>Foto Bukti Hasil Kerja</span>
                   </span>
                   {ticket.resolvedPhotoUrl ? (
@@ -280,7 +280,7 @@ export default async function CustomerTrackTicketPage({ params }: TrackPageProps
                         href={ticket.resolvedPhotoUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-[13px] text-[#065F46] hover:underline inline-block font-medium"
+                        className="text-[13px] text-[#1D4ED8] hover:underline inline-block font-medium"
                       >
                         Lihat Gambar Hasil Kerja &rarr;
                       </a>
@@ -371,7 +371,7 @@ export default async function CustomerTrackTicketPage({ params }: TrackPageProps
 
             {isResolvedOrClosed ? (
               <div className="mt-3">
-                <div className="text-[32px] font-bold text-[#065F46] leading-none">
+                <div className="text-[32px] font-bold text-[#1D4ED8] leading-none">
                   {elapsedHours <= targetHours ? "Tepat Waktu" : "Melewati Batas"}
                 </div>
                 <p className="text-[14px] text-[#475569] mt-2">

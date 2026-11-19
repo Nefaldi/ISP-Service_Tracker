@@ -43,7 +43,7 @@ export default async function CustomerPortalPage() {
         <div className="lg:col-span-2">
           <Card className="border border-[#E2E8F0]/60 bg-white shadow-2xs rounded-[12px] min-h-[460px]">
             <CardHeader className="px-5 pt-3.5 pb-2">
-              <CardTitle className="text-[16px] font-bold text-[#064E3B] leading-snug">
+              <CardTitle className="text-[16px] font-bold text-[#0B2A6F] leading-snug">
                 Laporan Terakhir Anda
               </CardTitle>
               <CardDescription className="text-[12px] text-[#64748B] mt-0.5">

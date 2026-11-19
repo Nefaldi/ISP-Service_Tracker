@@ -75,7 +75,7 @@ export default async function TechnicianOverviewPage() {
         <div className="lg:col-span-2">
           <Card className="border border-[#E2E8F0]/60 bg-white shadow-2xs rounded-[12px] min-h-[460px]">
             <CardHeader className="px-5 pt-3.5 pb-2">
-              <CardTitle className="text-[16px] font-bold text-[#064E3B] leading-snug">
+              <CardTitle className="text-[16px] font-bold text-[#0B2A6F] leading-snug">
                 Tugas Terakhir Anda
               </CardTitle>
               <CardDescription className="text-[12px] text-[#64748B] mt-0.5">
@@ -110,8 +110,8 @@ export default async function TechnicianOverviewPage() {
           {/* Profil Teknisi */}
           <Card className="border border-[#E2E8F0]/60 bg-white shadow-2xs rounded-[12px]">
             <CardHeader className="py-2.5 px-4 border-b border-[#F1F5F9]">
-              <CardTitle className="text-[14px] font-bold text-[#064E3B] flex items-center gap-2">
-                <Wrench className="h-4 w-4 text-[#166534]" />
+              <CardTitle className="text-[14px] font-bold text-[#0B2A6F] flex items-center gap-2">
+                <Wrench className="h-4 w-4 text-[#1D4ED8]" />
                 <span>Profil Pelaksana</span>
               </CardTitle>
             </CardHeader>

@@ -15,7 +15,7 @@ const InteractiveAreaMap = dynamic(
     ssr: false,
     loading: () => (
       <div className="w-full h-[340px] bg-[#F8FAFC] flex flex-col items-center justify-center gap-2 text-[#64748B]">
-        <Loader2 className="h-5 w-5 animate-spin text-[#059669]" />
+        <Loader2 className="h-5 w-5 animate-spin text-[#2563EB]" />
         <span className="text-[12px] font-medium">Memuat peta interaktif jaringan FO...</span>
       </div>
     ),
@@ -29,7 +29,7 @@ export function AreaMapCard({
     <Card className="overflow-hidden border border-[#E2E8F0]/60 bg-white shadow-2xs rounded-[12px]">
       <CardHeader className="py-2.5 px-4 border-b border-[#F1F5F9]">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-[14px] font-bold text-[#064E3B]">
+          <CardTitle className="text-[14px] font-bold text-[#0B2A6F]">
             Peta Area Pengawasan
           </CardTitle>
           <span className="text-[12px] font-medium text-[#64748B]">

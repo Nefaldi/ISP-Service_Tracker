@@ -20,7 +20,7 @@ export function CreateTicketDialog({
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className={`h-[40px] px-4 rounded-[8px] bg-[#14532D] hover:bg-[#166534] text-white text-[14px] font-semibold flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer ${className}`}
+        className={`h-[40px] px-4 rounded-[8px] bg-[#1D4ED8] hover:bg-[#1E40AF] text-white text-[14px] font-semibold flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer ${className}`}
       >
         <Plus className="h-4 w-4 stroke-[2.5]" />
         <span>{buttonText}</span>

@@ -89,20 +89,20 @@ export function CreateTicketForm() {
 
   if (createdTicket) {
     return (
-      <Card className="w-full border-[#A7F3D0] bg-[#F0FDF4]">
+      <Card className="w-full border-[#BFDBFE] bg-[#EFF6FF]">
         <CardHeader className="text-center pb-2">
-          <div className="mx-auto w-12 h-12 rounded-full bg-[#D1FAE5] text-[#059669] flex items-center justify-center mb-2">
+          <div className="mx-auto w-12 h-12 rounded-full bg-[#DBEAFE] text-[#2563EB] flex items-center justify-center mb-2">
             <CheckCircle2 className="w-7 h-7" />
           </div>
-          <CardTitle className="text-[20px] text-[#065F46]">
+          <CardTitle className="text-[20px] text-[#1D4ED8]">
             Laporan Berhasil Terkirim
           </CardTitle>
-          <CardDescription className="text-[14px] text-[#047857]">
+          <CardDescription className="text-[14px] text-[#1E40AF]">
             Tiket Anda telah tercatat di sistem Helpdesk dan sedang menunggu penugasan teknisi lapangan.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4 pt-2">
-          <div className="p-4 rounded-[10px] bg-white border border-[#A7F3D0] space-y-1.5 text-center">
+          <div className="p-4 rounded-[10px] bg-white border border-[#BFDBFE] space-y-1.5 text-center">
             <span className="text-xs font-semibold uppercase tracking-wider text-[#64748B]">
               Nomor Tiket Anda
             </span>

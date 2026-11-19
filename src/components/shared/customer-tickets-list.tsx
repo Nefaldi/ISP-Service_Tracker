@@ -263,7 +263,7 @@ export function CustomerTicketsList({
                     {/* 1. Alur Progres Stepper */}
                     <div>
                       <div className="flex items-center justify-between mb-3">
-                        <span className="text-[12px] font-bold text-[#064E3B] uppercase tracking-wider">
+                        <span className="text-[12px] font-bold text-[#0B2A6F] uppercase tracking-wider">
                           Tahapan Penanganan Gangguan
                         </span>
                         <span className="text-[11px] font-medium text-[#64748B]">
@@ -285,13 +285,13 @@ export function CustomerTicketsList({
                                 isActive
                                   ? "bg-white border-[#1D4ED8] shadow-xs ring-2 ring-[#DBEAFE]"
                                   : isDone
-                                  ? "bg-[#F0FDF4] border-[#BBF7D0]"
+                                  ? "bg-[#EFF6FF] border-[#BFDBFE]"
                                   : "bg-white border-[#E2E8F0] opacity-60"
                               }`}
                             >
                               <div className="flex items-center gap-2 mb-1">
                                 {isDone && (
-                                  <div className="h-5 w-5 rounded-full bg-[#059669] text-white flex items-center justify-center shrink-0">
+                                  <div className="h-5 w-5 rounded-full bg-[#2563EB] text-white flex items-center justify-center shrink-0">
                                     <Check className="h-3 w-3 stroke-[3]" />
                                   </div>
                                 )}
@@ -310,7 +310,7 @@ export function CustomerTicketsList({
                                     isActive
                                       ? "text-[#1D4ED8]"
                                       : isDone
-                                      ? "text-[#065F46]"
+                                      ? "text-[#1D4ED8]"
                                       : "text-[#64748B]"
                                   }`}
                                 >
@@ -376,7 +376,7 @@ export function CustomerTicketsList({
                       {/* Kolom Kanan: Teknisi & Penyelesaian */}
                       <div className="space-y-3 bg-white p-3.5 rounded-[10px] border border-[#E2E8F0]">
                         <h4 className="text-[12px] font-bold text-[#0F172A] flex items-center gap-1.5 pb-2 border-b border-[#F1F5F9]">
-                          <Wrench className="h-3.5 w-3.5 text-[#059669]" />
+                          <Wrench className="h-3.5 w-3.5 text-[#2563EB]" />
                           <span>Pelaksana & Penyelesaian</span>
                         </h4>
 
@@ -385,13 +385,13 @@ export function CustomerTicketsList({
                           <div>
                             <span className="text-[#64748B]">Teknisi Penanggung Jawab:</span>
                             {ticket.technician ? (
-                              <div className="mt-1 flex items-center justify-between p-2 rounded-[6px] bg-[#F0FDF4] border border-[#DCFCE7]">
+                              <div className="mt-1 flex items-center justify-between p-2 rounded-[6px] bg-[#EFF6FF] border border-[#BFDBFE]">
                                 <div className="min-w-0">
-                                  <p className="font-semibold text-[#065F46] truncate">
+                                  <p className="font-semibold text-[#1D4ED8] truncate">
                                     {ticket.technician.name}
                                   </p>
                                   {ticket.technician.phone && (
-                                    <p className="text-[11px] text-[#047857]">
+                                    <p className="text-[11px] text-[#1E40AF]">
                                       {ticket.technician.phone}
                                     </p>
                                   )}
@@ -402,7 +402,7 @@ export function CustomerTicketsList({
                                     href={`https://wa.me/${waNumber}?text=Halo%20Teknisi%2C%20saya%20pelapor%20tiket%20%23${ticket.ticketNumber}`}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="px-2.5 py-1 rounded-[6px] bg-[#16A34A] text-white text-[11px] font-semibold flex items-center gap-1 hover:bg-[#15803D]"
+                                    className="px-2.5 py-1 rounded-[6px] bg-[#2563EB] text-white text-[11px] font-semibold flex items-center gap-1 hover:bg-[#1D4ED8]"
                                   >
                                     <Phone className="h-3 w-3" />
                                     <span>WhatsApp</span>
@@ -418,11 +418,11 @@ export function CustomerTicketsList({
 
                           {/* Catatan Penyelesaian (Jika ada) */}
                           {ticket.resolutionNotes && (
-                            <div className="p-2.5 rounded-[6px] bg-[#F0FDF4] border border-[#BBF7D0]">
-                              <span className="font-semibold text-[#065F46] block text-[11px]">
+                            <div className="p-2.5 rounded-[6px] bg-[#EFF6FF] border border-[#BFDBFE]">
+                              <span className="font-semibold text-[#1D4ED8] block text-[11px]">
                                 Catatan Penyelesaian Lapangan:
                               </span>
-                              <p className="text-[#047857] text-[12px] mt-0.5">
+                              <p className="text-[#1E40AF] text-[12px] mt-0.5">
                                 {ticket.resolutionNotes}
                               </p>
                             </div>

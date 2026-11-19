@@ -283,8 +283,8 @@ export function TechnicianTasksList({
 
                 {/* Catatan Penyelesaian jika tiket sudah RESOLVED / CLOSED */}
                 {(task.status === "RESOLVED" || task.status === "CLOSED") && task.resolutionNotes && (
-                  <div className="p-3 rounded-[8px] bg-[#F0FDF4] border border-[#A7F3D0] text-xs space-y-1">
-                    <span className="font-semibold text-[#065F46] flex items-center gap-1.5">
+                  <div className="p-3 rounded-[8px] bg-[#EFF6FF] border border-[#BFDBFE] text-xs space-y-1">
+                    <span className="font-semibold text-[#1D4ED8] flex items-center gap-1.5">
                       <CheckCircle2 className="h-4 w-4" />
                       <span>Catatan Penyelesaian Anda:</span>
                     </span>
@@ -311,7 +311,7 @@ export function TechnicianTasksList({
                         )},%20saya%20teknisi%20Service%20Tracker%20terkait%20laporan%20%23${task.ticketNumber}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="h-[36px] px-3.5 rounded-[8px] bg-[#D1FAE5] hover:bg-[#A7F3D0] text-[#065F46] border border-[#A7F3D0] text-xs font-semibold inline-flex items-center justify-center gap-1.5 transition-colors"
+                        className="h-[36px] px-3.5 rounded-[8px] bg-[#EFF6FF] hover:bg-[#DBEAFE] text-[#1D4ED8] border border-[#BFDBFE] text-xs font-semibold inline-flex items-center justify-center gap-1.5 transition-colors"
                       >
                         <MessageSquare className="h-3.5 w-3.5" />
                         <span>WhatsApp</span>

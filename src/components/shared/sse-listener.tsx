@@ -79,7 +79,7 @@ export function SSEListener() {
           className="pointer-events-auto flex items-start gap-3 p-4 rounded-xl border border-zinc-200 bg-white shadow-lg dark:border-zinc-800 dark:bg-zinc-900 animate-in slide-in-from-bottom-2 duration-200"
         >
           {toast.type === "success" ? (
-            <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
+            <CheckCircle2 className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
           ) : toast.type === "warning" ? (
             <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
           ) : (

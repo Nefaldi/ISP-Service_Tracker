@@ -90,8 +90,8 @@ export function CreateUserDialog() {
 
             {successMsg ? (
               <div className="py-8 text-center space-y-2">
-                <CheckCircle2 className="h-10 w-10 text-[#047857] mx-auto" />
-                <h4 className="text-[16px] font-bold text-[#065F46]">
+                <CheckCircle2 className="h-10 w-10 text-[#2563EB] mx-auto" />
+                <h4 className="text-[16px] font-bold text-[#1D4ED8]">
                   Akun Berhasil Dibuat
                 </h4>
                 <p className="text-[13px] text-[#475569]">

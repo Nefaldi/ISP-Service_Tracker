@@ -47,12 +47,12 @@ export function CustomerReviewCard({
 
   if (isClosed || successMsg) {
     return (
-      <Card className="border-[#A7F3D0] bg-[#D1FAE5]/30">
+      <Card className="border-[#BFDBFE] bg-[#DBEAFE]/30">
         <CardContent className="pt-6 text-center">
-          <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-[#D1FAE5] text-[#065F46]">
+          <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-[#DBEAFE] text-[#1D4ED8]">
             <CheckCircle2 className="h-6 w-6" />
           </div>
-          <h4 className="text-[18px] font-semibold text-[#065F46]">
+          <h4 className="text-[18px] font-semibold text-[#1D4ED8]">
             Tiket Telah Ditutup & Diverifikasi
           </h4>
           <p className="text-[14px] text-[#475569] mt-1">

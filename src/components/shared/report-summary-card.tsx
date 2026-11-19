@@ -27,7 +27,7 @@ export function ReportSummaryCard({
     <Card className="border border-[#E2E8F0]/60 bg-white shadow-2xs rounded-[12px]">
       <CardHeader className="py-2.5 px-4 border-b border-[#F1F5F9]">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-[14px] font-bold text-[#064E3B]">
+          <CardTitle className="text-[14px] font-bold text-[#0B2A6F]">
             {title}
           </CardTitle>
           {historyHref && (
@@ -68,14 +68,14 @@ export function ReportSummaryCard({
         </div>
 
         {/* Row 3: Selesai */}
-        <div className="rounded-[8px] border border-[#BBF7D0]/60 bg-[#F0FDF4] px-3.5 py-2.5 flex items-center justify-between">
+        <div className="rounded-[8px] border border-[#BFDBFE]/60 bg-[#EFF6FF] px-3.5 py-2.5 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <CheckSquare className="h-4 w-4 text-[#16A34A] shrink-0" />
-            <span className="text-[13px] font-medium text-[#16A34A]">
+            <CheckSquare className="h-4 w-4 text-[#2563EB] shrink-0" />
+            <span className="text-[13px] font-medium text-[#2563EB]">
               {resolvedLabel}
             </span>
           </div>
-          <span className="text-[16px] font-bold text-[#16A34A]">
+          <span className="text-[16px] font-bold text-[#2563EB]">
             {resolvedCount}
           </span>
         </div>

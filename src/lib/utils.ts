@@ -22,7 +22,7 @@ export function getStatusBadgeClass(status: string): string {
     case "IN_PROGRESS":
       return "bg-[#EDE9FE] text-[#5B21B6] border-[#DDD6FE]";
     case "RESOLVED":
-      return "bg-[#D1FAE5] text-[#065F46] border-[#A7F3D0]";
+      return "bg-[#EFF6FF] text-[#1D4ED8] border-[#BFDBFE]";
     case "CLOSED":
       return "bg-[#E2E8F0] text-[#334155] border-[#CBD5E1]";
     default:
@@ -56,7 +56,7 @@ export function getPriorityBadgeClass(priority: string): string {
     case "MEDIUM":
       return "bg-[#FEF9C3] text-[#854D0E] border-[#FDE047]";
     case "LOW":
-      return "bg-[#DCFCE7] text-[#166534] border-[#86EFAC]";
+      return "bg-[#EFF6FF] text-[#1D4ED8] border-[#BFDBFE]";
     default:
       return "bg-[#F1F5F9] text-[#475569] border-[#E2E8F0]";
   }

@@ -74,14 +74,14 @@ export function RegisterForm() {
       </div>
 
       {isSuccess ? (
-        <div className="p-6 text-center space-y-3 bg-[#D1FAE5] rounded-[12px] border border-[#A7F3D0]">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#065F46] text-white">
+        <div className="p-6 text-center space-y-3 bg-[#DBEAFE] rounded-[12px] border border-[#BFDBFE]">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#1D4ED8] text-white">
             <CheckCircle2 className="h-6 w-6" />
           </div>
-          <h4 className="text-[18px] font-bold text-[#065F46]">
+          <h4 className="text-[18px] font-bold text-[#1D4ED8]">
             Pendaftaran Berhasil!
           </h4>
-          <p className="text-[14px] text-[#065F46]">
+          <p className="text-[14px] text-[#1D4ED8]">
             Akun Anda telah terdaftar. Sedang mengalihkan ke halaman masuk...
           </p>
           <div className="pt-2">

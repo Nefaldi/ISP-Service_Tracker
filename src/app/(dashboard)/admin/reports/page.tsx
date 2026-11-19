@@ -142,7 +142,7 @@ export default async function AdminReportsPage() {
             <span className="text-[14px] font-medium text-[#475569]">
               Tingkat Penyelesaian
             </span>
-            <div className="h-8 w-8 rounded-full bg-[#D1FAE5] text-[#065F46] flex items-center justify-center">
+            <div className="h-8 w-8 rounded-full bg-[#DBEAFE] text-[#1D4ED8] flex items-center justify-center">
               <CheckCircle2 className="h-4 w-4" />
             </div>
           </div>
@@ -251,7 +251,7 @@ export default async function AdminReportsPage() {
                         <td className="py-3.5 px-4 text-center text-[14px] font-medium text-[#0F172A]">
                           {tech.totalAssigned}
                         </td>
-                        <td className="py-3.5 px-4 text-center text-[14px] font-semibold text-[#065F46]">
+                        <td className="py-3.5 px-4 text-center text-[14px] font-semibold text-[#1D4ED8]">
                           {tech.completed}
                         </td>
                         <td className="py-3.5 px-4 text-center">

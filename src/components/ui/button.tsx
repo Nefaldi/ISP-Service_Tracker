@@ -32,7 +32,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       outline:
         "border border-[#1D4ED8] bg-transparent text-[#1D4ED8] hover:bg-[#EFF6FF] focus:ring-[#1D4ED8]",
       success:
-        "bg-[#047857] text-white hover:bg-[#065F46] focus:ring-[#047857] shadow-xs active:bg-[#064E3B]",
+        "bg-[#1D4ED8] text-white hover:bg-[#1E40AF] focus:ring-[#1D4ED8] shadow-xs active:bg-[#1E3A8A]",
       danger:
         "bg-[#DC2626] text-white hover:bg-[#B91C1C] focus:ring-[#DC2626] shadow-xs",
       ghost:
