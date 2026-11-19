@@ -10,23 +10,39 @@ interface TechnicianActionsProps {
   ticketId: string;
   status: string;
   isFullCard?: boolean;
+  onSuccess?: (newStatus: string, resolutionNotes?: string) => void;
 }
 
-export function TechnicianActions({ ticketId, status }: TechnicianActionsProps) {
+export function TechnicianActions({ ticketId, status, onSuccess }: TechnicianActionsProps) {
   const router = useRouter();
+  const [currentStatus, setCurrentStatus] = useState(status);
+  const [prevStatus, setPrevStatus] = useState(status);
   const [isLoading, setIsLoading] = useState(false);
   const [showResolveModal, setShowResolveModal] = useState(false);
   const [resolutionNotes, setResolutionNotes] = useState("");
   const [fileToUpload, setFileToUpload] = useState<File | null>(null);
 
+  if (status !== prevStatus) {
+    setPrevStatus(status);
+    setCurrentStatus(status);
+  }
+
   const handleStart = async () => {
     setIsLoading(true);
-    const res = await startProgress(ticketId);
-    setIsLoading(false);
-    if (res.success) {
-      router.refresh();
-    } else {
-      alert(res.error || "Gagal memulai tugas.");
+    try {
+      const res = await startProgress(ticketId);
+      setIsLoading(false);
+      if (res.success) {
+        setCurrentStatus("IN_PROGRESS");
+        onSuccess?.("IN_PROGRESS");
+        router.refresh();
+      } else {
+        alert(res.error || "Gagal memulai tugas.");
+      }
+    } catch (err) {
+      setIsLoading(false);
+      console.error(err);
+      alert("Terjadi kesalahan jaringan saat memulai tugas.");
     }
   };
 
@@ -53,25 +69,33 @@ export function TechnicianActions({ ticketId, status }: TechnicianActionsProps) 
       }
     }
 
-    const res = await resolveTicket({
-      ticketId,
-      resolutionNotes,
-      resolvedPhotoUrl: finalPhotoUrl || undefined,
-    });
+    try {
+      const res = await resolveTicket({
+        ticketId,
+        resolutionNotes,
+        resolvedPhotoUrl: finalPhotoUrl || undefined,
+      });
 
-    setIsLoading(false);
-    if (res.success) {
-      setShowResolveModal(false);
-      setFileToUpload(null);
-      router.refresh();
-    } else {
-      alert(res.error || "Gagal menyelesaikan tiket.");
+      setIsLoading(false);
+      if (res.success) {
+        setCurrentStatus("RESOLVED");
+        onSuccess?.("RESOLVED", resolutionNotes);
+        setShowResolveModal(false);
+        setFileToUpload(null);
+        router.refresh();
+      } else {
+        alert(res.error || "Gagal menyelesaikan tiket.");
+      }
+    } catch (err) {
+      setIsLoading(false);
+      console.error(err);
+      alert("Terjadi kesalahan jaringan saat menyelesaikan tugas.");
     }
   };
 
   return (
     <div className="w-full">
-      {status === "ASSIGNED" && (
+      {currentStatus === "ASSIGNED" && (
         <Button
           type="button"
           variant="primary"
@@ -85,7 +109,7 @@ export function TechnicianActions({ ticketId, status }: TechnicianActionsProps) 
         </Button>
       )}
 
-      {status === "IN_PROGRESS" && (
+      {currentStatus === "IN_PROGRESS" && (
         <>
           <Button
             type="button"
@@ -208,13 +232,13 @@ export function TechnicianActions({ ticketId, status }: TechnicianActionsProps) 
         </>
       )}
 
-      {status === "RESOLVED" && (
+      {currentStatus === "RESOLVED" && (
         <div className="h-[44px] flex items-center justify-center rounded-[8px] bg-[#EFF6FF] text-[#1D4ED8] text-[13px] font-semibold border border-[#BFDBFE]">
           Menunggu Verifikasi Pelanggan
         </div>
       )}
 
-      {status === "CLOSED" && (
+      {currentStatus === "CLOSED" && (
         <div className="h-[44px] flex items-center justify-center rounded-[8px] bg-[#F1F5F9] text-[#475569] text-[13px] font-semibold border border-[#E2E8F0]">
           Tiket Telah Selesai & Ditutup
         </div>

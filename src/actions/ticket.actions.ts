@@ -224,26 +224,22 @@ export async function assignTechnician(input: {
  */
 export async function startProgress(ticketId: string) {
   const session = await auth();
-  if (!session?.user?.id || (session.user.role !== "TEKNISI" && session.user.role !== "ADMIN")) {
-    return { success: false, error: "Unauthorized. Hanya teknisi/admin yang dapat memulai pengerjaan." };
+  if (!session?.user || (session.user.role !== "TEKNISI" && session.user.role !== "ADMIN")) {
+    return { success: false, error: "Unauthorized. Hanya teknisi atau admin yang dapat memulai pengerjaan." };
   }
 
   try {
     const existing = await prisma.ticket.findUnique({ where: { id: ticketId } });
     if (!existing) return { success: false, error: "Tiket tidak ditemukan." };
 
-    const effectiveTechId = await getEffectiveUserId(session);
-    if (
-      session.user.role === "TEKNISI" &&
-      existing.technicianId &&
-      existing.technicianId !== effectiveTechId &&
-      existing.technicianId !== session.user.id
-    ) {
-      return { success: false, error: "Tiket ini ditugaskan ke teknisi lain." };
+    const effectiveTechId = (await getEffectiveUserId(session)) || session.user.id;
+    if (!effectiveTechId) {
+      return { success: false, error: "ID Pengguna tidak terverifikasi." };
     }
 
     const previousStatus = existing.status;
     const newStatus: TicketStatus = "IN_PROGRESS";
+    const techName = session.user.name || "Teknisi Lapangan";
 
     const updated = await prisma.ticket.update({
       where: { id: ticketId },
@@ -256,34 +252,42 @@ export async function startProgress(ticketId: string) {
             action: "IN_PROGRESS",
             previousStatus,
             newStatus,
-            notes: "Teknisi telah menerima penugasan dan memulai pengerjaan perbaikan di lokasi.",
+            notes: `${techName} telah menerima penugasan dan memulai pengerjaan perbaikan di lokasi.`,
           },
         },
       },
     });
 
     // Instant SSE update to Customer Live Tracker & Admin
-    sseBroker.broadcast("ticket:status_change", {
-      ticketId: updated.id,
-      ticketNumber: updated.ticketNumber,
-      status: newStatus,
-      previousStatus,
-      customerId: updated.customerId,
-      technicianId: updated.technicianId,
-      message: `Pengerjaan tiket #${updated.ticketNumber} telah dimulai oleh teknisi.`,
-      timestamp: new Date().toISOString(),
-    });
+    try {
+      sseBroker.broadcast("ticket:status_change", {
+        ticketId: updated.id,
+        ticketNumber: updated.ticketNumber,
+        status: newStatus,
+        previousStatus,
+        customerId: updated.customerId,
+        technicianId: updated.technicianId,
+        message: `Pengerjaan tiket #${updated.ticketNumber} telah dimulai oleh teknisi.`,
+        timestamp: new Date().toISOString(),
+      });
+    } catch (sseErr) {
+      console.warn("SSE broadcast warning:", sseErr);
+    }
 
     revalidatePath("/technician");
     revalidatePath("/technician/tasks");
     revalidatePath("/admin");
     revalidatePath("/admin/tickets");
     revalidatePath("/customer");
+    revalidatePath("/customer/reports");
     revalidatePath(`/customer/track/${ticketId}`);
     return { success: true, data: updated };
   } catch (error) {
     console.error("startProgress error:", error);
-    return { success: false, error: "Gagal memperbarui status tiket." };
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Gagal memperbarui status tiket.",
+    };
   }
 }
 
@@ -296,8 +300,8 @@ export async function resolveTicket(input: {
   resolutionNotes: string;
 }) {
   const session = await auth();
-  if (!session?.user?.id || (session.user.role !== "TEKNISI" && session.user.role !== "ADMIN")) {
-    return { success: false, error: "Unauthorized. Hanya teknisi/admin yang dapat menyelesaikan tiket." };
+  if (!session?.user || (session.user.role !== "TEKNISI" && session.user.role !== "ADMIN")) {
+    return { success: false, error: "Unauthorized. Hanya teknisi atau admin yang dapat menyelesaikan tiket." };
   }
 
   const parsed = resolveTicketSchema.safeParse(input);
@@ -311,14 +315,9 @@ export async function resolveTicket(input: {
     const existing = await prisma.ticket.findUnique({ where: { id: ticketId } });
     if (!existing) return { success: false, error: "Tiket tidak ditemukan." };
 
-    const effectiveTechId = await getEffectiveUserId(session);
-    if (
-      session.user.role === "TEKNISI" &&
-      existing.technicianId &&
-      existing.technicianId !== effectiveTechId &&
-      existing.technicianId !== session.user.id
-    ) {
-      return { success: false, error: "Tiket ini ditugaskan ke teknisi lain." };
+    const effectiveTechId = (await getEffectiveUserId(session)) || session.user.id;
+    if (!effectiveTechId) {
+      return { success: false, error: "ID Pengguna tidak terverifikasi." };
     }
 
     const previousStatus = existing.status;
@@ -328,6 +327,7 @@ export async function resolveTicket(input: {
       where: { id: ticketId },
       data: {
         status: newStatus,
+        technicianId: existing.technicianId || effectiveTechId,
         resolvedPhotoUrl: resolvedPhotoUrl || null,
         resolutionNotes,
         resolvedAt: new Date(),
@@ -344,16 +344,20 @@ export async function resolveTicket(input: {
     });
 
     // SSE notification sent to customer
-    sseBroker.broadcast("ticket:resolved", {
-      ticketId: updated.id,
-      ticketNumber: updated.ticketNumber,
-      status: newStatus,
-      previousStatus,
-      customerId: updated.customerId,
-      technicianId: updated.technicianId,
-      message: `Pekerjaan tiket #${updated.ticketNumber} telah diselesaikan oleh teknisi. Menunggu verifikasi pelanggan.`,
-      timestamp: new Date().toISOString(),
-    });
+    try {
+      sseBroker.broadcast("ticket:resolved", {
+        ticketId: updated.id,
+        ticketNumber: updated.ticketNumber,
+        status: newStatus,
+        previousStatus,
+        customerId: updated.customerId,
+        technicianId: updated.technicianId,
+        message: `Pekerjaan tiket #${updated.ticketNumber} telah diselesaikan oleh teknisi. Menunggu verifikasi pelanggan.`,
+        timestamp: new Date().toISOString(),
+      });
+    } catch (sseErr) {
+      console.warn("SSE broadcast warning:", sseErr);
+    }
 
     revalidatePath("/technician");
     revalidatePath("/technician/tasks");
@@ -361,11 +365,15 @@ export async function resolveTicket(input: {
     revalidatePath("/admin/tickets");
     revalidatePath("/admin/reports");
     revalidatePath("/customer");
+    revalidatePath("/customer/reports");
     revalidatePath(`/customer/track/${ticketId}`);
     return { success: true, data: updated };
   } catch (error) {
     console.error("resolveTicket error:", error);
-    return { success: false, error: "Gagal menyelesaikan tiket." };
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Gagal menyelesaikan tiket.",
+    };
   }
 }
 

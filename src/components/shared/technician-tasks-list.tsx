@@ -72,9 +72,30 @@ export function TechnicianTasksList({
   initialTasks,
   limit,
 }: TechnicianTasksListProps) {
+  const [tasks, setTasks] = useState<TechTaskItem[]>(initialTasks);
+  const [prevInitialTasks, setPrevInitialTasks] = useState(initialTasks);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterTab, setFilterTab] = useState<"ACTIVE" | "ASSIGNED" | "IN_PROGRESS" | "RESOLVED" | "ALL">("ACTIVE");
   const [expandedIds, setExpandedIds] = useState<Record<string, boolean>>({});
+
+  if (initialTasks !== prevInitialTasks) {
+    setPrevInitialTasks(initialTasks);
+    setTasks(initialTasks);
+  }
+
+  const handleTaskUpdate = (ticketId: string, newStatus: string, resNotes?: string) => {
+    setTasks((prev) =>
+      prev.map((t) =>
+        t.id === ticketId
+          ? {
+              ...t,
+              status: newStatus,
+              resolutionNotes: resNotes !== undefined ? resNotes : t.resolutionNotes,
+            }
+          : t
+      )
+    );
+  };
 
   const toggleExpand = (id: string) => {
     setExpandedIds((prev) => ({
@@ -84,7 +105,7 @@ export function TechnicianTasksList({
   };
 
   const filteredTasks = useMemo(() => {
-    return initialTasks.filter((task) => {
+    return tasks.filter((task) => {
       const keyword = searchTerm.toLowerCase().trim();
       const matchKeyword =
         !keyword ||
@@ -101,7 +122,7 @@ export function TechnicianTasksList({
 
       return matchKeyword && matchTab;
     });
-  }, [initialTasks, searchTerm, filterTab]);
+  }, [tasks, searchTerm, filterTab]);
 
   // Display only the latest `limit` tasks on overview dashboard
   const displayedTasks = useMemo(() => {
@@ -503,7 +524,13 @@ export function TechnicianTasksList({
                             <span className="text-[#64748B] block mb-1.5 font-medium">
                               Aksi Penanganan:
                             </span>
-                            <TechnicianActions ticketId={task.id} status={task.status} />
+                            <TechnicianActions
+                              ticketId={task.id}
+                              status={task.status}
+                              onSuccess={(newStatus, resNotes) =>
+                                handleTaskUpdate(task.id, newStatus, resNotes)
+                              }
+                            />
                           </div>
                         </div>
                       </div>

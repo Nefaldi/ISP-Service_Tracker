@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { TechnicianTasksList } from "@/components/shared/technician-tasks-list";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Daftar Tugas Lapangan - Service Tracker Teknisi",
 };

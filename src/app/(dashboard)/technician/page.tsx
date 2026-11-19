@@ -5,6 +5,8 @@ import { ReportSummaryCard } from "@/components/shared/report-summary-card";
 import { AreaMapCard } from "@/components/shared/area-map-card";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Portal Teknisi - Service Tracker",
 };
