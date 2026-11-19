@@ -223,12 +223,12 @@ export async function assignTechnician(input: {
  * 3. In Progress: Technician marks task as in progress
  */
 export async function startProgress(ticketId: string) {
-  const session = await auth();
-  if (!session?.user || (session.user.role !== "TEKNISI" && session.user.role !== "ADMIN")) {
-    return { success: false, error: "Unauthorized. Hanya teknisi atau admin yang dapat memulai pengerjaan." };
-  }
-
   try {
+    const session = await auth();
+    if (!session?.user || (session.user.role !== "TEKNISI" && session.user.role !== "ADMIN")) {
+      return { success: false, error: "Unauthorized. Hanya teknisi atau admin yang dapat memulai pengerjaan." };
+    }
+
     const existing = await prisma.ticket.findUnique({ where: { id: ticketId } });
     if (!existing) return { success: false, error: "Tiket tidak ditemukan." };
 
@@ -274,14 +274,25 @@ export async function startProgress(ticketId: string) {
       console.warn("SSE broadcast warning:", sseErr);
     }
 
-    revalidatePath("/technician");
-    revalidatePath("/technician/tasks");
-    revalidatePath("/admin");
-    revalidatePath("/admin/tickets");
-    revalidatePath("/customer");
-    revalidatePath("/customer/reports");
-    revalidatePath(`/customer/track/${ticketId}`);
-    return { success: true, data: updated };
+    try {
+      revalidatePath("/technician");
+      revalidatePath("/technician/tasks");
+      revalidatePath("/admin");
+      revalidatePath("/admin/tickets");
+      revalidatePath("/customer");
+      revalidatePath("/customer/reports");
+    } catch (revalErr) {
+      console.warn("revalidatePath warning:", revalErr);
+    }
+
+    return {
+      success: true,
+      data: {
+        id: updated.id,
+        ticketNumber: updated.ticketNumber,
+        status: updated.status,
+      },
+    };
   } catch (error) {
     console.error("startProgress error:", error);
     return {
@@ -299,19 +310,19 @@ export async function resolveTicket(input: {
   resolvedPhotoUrl?: string;
   resolutionNotes: string;
 }) {
-  const session = await auth();
-  if (!session?.user || (session.user.role !== "TEKNISI" && session.user.role !== "ADMIN")) {
-    return { success: false, error: "Unauthorized. Hanya teknisi atau admin yang dapat menyelesaikan tiket." };
-  }
-
-  const parsed = resolveTicketSchema.safeParse(input);
-  if (!parsed.success) {
-    return { success: false, error: parsed.error.issues[0]?.message || "Data input tidak valid." };
-  }
-
-  const { ticketId, resolvedPhotoUrl, resolutionNotes } = parsed.data;
-
   try {
+    const session = await auth();
+    if (!session?.user || (session.user.role !== "TEKNISI" && session.user.role !== "ADMIN")) {
+      return { success: false, error: "Unauthorized. Hanya teknisi atau admin yang dapat menyelesaikan tiket." };
+    }
+
+    const parsed = resolveTicketSchema.safeParse(input);
+    if (!parsed.success) {
+      return { success: false, error: parsed.error.issues[0]?.message || "Data input tidak valid." };
+    }
+
+    const { ticketId, resolvedPhotoUrl, resolutionNotes } = parsed.data;
+
     const existing = await prisma.ticket.findUnique({ where: { id: ticketId } });
     if (!existing) return { success: false, error: "Tiket tidak ditemukan." };
 
@@ -359,15 +370,25 @@ export async function resolveTicket(input: {
       console.warn("SSE broadcast warning:", sseErr);
     }
 
-    revalidatePath("/technician");
-    revalidatePath("/technician/tasks");
-    revalidatePath("/admin");
-    revalidatePath("/admin/tickets");
-    revalidatePath("/admin/reports");
-    revalidatePath("/customer");
-    revalidatePath("/customer/reports");
-    revalidatePath(`/customer/track/${ticketId}`);
-    return { success: true, data: updated };
+    try {
+      revalidatePath("/technician");
+      revalidatePath("/technician/tasks");
+      revalidatePath("/admin");
+      revalidatePath("/admin/tickets");
+      revalidatePath("/customer");
+      revalidatePath("/customer/reports");
+    } catch (revalErr) {
+      console.warn("revalidatePath warning:", revalErr);
+    }
+
+    return {
+      success: true,
+      data: {
+        id: updated.id,
+        ticketNumber: updated.ticketNumber,
+        status: updated.status,
+      },
+    };
   } catch (error) {
     console.error("resolveTicket error:", error);
     return {

@@ -30,19 +30,31 @@ export function TechnicianActions({ ticketId, status, onSuccess }: TechnicianAct
   const handleStart = async () => {
     setIsLoading(true);
     try {
-      const res = await startProgress(ticketId);
+      let res: { success: boolean; error?: string } | null = null;
+      try {
+        const apiRes = await fetch(`/api/tickets/${ticketId}/start`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        });
+        res = await apiRes.json();
+      } catch (fetchErr) {
+        console.warn("API route failed, falling back to server action:", fetchErr);
+        res = await startProgress(ticketId);
+      }
+
       setIsLoading(false);
-      if (res.success) {
+      if (res && res.success) {
         setCurrentStatus("IN_PROGRESS");
         onSuccess?.("IN_PROGRESS");
         router.refresh();
       } else {
-        alert(res.error || "Gagal memulai tugas.");
+        alert(res?.error || "Gagal memulai tugas.");
       }
-    } catch (err) {
+    } catch (err: unknown) {
       setIsLoading(false);
-      console.error(err);
-      alert("Terjadi kesalahan jaringan saat memulai tugas.");
+      console.error("handleStart error:", err);
+      const msg = err instanceof Error ? err.message : "Gagal menghubungi server.";
+      alert(`Terjadi kendala saat memulai tugas: ${msg}`);
     }
   };
 
@@ -70,26 +82,41 @@ export function TechnicianActions({ ticketId, status, onSuccess }: TechnicianAct
     }
 
     try {
-      const res = await resolveTicket({
-        ticketId,
-        resolutionNotes,
-        resolvedPhotoUrl: finalPhotoUrl || undefined,
-      });
+      let res: { success: boolean; error?: string } | null = null;
+      try {
+        const apiRes = await fetch(`/api/tickets/${ticketId}/resolve`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            resolutionNotes,
+            resolvedPhotoUrl: finalPhotoUrl || undefined,
+          }),
+        });
+        res = await apiRes.json();
+      } catch (fetchErr) {
+        console.warn("API route failed, falling back to server action:", fetchErr);
+        res = await resolveTicket({
+          ticketId,
+          resolutionNotes,
+          resolvedPhotoUrl: finalPhotoUrl || undefined,
+        });
+      }
 
       setIsLoading(false);
-      if (res.success) {
+      if (res && res.success) {
         setCurrentStatus("RESOLVED");
         onSuccess?.("RESOLVED", resolutionNotes);
         setShowResolveModal(false);
         setFileToUpload(null);
         router.refresh();
       } else {
-        alert(res.error || "Gagal menyelesaikan tiket.");
+        alert(res?.error || "Gagal menyelesaikan tiket.");
       }
-    } catch (err) {
+    } catch (err: unknown) {
       setIsLoading(false);
-      console.error(err);
-      alert("Terjadi kesalahan jaringan saat menyelesaikan tugas.");
+      console.error("handleResolve error:", err);
+      const msg = err instanceof Error ? err.message : "Gagal menghubungi server.";
+      alert(`Terjadi kendala saat menyelesaikan tugas: ${msg}`);
     }
   };
 
