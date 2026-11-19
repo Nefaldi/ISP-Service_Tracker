@@ -79,33 +79,25 @@ export default function LoginPage() {
 
       {/* Form Panel (Kanan) */}
       <div className="flex flex-col justify-center items-center px-6 py-12 lg:px-12 bg-white">
-        {/* Mobile Header Banner with the same Server Rack Background */}
-        <div className="lg:hidden w-full max-w-[420px] mb-6 relative rounded-[14px] overflow-hidden p-5 text-white shadow-sm">
-          <Image
-            src="/4f992cf6d1ed8b70b47ad218a49dd046.jpg"
-            alt="ZipNet Network"
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover object-center"
-          />
-          <div className="absolute inset-0 bg-[#0B2A6F]/80 mix-blend-multiply" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0B2A6F] to-[#0B2A6F]/60" />
-          <div className="relative z-10 flex items-center justify-between">
-            <div className="bg-white px-2.5 py-1.5 rounded-[8px] shadow-xs flex items-center justify-center">
-              <Image
-                src="/logo-zipnet.png"
-                alt="Logo ZipNet"
-                width={70}
-                height={28}
-                style={{ width: "auto" }}
-                className="h-6 w-auto object-contain"
-              />
-            </div>
-            <span className="text-xs font-bold tracking-wider uppercase text-[#BFDBFE]">
+        {/* Mobile Header: Cukup tampilkan Logo ZipNet tanpa latar belakang dengan teks Service Tracker dibawahnya */}
+        <div className="lg:hidden flex flex-col items-center justify-center text-center mb-6 w-full max-w-[420px]">
+          <Link
+            href="/login"
+            className="flex flex-col items-center group transition-transform hover:scale-[1.02]"
+          >
+            <Image
+              src="/logo-zipnet.png"
+              alt="Logo ZipNet"
+              width={160}
+              height={87}
+              style={{ width: "auto" }}
+              className="h-11 sm:h-12 w-auto object-contain"
+              priority
+            />
+            <h1 className="text-[17px] sm:text-[18px] font-bold text-[#0B2A6F] tracking-tight mt-2.5">
               Service Tracker
-            </span>
-          </div>
+            </h1>
+          </Link>
         </div>
 
         <Suspense
