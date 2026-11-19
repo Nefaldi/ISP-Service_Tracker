@@ -83,7 +83,7 @@ export default async function TechnicianOverviewPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="p-5 pt-0">
-              <TechnicianTasksList initialTasks={formattedTasks} />
+              <TechnicianTasksList initialTasks={formattedTasks} limit={3} />
             </CardContent>
           </Card>
         </div>

@@ -30,9 +30,13 @@ export interface CustomerTicketItem {
 
 interface CustomerTicketsListProps {
   initialTickets: CustomerTicketItem[];
+  limit?: number;
 }
 
-export function CustomerTicketsList({ initialTickets }: CustomerTicketsListProps) {
+export function CustomerTicketsList({
+  initialTickets,
+  limit = 3,
+}: CustomerTicketsListProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [tab, setTab] = useState<"ACTIVE" | "HISTORY" | "ALL">("ACTIVE");
 
@@ -61,7 +65,12 @@ export function CustomerTicketsList({ initialTickets }: CustomerTicketsListProps
     });
   }, [initialTickets, searchTerm, tab]);
 
-  // When user has no tickets at all, display the clean empty state matching reference UI
+  // Display only the latest `limit` tickets on the dashboard card
+  const displayedTickets = useMemo(() => {
+    return limit ? filteredTickets.slice(0, limit) : filteredTickets;
+  }, [filteredTickets, limit]);
+
+  // When user has no tickets at all, display clean empty state matching reference UI
   if (initialTickets.length === 0) {
     return (
       <div className="py-20 sm:py-24 flex flex-col items-center justify-center text-center">
@@ -77,7 +86,7 @@ export function CustomerTicketsList({ initialTickets }: CustomerTicketsListProps
 
   return (
     <div className="space-y-4">
-      {/* Search and Tabs */}
+      {/* Search and Tabs Filter */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-3 border-b border-[#E2E8F0]">
         <div className="flex items-center gap-2">
           <button
@@ -128,8 +137,8 @@ export function CustomerTicketsList({ initialTickets }: CustomerTicketsListProps
         </div>
       </div>
 
-      {/* List of Tickets */}
-      {filteredTickets.length === 0 ? (
+      {/* List of Tickets (Limited to 3 latest items) */}
+      {displayedTickets.length === 0 ? (
         <div className="py-12 flex flex-col items-center justify-center text-center">
           <div className="h-12 w-12 rounded-full bg-[#F1F5F9] text-[#94A3B8] flex items-center justify-center mb-2">
             <Inbox className="h-5 w-5 stroke-[1.75]" />
@@ -140,7 +149,7 @@ export function CustomerTicketsList({ initialTickets }: CustomerTicketsListProps
         </div>
       ) : (
         <div className="space-y-3">
-          {filteredTickets.map((ticket) => (
+          {displayedTickets.map((ticket) => (
             <Link
               key={ticket.id}
               href={`/customer/track/${ticket.id}`}
@@ -181,6 +190,15 @@ export function CustomerTicketsList({ initialTickets }: CustomerTicketsListProps
               </div>
             </Link>
           ))}
+
+          {/* Footer note when more tickets exist */}
+          {limit && filteredTickets.length > limit && (
+            <div className="pt-2 text-center border-t border-[#F1F5F9]">
+              <p className="text-[12px] text-[#64748B]">
+                Menampilkan {limit} laporan terakhir dari total {filteredTickets.length} laporan.
+              </p>
+            </div>
+          )}
         </div>
       )}
     </div>

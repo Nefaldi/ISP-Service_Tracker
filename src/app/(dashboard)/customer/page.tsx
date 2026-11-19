@@ -51,7 +51,7 @@ export default async function CustomerPortalPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="p-5 pt-0">
-              <CustomerTicketsList initialTickets={tickets} />
+              <CustomerTicketsList initialTickets={tickets} limit={3} />
             </CardContent>
           </Card>
         </div>

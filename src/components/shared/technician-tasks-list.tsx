@@ -41,9 +41,13 @@ export interface TechTaskItem {
 
 interface TechnicianTasksListProps {
   initialTasks: TechTaskItem[];
+  limit?: number;
 }
 
-export function TechnicianTasksList({ initialTasks }: TechnicianTasksListProps) {
+export function TechnicianTasksList({
+  initialTasks,
+  limit,
+}: TechnicianTasksListProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterTab, setFilterTab] = useState<"ACTIVE" | "ASSIGNED" | "IN_PROGRESS" | "RESOLVED" | "ALL">("ACTIVE");
 
@@ -76,6 +80,11 @@ export function TechnicianTasksList({ initialTasks }: TechnicianTasksListProps) 
       return matchKeyword && matchTab;
     });
   }, [initialTasks, searchTerm, filterTab]);
+
+  // Display only the latest `limit` tasks on overview dashboard
+  const displayedTasks = useMemo(() => {
+    return limit ? filteredTasks.slice(0, limit) : filteredTasks;
+  }, [filteredTasks, limit]);
 
   // Clean empty state matching reference UI
   if (initialTasks.length === 0) {
@@ -172,7 +181,7 @@ export function TechnicianTasksList({ initialTasks }: TechnicianTasksListProps) 
       </div>
 
       {/* Task Cards List */}
-      {filteredTasks.length === 0 ? (
+      {displayedTasks.length === 0 ? (
         <div className="py-12 flex flex-col items-center justify-center text-center">
           <div className="h-12 w-12 rounded-full bg-[#F1F5F9] text-[#94A3B8] flex items-center justify-center mb-2">
             <Inbox className="h-5 w-5 stroke-[1.75]" />
@@ -183,7 +192,7 @@ export function TechnicianTasksList({ initialTasks }: TechnicianTasksListProps) 
         </div>
       ) : (
         <div className="space-y-4">
-          {filteredTasks.map((task) => {
+          {displayedTasks.map((task) => {
             const targetHours =
               task.priority === "CRITICAL"
                 ? 2
@@ -345,6 +354,15 @@ export function TechnicianTasksList({ initialTasks }: TechnicianTasksListProps) 
               </div>
             );
           })}
+
+          {/* Footer note when more tasks exist */}
+          {limit && filteredTasks.length > limit && (
+            <div className="pt-2 text-center border-t border-[#F1F5F9]">
+              <p className="text-[12px] text-[#64748B]">
+                Menampilkan {limit} tugas terakhir dari total {filteredTasks.length} tugas.
+              </p>
+            </div>
+          )}
         </div>
       )}
     </div>
