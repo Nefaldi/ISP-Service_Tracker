@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { assignTechnician } from "@/actions/ticket.actions";
 import { Button } from "@/components/ui/button";
-import { UserCheck, RefreshCw, X, ShieldAlert } from "lucide-react";
+import { X, ShieldAlert } from "lucide-react";
 
 export interface TechnicianOption {
   id: string;
@@ -79,15 +79,9 @@ export function AssignTechnicianDialog({
         }`}
       >
         {isReassign ? (
-          <>
-            <RefreshCw className="h-3.5 w-3.5 mr-1 text-[#475569]" />
-            <span>Ubah Teknisi</span>
-          </>
+          <span>Ubah Teknisi</span>
         ) : (
-          <>
-            <UserCheck className="h-3.5 w-3.5 mr-1" />
-            <span>Tugaskan</span>
-          </>
+          <span>Tugaskan</span>
         )}
       </Button>
 

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { startProgress, resolveTicket, uploadPhotoAction } from "@/actions/ticket.actions";
 import { Button } from "@/components/ui/button";
-import { Play, CheckCircle2, UploadCloud, X } from "lucide-react";
+import { UploadCloud, X } from "lucide-react";
 
 interface TechnicianActionsProps {
   ticketId: string;
@@ -131,7 +131,6 @@ export function TechnicianActions({ ticketId, status, onSuccess }: TechnicianAct
           isLoading={isLoading}
           className="h-[52px] bg-[#1D4ED8] hover:bg-[#1E40AF] text-white font-semibold rounded-[10px] cursor-pointer"
         >
-          <Play className="h-5 w-5 fill-current" />
           <span>Terima & Mulai Pengerjaan</span>
         </Button>
       )}
@@ -145,7 +144,6 @@ export function TechnicianActions({ ticketId, status, onSuccess }: TechnicianAct
             onClick={() => setShowResolveModal(true)}
             className="h-[52px] bg-[#1D4ED8] hover:bg-[#1E40AF] text-white font-semibold rounded-[10px] cursor-pointer"
           >
-            <CheckCircle2 className="h-5 w-5" />
             <span>Selesaikan Tugas (Tandai Selesai)</span>
           </Button>
 

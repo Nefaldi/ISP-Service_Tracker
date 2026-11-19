@@ -10,7 +10,7 @@ import {
   TechnicianOption,
 } from "@/components/forms/assign-technician-dialog";
 import { formatDateTime } from "@/lib/utils";
-import { Search, Download, ExternalLink } from "lucide-react";
+import { Search, Download } from "lucide-react";
 
 export interface TicketRow {
   id: string;
@@ -289,7 +289,6 @@ export function AdminTicketsTable({
                               className="h-[36px] text-[13px] border-[#CBD5E1] text-[#0F172A] hover:bg-[#F1F5F9]"
                             >
                               <span>Pantau</span>
-                              <ExternalLink className="h-3.5 w-3.5 ml-1 text-[#64748B]" />
                             </Button>
                           </Link>
                         </div>
@@ -301,7 +300,6 @@ export function AdminTicketsTable({
                             className="h-[36px] text-[13px] border-[#E2E8F0] text-[#0F172A] hover:bg-[#F1F5F9]"
                           >
                             <span>Pantau</span>
-                            <ExternalLink className="h-3.5 w-3.5 ml-1 text-[#64748B]" />
                           </Button>
                         </Link>
                       )}
