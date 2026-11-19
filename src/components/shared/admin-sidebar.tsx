@@ -79,6 +79,7 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
                 alt="Logo ZipNet"
                 width={70}
                 height={28}
+                style={{ width: "auto" }}
                 className="h-6 w-auto object-contain"
               />
             </div>

@@ -71,6 +71,7 @@ export function Navbar({ user }: NavbarProps) {
               alt="Logo ZipNet"
               width={140}
               height={44}
+              style={{ width: "auto" }}
               className="h-[40px] sm:h-[44px] w-auto object-contain"
               priority
             />

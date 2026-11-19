@@ -25,6 +25,7 @@ export default async function HomePage() {
               alt="Logo ZipNet"
               width={120}
               height={40}
+              style={{ width: "auto" }}
               className="h-9 w-auto object-contain"
             />
             <span className="h-6 w-[1px] bg-[#CBD5E1]" />
