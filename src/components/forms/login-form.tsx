@@ -41,11 +41,23 @@ export function LoginForm() {
 
       if (res?.error) {
         setErrorMessage(
-          "Gagal masuk. Periksa kembali email dan kata sandi Anda. Jika proyek Supabase sedang dijeda (inaktif), silakan klik 'Restore/Resume project' di dashboard Supabase."
+          "Gagal masuk. Periksa kembali email dan kata sandi Anda. Akun demo tersedia: admin@tracker.com, teknisi@tracker.com, customer@tracker.com."
         );
         setIsLoading(false);
       } else {
-        router.push(callbackUrl);
+        // Redirect directly to the appropriate dashboard
+        let target = callbackUrl;
+        if (!target || target === "/") {
+          const lowerEmail = email.toLowerCase();
+          if (lowerEmail.includes("admin")) {
+            target = "/admin";
+          } else if (lowerEmail.includes("teknisi")) {
+            target = "/technician";
+          } else {
+            target = "/customer";
+          }
+        }
+        router.push(target);
         router.refresh();
       }
     } catch (err) {

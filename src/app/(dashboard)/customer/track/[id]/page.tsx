@@ -21,7 +21,8 @@ interface TrackPageProps {
 }
 
 export default async function CustomerTrackTicketPage({ params }: TrackPageProps) {
-  const { id } = await params;
+  const resolvedParams = await params;
+  const id = resolvedParams.id;
 
   const ticket = await prisma.ticket.findUnique({
     where: { id },
