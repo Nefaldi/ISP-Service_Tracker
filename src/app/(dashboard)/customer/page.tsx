@@ -61,7 +61,7 @@ export default async function CustomerPortalPage() {
           {/* Ringkasan Laporan Card */}
           <ReportSummaryCard
             title="Ringkasan Laporan"
-            historyHref="/customer"
+            historyHref="/customer/reports"
             totalLabel="Total Laporan"
             totalCount={tickets.length}
             inProgressLabel="Sedang Diproses"

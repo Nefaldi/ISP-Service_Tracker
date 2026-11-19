@@ -486,10 +486,16 @@ export function CustomerTicketsList({
 
           {/* Footer note when more tickets exist */}
           {limit && filteredTickets.length > limit && (
-            <div className="pt-2 text-center border-t border-[#F1F5F9]">
+            <div className="pt-2 text-center border-t border-[#F1F5F9] flex flex-col sm:flex-row items-center justify-between gap-2">
               <p className="text-[12px] text-[#64748B]">
                 Menampilkan {limit} laporan terakhir dari total {filteredTickets.length} laporan.
               </p>
+              <Link
+                href="/customer/reports"
+                className="text-[12px] font-semibold text-[#1D4ED8] hover:underline"
+              >
+                Lihat Semua Laporan
+              </Link>
             </div>
           )}
         </div>
