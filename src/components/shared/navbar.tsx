@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { User } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { User, ArrowLeft } from "lucide-react";
 import { CreateTicketDialog } from "@/components/forms/create-ticket-dialog";
 
 interface NavbarProps {
@@ -14,6 +15,12 @@ interface NavbarProps {
 }
 
 export function Navbar({ user }: NavbarProps) {
+  const pathname = usePathname();
+  const isTechnicianTasks = pathname?.startsWith("/technician/tasks");
+  const isCustomerReports =
+    pathname?.startsWith("/customer/reports") ||
+    pathname?.startsWith("/customer/tickets");
+
   // Determine display role subtitle matching reference UI
   let roleSubtitle = "Civitas Akademik / Pelapor";
   if (user?.role === "TEKNISI") {
@@ -96,21 +103,41 @@ export function Navbar({ user }: NavbarProps) {
           {/* Action Button: "+ Buat Laporan" for customer, or Portal Link */}
           {user?.role === "CUSTOMER" ? (
             <div className="flex items-center gap-2">
-              <Link
-                href="/customer/reports"
-                className="h-[38px] px-3.5 rounded-[8px] border border-[#CBD5E1] bg-white text-[13px] font-semibold text-[#0F172A] hover:bg-[#F8FAFC] hover:border-[#94A3B8] transition-colors hidden sm:flex items-center"
-              >
-                <span>Daftar Laporan</span>
-              </Link>
+              {isCustomerReports ? (
+                <Link
+                  href="/customer"
+                  className="h-[38px] px-3.5 rounded-[8px] border border-[#CBD5E1] bg-white text-[13px] font-semibold text-[#0F172A] hover:bg-[#F8FAFC] hover:border-[#94A3B8] transition-colors flex items-center gap-1.5 shadow-2xs"
+                >
+                  <ArrowLeft className="h-4 w-4 text-[#64748B]" />
+                  <span>Kembali</span>
+                </Link>
+              ) : (
+                <Link
+                  href="/customer/reports"
+                  className="h-[38px] px-3.5 rounded-[8px] border border-[#CBD5E1] bg-white text-[13px] font-semibold text-[#0F172A] hover:bg-[#F8FAFC] hover:border-[#94A3B8] transition-colors hidden sm:flex items-center"
+                >
+                  <span>Daftar Laporan</span>
+                </Link>
+              )}
               <CreateTicketDialog buttonText="Buat Laporan" />
             </div>
           ) : user?.role === "TEKNISI" ? (
-            <Link
-              href="/technician/tasks"
-              className="h-[38px] px-3.5 rounded-[8px] bg-[#1D4ED8] hover:bg-[#1E40AF] text-white text-[13px] font-semibold flex items-center gap-1.5 shadow-xs transition-colors"
-            >
-              <span>Daftar Tugas</span>
-            </Link>
+            isTechnicianTasks ? (
+              <Link
+                href="/technician"
+                className="h-[38px] px-3.5 rounded-[8px] border border-[#CBD5E1] bg-white text-[13px] font-semibold text-[#0F172A] hover:bg-[#F8FAFC] hover:border-[#94A3B8] transition-colors flex items-center gap-1.5 shadow-2xs"
+              >
+                <ArrowLeft className="h-4 w-4 text-[#64748B]" />
+                <span>Kembali</span>
+              </Link>
+            ) : (
+              <Link
+                href="/technician/tasks"
+                className="h-[38px] px-3.5 rounded-[8px] bg-[#1D4ED8] hover:bg-[#1E40AF] text-white text-[13px] font-semibold flex items-center gap-1.5 shadow-xs transition-colors"
+              >
+                <span>Daftar Tugas</span>
+              </Link>
+            )
           ) : user?.role === "ADMIN" ? (
             <Link
               href="/admin"
