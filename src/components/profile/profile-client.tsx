@@ -79,7 +79,7 @@ export function ProfileClient({ user: initialUser }: ProfileClientProps) {
       case "CUSTOMER":
         return "Civitas Akademik / Pelapor";
       case "TEKNISI":
-        return "Teknisi Lapangan / Pelaksana";
+        return "Teknisi Lapangan";
       case "ADMIN":
         return "Administrator Sistem";
       default:

@@ -25,7 +25,7 @@ export function Navbar({ user }: NavbarProps) {
   // Determine display role subtitle matching reference UI
   let roleSubtitle = "Civitas Akademik / Pelapor";
   if (user?.role === "TEKNISI") {
-    roleSubtitle = "Teknisi Lapangan / Pelaksana";
+    roleSubtitle = "Teknisi Lapangan";
   } else if (user?.role === "ADMIN") {
     roleSubtitle = "Administrator Sistem";
   } else if (!user) {
