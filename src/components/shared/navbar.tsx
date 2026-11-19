@@ -54,25 +54,27 @@ export function Navbar({ user }: NavbarProps) {
   return (
     <header className="sticky top-0 z-40 border-b border-[#E2E8F0]/70 bg-white h-[68px] flex items-center px-4 sm:px-6">
       <div className="w-full max-w-[1120px] mx-auto flex items-center justify-between">
-        {/* Left: Campus Logo + Greeting + Role Subtitle */}
-        <div className="flex items-center gap-3">
+        {/* Left: Brand Logo + Greeting + Role Subtitle */}
+        <div className="flex items-center gap-3.5">
           <Link
             href={homeHref}
-            className="flex items-center shrink-0 hover:opacity-90 transition-opacity"
+            className="flex items-center shrink-0 hover:opacity-90 transition-opacity py-1"
             aria-label="Kembali ke Beranda"
           >
             <Image
-              src="/app-logo.png"
-              alt="Logo Universitas"
-              width={38}
-              height={38}
-              className="h-9 w-auto object-contain"
+              src="/logo-zipnet.png"
+              alt="Logo ZipNet"
+              width={140}
+              height={44}
+              className="h-[40px] sm:h-[44px] w-auto object-contain"
               priority
             />
           </Link>
 
+          <div className="hidden sm:block h-8 w-[1px] bg-[#E2E8F0]" />
+
           <div className="flex flex-col leading-tight">
-            <h1 className="text-[18px] sm:text-[20px] font-bold text-[#0B2A6F] tracking-tight">
+            <h1 className="text-[17px] sm:text-[19px] font-bold text-[#0B2A6F] tracking-tight">
               Halo, {displayName}
             </h1>
             <p className="text-[12px] sm:text-[13px] text-[#64748B]">

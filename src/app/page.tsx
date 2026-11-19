@@ -19,8 +19,15 @@ export default async function HomePage() {
       {/* Top Header */}
       <header className="border-b border-[#E2E8F0] bg-white h-[64px] flex items-center px-4 sm:px-6">
         <div className="w-full flex items-center justify-between max-w-6xl mx-auto">
-          <Link href="/" className="flex items-center gap-2.5 font-bold text-[18px] tracking-tight text-[#0B2A6F]">
-            <Image src="/Logo.jpeg" alt="Logo" width={32} height={32} className="h-8 w-8 rounded-lg object-contain" />
+          <Link href="/" className="flex items-center gap-3 font-bold text-[18px] tracking-tight text-[#0B2A6F]">
+            <Image
+              src="/logo-zipnet.png"
+              alt="Logo ZipNet"
+              width={120}
+              height={40}
+              className="h-9 w-auto object-contain"
+            />
+            <span className="h-6 w-[1px] bg-[#CBD5E1]" />
             <span>Service Tracker</span>
           </Link>
 

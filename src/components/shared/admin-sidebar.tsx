@@ -71,9 +71,17 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
     <div className="flex flex-col h-full justify-between p-4 bg-[#0B2A6F] text-white select-none">
       <div>
         {/* Brand / Logo */}
-        <div className="flex items-center justify-between pb-6 pt-2 px-2 border-b border-[#1E3A8A]">
-          <Link href="/admin" className="flex items-center gap-2.5">
-            <Image src="/Logo.jpeg" alt="Logo" width={32} height={32} className="h-8 w-8 rounded-[8px] object-cover shrink-0" />
+        <div className="flex items-center justify-between pb-5 pt-1 px-2 border-b border-[#1E3A8A]">
+          <Link href="/admin" className="flex items-center gap-3">
+            <div className="bg-white px-2 py-1 rounded-[8px] shadow-2xs flex items-center justify-center shrink-0">
+              <Image
+                src="/logo-zipnet.png"
+                alt="Logo ZipNet"
+                width={70}
+                height={28}
+                className="h-6 w-auto object-contain"
+              />
+            </div>
             <div>
               <span className="block text-[15px] font-bold tracking-tight text-white leading-tight">
                 Service Tracker

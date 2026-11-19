@@ -16,10 +16,18 @@ export default function LoginPage() {
         <div>
           <Link
             href="/"
-            className="inline-flex items-center gap-2.5 text-sm font-semibold tracking-wider text-[#BFDBFE] hover:text-white transition-colors"
+            className="inline-flex items-center gap-3 text-sm font-semibold tracking-wider text-[#BFDBFE] hover:text-white transition-colors"
           >
-            <Image src="/Logo.jpeg" alt="Logo" width={32} height={32} className="h-8 w-8 rounded-lg object-contain" />
-            <span>Service Tracker</span>
+            <div className="bg-white px-2 py-1 rounded-[8px] shadow-xs flex items-center justify-center">
+              <Image
+                src="/logo-zipnet.png"
+                alt="Logo ZipNet"
+                width={70}
+                height={28}
+                className="h-6 w-auto object-contain"
+              />
+            </div>
+            <span className="font-bold text-[16px] text-white">Service Tracker</span>
           </Link>
 
           <div className="mt-20 max-w-lg">

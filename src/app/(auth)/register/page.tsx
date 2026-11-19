@@ -12,9 +12,16 @@ export default function RegisterPage() {
       <div className="w-full max-w-[420px] mb-4">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-sm font-bold tracking-tight text-[#0B2A6F]"
+          className="inline-flex items-center gap-3 text-sm font-bold tracking-tight text-[#0B2A6F]"
         >
-          <Image src="/Logo.jpeg" alt="Logo" width={28} height={28} className="h-7 w-7 rounded-md object-contain" />
+          <Image
+            src="/logo-zipnet.png"
+            alt="Logo ZipNet"
+            width={100}
+            height={36}
+            className="h-8 w-auto object-contain"
+          />
+          <span className="h-5 w-[1px] bg-[#CBD5E1]" />
           <span>Service Tracker</span>
         </Link>
       </div>
