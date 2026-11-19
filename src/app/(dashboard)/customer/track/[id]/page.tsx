@@ -251,7 +251,7 @@ export default async function CustomerTrackTicketPage({ params }: TrackPageProps
                         rel="noopener noreferrer"
                         className="text-[13px] text-[#1D4ED8] hover:underline inline-block font-medium"
                       >
-                        Lihat Gambar Asli &rarr;
+                        Lihat Gambar Asli
                       </a>
                     </div>
                   ) : (
@@ -282,7 +282,7 @@ export default async function CustomerTrackTicketPage({ params }: TrackPageProps
                         rel="noopener noreferrer"
                         className="text-[13px] text-[#1D4ED8] hover:underline inline-block font-medium"
                       >
-                        Lihat Gambar Hasil Kerja &rarr;
+                        Lihat Gambar Hasil Kerja
                       </a>
                     </div>
                   ) : (

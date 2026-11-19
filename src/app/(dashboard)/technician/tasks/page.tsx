@@ -71,16 +71,16 @@ export default async function TechnicianTasksPage() {
         </p>
       </div>
 
-      <Card>
-        <CardHeader className="pb-3 border-b border-[#E2E8F0] mb-4">
-          <CardTitle className="text-[18px]">
-            Semua Tugas Lapangan ({tasks.length})
+      <Card className="border border-[#E2E8F0]/60 bg-white shadow-2xs rounded-[12px]">
+        <CardHeader className="px-5 pt-3.5 pb-2 border-b border-[#F1F5F9]">
+          <CardTitle className="text-[16px] font-bold text-[#0B2A6F] leading-snug">
+            Semua Tugas Lapangan
           </CardTitle>
-          <CardDescription className="text-[14px]">
+          <CardDescription className="text-[12px] text-[#64748B] mt-0.5">
             Gunakan filter status atau kotak pencarian untuk menemukan tiket dengan cepat
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-5 pb-5 pt-3">
           <TechnicianTasksList initialTasks={formattedTasks} />
         </CardContent>
       </Card>

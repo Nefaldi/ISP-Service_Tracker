@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { TechnicianTasksList } from "@/components/shared/technician-tasks-list";
@@ -110,10 +111,18 @@ export default async function TechnicianOverviewPage() {
           {/* Profil Teknisi */}
           <Card className="border border-[#E2E8F0]/60 bg-white shadow-2xs rounded-[12px]">
             <CardHeader className="py-2.5 px-4 border-b border-[#F1F5F9]">
-              <CardTitle className="text-[14px] font-bold text-[#0B2A6F] flex items-center gap-2">
-                <Wrench className="h-4 w-4 text-[#1D4ED8]" />
-                <span>Profil Pelaksana</span>
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-[14px] font-bold text-[#0B2A6F] flex items-center gap-2">
+                  <Wrench className="h-4 w-4 text-[#1D4ED8]" />
+                  <span>Profil Pelaksana</span>
+                </CardTitle>
+                <Link
+                  href="/technician/profile"
+                  className="text-[12px] font-medium text-[#1D4ED8] hover:underline"
+                >
+                  Kelola
+                </Link>
+              </div>
             </CardHeader>
             <CardContent className="p-3.5 space-y-3">
               <div className="flex items-center gap-3">
