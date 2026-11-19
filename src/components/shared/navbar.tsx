@@ -59,30 +59,8 @@ export function Navbar({ user }: NavbarProps) {
       ? "/technician/profile"
       : "/customer/profile";
 
-  const renderActionButtons = (isMobile = false) => {
+  const renderActionButtons = () => {
     if (user?.role === "CUSTOMER") {
-      if (isMobile) {
-        return (
-          <div className="w-full flex items-center gap-2">
-            {isCustomerSubpage && (
-              <Link
-                href="/customer"
-                className="h-[38px] px-3.5 rounded-[8px] border border-[#CBD5E1] bg-white text-[13px] font-semibold text-[#0F172A] hover:bg-[#F8FAFC] hover:border-[#94A3B8] transition-colors flex items-center gap-1.5 shadow-2xs shrink-0"
-              >
-                <ArrowLeft className="h-4 w-4 text-[#64748B]" />
-                <span>Kembali</span>
-              </Link>
-            )}
-            <div className="flex-1">
-              <CreateTicketDialog
-                buttonText="Buat Laporan"
-                className="w-full justify-center"
-              />
-            </div>
-          </div>
-        );
-      }
-
       return (
         <div className="flex items-center gap-2">
           {isCustomerSubpage && (
@@ -100,29 +78,6 @@ export function Navbar({ user }: NavbarProps) {
     }
 
     if (user?.role === "TEKNISI") {
-      if (isMobile) {
-        return (
-          <div className="w-full">
-            {isTechnicianSubpage ? (
-              <Link
-                href="/technician"
-                className="w-full h-[38px] px-3.5 rounded-[8px] border border-[#CBD5E1] bg-white text-[13px] font-semibold text-[#0F172A] hover:bg-[#F8FAFC] hover:border-[#94A3B8] transition-colors flex items-center justify-center gap-1.5 shadow-2xs"
-              >
-                <ArrowLeft className="h-4 w-4 text-[#64748B]" />
-                <span>Kembali</span>
-              </Link>
-            ) : (
-              <Link
-                href="/technician/tasks"
-                className="w-full h-[38px] px-3.5 rounded-[8px] bg-[#1D4ED8] hover:bg-[#1E40AF] text-white text-[13px] font-semibold flex items-center justify-center gap-1.5 shadow-xs transition-colors"
-              >
-                <span>Daftar Tugas</span>
-              </Link>
-            )}
-          </div>
-        );
-      }
-
       return isTechnicianSubpage ? (
         <Link
           href="/technician"
@@ -142,29 +97,6 @@ export function Navbar({ user }: NavbarProps) {
     }
 
     if (user?.role === "ADMIN") {
-      if (isMobile) {
-        return (
-          <div className="w-full">
-            {isAdminSubpage ? (
-              <Link
-                href="/admin"
-                className="w-full h-[38px] px-3.5 rounded-[8px] border border-[#CBD5E1] bg-white text-[13px] font-semibold text-[#0F172A] hover:bg-[#F8FAFC] hover:border-[#94A3B8] transition-colors flex items-center justify-center gap-1.5 shadow-2xs"
-              >
-                <ArrowLeft className="h-4 w-4 text-[#64748B]" />
-                <span>Kembali</span>
-              </Link>
-            ) : (
-              <Link
-                href="/admin/tickets"
-                className="w-full h-[38px] px-3.5 rounded-[8px] bg-[#1D4ED8] hover:bg-[#1E40AF] text-white text-[13px] font-semibold flex items-center justify-center shadow-xs transition-colors"
-              >
-                <span>Daftar Tiket</span>
-              </Link>
-            )}
-          </div>
-        );
-      }
-
       return isAdminSubpage ? (
         <Link
           href="/admin"
@@ -182,23 +114,11 @@ export function Navbar({ user }: NavbarProps) {
       );
     }
 
-    // Guest / Tanpa Sesi
-    if (isMobile) {
-      return (
-        <div className="w-full">
-          <CreateTicketDialog
-            buttonText="Buat Laporan"
-            className="w-full justify-center"
-          />
-        </div>
-      );
-    }
-
     return <CreateTicketDialog buttonText="Buat Laporan" />;
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[#E2E8F0]/70 bg-white">
+    <header className="border-b border-[#E2E8F0]/70 bg-white">
       {/* Top Bar: Brand Logo, Greeting & Profile Link */}
       <div className="h-[64px] sm:h-[68px] px-4 sm:px-6 flex items-center">
         <div className="w-full max-w-[1120px] mx-auto flex items-center justify-between">
@@ -254,16 +174,9 @@ export function Navbar({ user }: NavbarProps) {
 
             {/* Desktop Action Buttons */}
             <div className="hidden sm:flex items-center gap-2">
-              {renderActionButtons(false)}
+              {renderActionButtons()}
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Mobile Sub-Bar: Action Button directly below Navbar */}
-      <div className="sm:hidden border-t border-[#F1F5F9] bg-[#F8FAFC]/95 px-4 py-2">
-        <div className="w-full max-w-[1120px] mx-auto flex items-center">
-          {renderActionButtons(true)}
         </div>
       </div>
     </header>

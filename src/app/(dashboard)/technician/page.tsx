@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { TechnicianTasksList } from "@/components/shared/technician-tasks-list";
@@ -72,7 +73,7 @@ export default async function TechnicianOverviewPage() {
       {/* 2-Column Responsive Layout consistent with Customer Dashboard & Reference UI */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         {/* Left Column (Wide 2 spans): Tugas Terakhir Anda */}
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 space-y-4">
           <Card className="border border-[#E2E8F0]/60 bg-white shadow-2xs rounded-[12px] min-h-[460px]">
             <CardHeader className="px-5 pt-3.5 pb-2">
               <CardTitle className="text-[16px] font-bold text-[#0B2A6F] leading-snug">
@@ -86,6 +87,16 @@ export default async function TechnicianOverviewPage() {
               <TechnicianTasksList initialTasks={formattedTasks} limit={3} />
             </CardContent>
           </Card>
+
+          {/* Tombol Utama: Daftar Tugas (Di Bawah Container Utama) */}
+          <div className="flex items-center justify-start sm:justify-end">
+            <Link
+              href="/technician/tasks"
+              className="w-full sm:w-auto h-[40px] px-5 rounded-[8px] bg-[#1D4ED8] hover:bg-[#1E40AF] text-white text-[14px] font-semibold flex items-center justify-center gap-1.5 shadow-xs transition-colors"
+            >
+              <span>Daftar Tugas</span>
+            </Link>
+          </div>
         </div>
 
         {/* Right Column (1 span): Ringkasan Tugas & Peta Area Pengawasan */}

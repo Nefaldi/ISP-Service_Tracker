@@ -250,6 +250,16 @@ export default async function AdminDashboardPage() {
               />
             </CardContent>
           </Card>
+
+          {/* Tombol Utama: Daftar Tiket (Di Bawah Container Utama) */}
+          <div className="flex items-center justify-start sm:justify-end">
+            <Link
+              href="/admin/tickets"
+              className="w-full sm:w-auto h-[40px] px-5 rounded-[8px] bg-[#1D4ED8] hover:bg-[#1E40AF] text-white text-[14px] font-semibold flex items-center justify-center shadow-xs transition-colors"
+            >
+              <span>Daftar Tiket</span>
+            </Link>
+          </div>
         </div>
 
         {/* Kolom Kanan (1 Span): Ringkasan Tiket dan Peta Pengawasan */}

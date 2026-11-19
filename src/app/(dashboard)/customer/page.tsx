@@ -4,6 +4,7 @@ import { CustomerTicketsList } from "@/components/shared/customer-tickets-list";
 import { ReportSummaryCard } from "@/components/shared/report-summary-card";
 import { AreaMapCard } from "@/components/shared/area-map-card";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { CreateTicketDialog } from "@/components/forms/create-ticket-dialog";
 
 export const metadata = {
   title: "Portal Pelanggan - Service Tracker",
@@ -40,7 +41,7 @@ export default async function CustomerPortalPage() {
       {/* 2-Column Responsive Layout matching reference UI */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         {/* Left Column (Wide 2 spans): Laporan Terakhir Anda */}
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 space-y-4">
           <Card className="border border-[#E2E8F0]/60 bg-white shadow-2xs rounded-[12px] min-h-[460px]">
             <CardHeader className="px-5 pt-3.5 pb-2">
               <CardTitle className="text-[16px] font-bold text-[#0B2A6F] leading-snug">
@@ -54,6 +55,14 @@ export default async function CustomerPortalPage() {
               <CustomerTicketsList initialTickets={tickets} limit={3} />
             </CardContent>
           </Card>
+
+          {/* Tombol Utama: Buat Laporan (Di Bawah Container Utama) */}
+          <div className="flex items-center justify-start sm:justify-end">
+            <CreateTicketDialog
+              buttonText="Buat Laporan"
+              className="w-full sm:w-auto"
+            />
+          </div>
         </div>
 
         {/* Right Column (1 span): Ringkasan Laporan & Peta Area Pengawasan */}
