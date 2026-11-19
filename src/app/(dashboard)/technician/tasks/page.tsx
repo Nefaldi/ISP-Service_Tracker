@@ -17,13 +17,39 @@ export default async function TechnicianTasksPage() {
   const techId = dbUser?.id || session?.user?.id;
   const techName = session?.user?.name || "Teknisi";
 
+  const isTech = session?.user?.role === "TEKNISI";
+  const whereClause = isTech && techId ? { technicianId: techId } : {};
+
   const tasks = await prisma.ticket.findMany({
-    where: { technicianId: techId },
+    where: whereClause,
     include: {
       customer: { select: { name: true, phone: true } },
+      logs: {
+        where: { action: "ASSIGNED" },
+        orderBy: { createdAt: "desc" },
+        take: 1,
+        select: { notes: true, user: { select: { name: true } } },
+      },
     },
     orderBy: { createdAt: "desc" },
   });
+
+  const formattedTasks = tasks.map((task) => ({
+    id: task.id,
+    ticketNumber: task.ticketNumber,
+    title: task.title,
+    description: task.description,
+    status: task.status,
+    priority: task.priority,
+    category: task.category,
+    damagePhotoUrl: task.damagePhotoUrl,
+    resolvedPhotoUrl: task.resolvedPhotoUrl,
+    resolutionNotes: task.resolutionNotes,
+    createdAt: task.createdAt,
+    resolvedAt: task.resolvedAt,
+    customer: task.customer,
+    adminNotes: task.logs[0]?.notes || null,
+  }));
 
   return (
     <div className="space-y-4">
@@ -37,7 +63,7 @@ export default async function TechnicianTasksPage() {
         </h1>
       </div>
 
-      <TechnicianTasksList initialTasks={tasks} />
+      <TechnicianTasksList initialTasks={formattedTasks} />
     </div>
   );
 }

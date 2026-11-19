@@ -5,7 +5,10 @@ import Link from "next/link";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { AssignTechnicianDialog } from "@/components/forms/assign-technician-dialog";
+import {
+  AssignTechnicianDialog,
+  TechnicianOption,
+} from "@/components/forms/assign-technician-dialog";
 import { formatDateTime } from "@/lib/utils";
 import { Search, Download, ExternalLink } from "lucide-react";
 
@@ -37,12 +40,6 @@ export interface TicketRow {
     rating: number;
     comment?: string | null;
   } | null;
-}
-
-interface TechnicianOption {
-  id: string;
-  name: string;
-  email: string;
 }
 
 interface AdminTicketsTableProps {
@@ -273,7 +270,29 @@ export function AdminTicketsTable({
                           ticketTitle={ticket.title}
                           currentTechnicianId={ticket.technicianId}
                           technicians={technicians}
+                          isReassign={false}
                         />
+                      ) : ticket.status === "ASSIGNED" ? (
+                        <div className="flex items-center justify-end gap-1.5">
+                          <AssignTechnicianDialog
+                            ticketId={ticket.id}
+                            ticketNumber={ticket.ticketNumber}
+                            ticketTitle={ticket.title}
+                            currentTechnicianId={ticket.technicianId}
+                            technicians={technicians}
+                            isReassign={true}
+                          />
+                          <Link href={`/customer/track/${ticket.id}`}>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-[36px] text-[13px] border-[#CBD5E1] text-[#0F172A] hover:bg-[#F1F5F9]"
+                            >
+                              <span>Pantau</span>
+                              <ExternalLink className="h-3.5 w-3.5 ml-1 text-[#64748B]" />
+                            </Button>
+                          </Link>
+                        </div>
                       ) : (
                         <Link href={`/customer/track/${ticket.id}`}>
                           <Button
@@ -281,7 +300,7 @@ export function AdminTicketsTable({
                             variant="outline"
                             className="h-[36px] text-[13px] border-[#E2E8F0] text-[#0F172A] hover:bg-[#F1F5F9]"
                           >
-                            <span>Lihat</span>
+                            <span>Pantau</span>
                             <ExternalLink className="h-3.5 w-3.5 ml-1 text-[#64748B]" />
                           </Button>
                         </Link>

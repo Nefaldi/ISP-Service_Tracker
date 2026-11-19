@@ -113,6 +113,7 @@ export async function createTicket(formData: {
       timestamp: new Date().toISOString(),
     });
 
+    revalidatePath("/admin");
     revalidatePath("/admin/tickets");
     revalidatePath("/customer");
     return { success: true, data: ticket };
@@ -143,19 +144,38 @@ export async function assignTechnician(input: {
   const { ticketId, technicianId, notes } = parsed.data;
 
   try {
-    const existing = await prisma.ticket.findUnique({
-      where: { id: ticketId },
-      include: { customer: true },
-    });
+    const [existing, technician] = await Promise.all([
+      prisma.ticket.findUnique({
+        where: { id: ticketId },
+        include: { customer: true },
+      }),
+      prisma.user.findUnique({
+        where: { id: technicianId },
+        select: { id: true, name: true, role: true },
+      }),
+    ]);
 
     if (!existing) {
       return { success: false, error: "Tiket tidak ditemukan." };
     }
 
+    if (existing.status === "CLOSED") {
+      return { success: false, error: "Tiket yang sudah ditutup tidak dapat ditugaskan ulang." };
+    }
+
+    if (!technician || technician.role !== "TEKNISI") {
+      return { success: false, error: "Teknisi yang dipilih tidak valid." };
+    }
+
     const previousStatus = existing.status;
     const newStatus: TicketStatus = "ASSIGNED";
-
     const effectiveAdminId = await getEffectiveUserId(session);
+    const adminName = session.user.name || "Admin Helpdesk";
+
+    const logNotes = notes?.trim()
+      ? `Ditugaskan kepada ${technician.name} oleh ${adminName}. Instruksi: ${notes.trim()}`
+      : `Ditugaskan kepada ${technician.name} oleh ${adminName}.`;
+
     const updated = await prisma.ticket.update({
       where: { id: ticketId },
       data: {
@@ -167,7 +187,7 @@ export async function assignTechnician(input: {
             action: "ASSIGNED",
             previousStatus,
             newStatus,
-            notes: notes || `Ditugaskan kepada teknisi oleh ${session.user.name}`,
+            notes: logNotes,
           },
         },
       },
@@ -182,12 +202,15 @@ export async function assignTechnician(input: {
       previousStatus,
       technicianId,
       customerId: updated.customerId,
-      message: `Tiket #${updated.ticketNumber} telah ditugaskan kepada teknisi.`,
+      message: `Tiket #${updated.ticketNumber} telah ditugaskan kepada teknisi ${technician.name}.`,
       timestamp: new Date().toISOString(),
     });
 
+    revalidatePath("/admin");
     revalidatePath("/admin/tickets");
+    revalidatePath("/technician");
     revalidatePath("/technician/tasks");
+    revalidatePath("/customer");
     revalidatePath(`/customer/track/${ticketId}`);
     return { success: true, data: updated };
   } catch (error) {
@@ -209,27 +232,37 @@ export async function startProgress(ticketId: string) {
     const existing = await prisma.ticket.findUnique({ where: { id: ticketId } });
     if (!existing) return { success: false, error: "Tiket tidak ditemukan." };
 
+    const effectiveTechId = await getEffectiveUserId(session);
+    if (
+      session.user.role === "TEKNISI" &&
+      existing.technicianId &&
+      existing.technicianId !== effectiveTechId &&
+      existing.technicianId !== session.user.id
+    ) {
+      return { success: false, error: "Tiket ini ditugaskan ke teknisi lain." };
+    }
+
     const previousStatus = existing.status;
     const newStatus: TicketStatus = "IN_PROGRESS";
 
-    const effectiveTechId = await getEffectiveUserId(session);
     const updated = await prisma.ticket.update({
       where: { id: ticketId },
       data: {
         status: newStatus,
+        technicianId: existing.technicianId || effectiveTechId,
         logs: {
           create: {
             userId: effectiveTechId,
-            action: "STATUS_CHANGE",
+            action: "IN_PROGRESS",
             previousStatus,
             newStatus,
-            notes: "Teknisi sedang dalam perjalanan / mengerjakan perbaikan.",
+            notes: "Teknisi telah menerima penugasan dan memulai pengerjaan perbaikan di lokasi.",
           },
         },
       },
     });
 
-    // Instant SSE update to Customer Live Tracker
+    // Instant SSE update to Customer Live Tracker & Admin
     sseBroker.broadcast("ticket:status_change", {
       ticketId: updated.id,
       ticketNumber: updated.ticketNumber,
@@ -237,11 +270,15 @@ export async function startProgress(ticketId: string) {
       previousStatus,
       customerId: updated.customerId,
       technicianId: updated.technicianId,
-      message: `Status pengerjaan tiket #${updated.ticketNumber} berubah menjadi In Progress.`,
+      message: `Pengerjaan tiket #${updated.ticketNumber} telah dimulai oleh teknisi.`,
       timestamp: new Date().toISOString(),
     });
 
+    revalidatePath("/technician");
     revalidatePath("/technician/tasks");
+    revalidatePath("/admin");
+    revalidatePath("/admin/tickets");
+    revalidatePath("/customer");
     revalidatePath(`/customer/track/${ticketId}`);
     return { success: true, data: updated };
   } catch (error) {
@@ -274,10 +311,19 @@ export async function resolveTicket(input: {
     const existing = await prisma.ticket.findUnique({ where: { id: ticketId } });
     if (!existing) return { success: false, error: "Tiket tidak ditemukan." };
 
+    const effectiveTechId = await getEffectiveUserId(session);
+    if (
+      session.user.role === "TEKNISI" &&
+      existing.technicianId &&
+      existing.technicianId !== effectiveTechId &&
+      existing.technicianId !== session.user.id
+    ) {
+      return { success: false, error: "Tiket ini ditugaskan ke teknisi lain." };
+    }
+
     const previousStatus = existing.status;
     const newStatus: TicketStatus = "RESOLVED";
 
-    const effectiveTechId = await getEffectiveUserId(session);
     const updated = await prisma.ticket.update({
       where: { id: ticketId },
       data: {
@@ -291,7 +337,7 @@ export async function resolveTicket(input: {
             action: "RESOLVED",
             previousStatus,
             newStatus,
-            notes: `Tiket diselesaikan: ${resolutionNotes}`,
+            notes: `Perbaikan selesai: ${resolutionNotes}`,
           },
         },
       },
@@ -305,13 +351,17 @@ export async function resolveTicket(input: {
       previousStatus,
       customerId: updated.customerId,
       technicianId: updated.technicianId,
-      message: `Pekerjaan tiket #${updated.ticketNumber} telah diselesaikan oleh teknisi.`,
+      message: `Pekerjaan tiket #${updated.ticketNumber} telah diselesaikan oleh teknisi. Menunggu verifikasi pelanggan.`,
       timestamp: new Date().toISOString(),
     });
 
+    revalidatePath("/technician");
     revalidatePath("/technician/tasks");
-    revalidatePath(`/customer/track/${ticketId}`);
+    revalidatePath("/admin");
     revalidatePath("/admin/tickets");
+    revalidatePath("/admin/reports");
+    revalidatePath("/customer");
+    revalidatePath(`/customer/track/${ticketId}`);
     return { success: true, data: updated };
   } catch (error) {
     console.error("resolveTicket error:", error);
@@ -401,8 +451,13 @@ export async function closeTicketAndReview(input: {
       timestamp: new Date().toISOString(),
     });
 
+    revalidatePath("/customer");
     revalidatePath(`/customer/track/${ticketId}`);
+    revalidatePath("/admin");
     revalidatePath("/admin/tickets");
+    revalidatePath("/admin/reports");
+    revalidatePath("/technician");
+    revalidatePath("/technician/tasks");
     return { success: true, data: updated };
   } catch (error) {
     console.error("closeTicketAndReview error:", error);

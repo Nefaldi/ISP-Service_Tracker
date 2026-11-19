@@ -19,22 +19,27 @@ export default async function TechnicianOverviewPage() {
     : null;
   const techId = dbUser?.id || session?.user?.id;
   const techName = session?.user?.name || "Teknisi";
+  const isTech = session?.user?.role === "TEKNISI";
 
   const [assignedCount, inProgressCount, completedCount, activeTasks] = await Promise.all([
     prisma.ticket.count({
-      where: { technicianId: techId, status: "ASSIGNED" },
+      where: isTech && techId ? { technicianId: techId, status: "ASSIGNED" } : { status: "ASSIGNED" },
     }),
     prisma.ticket.count({
-      where: { technicianId: techId, status: "IN_PROGRESS" },
+      where: isTech && techId ? { technicianId: techId, status: "IN_PROGRESS" } : { status: "IN_PROGRESS" },
     }),
     prisma.ticket.count({
-      where: { technicianId: techId, status: { in: ["RESOLVED", "CLOSED"] } },
+      where: isTech && techId
+        ? { technicianId: techId, status: { in: ["RESOLVED", "CLOSED"] } }
+        : { status: { in: ["RESOLVED", "CLOSED"] } },
     }),
     prisma.ticket.findMany({
-      where: {
-        technicianId: techId,
-        status: { in: ["ASSIGNED", "IN_PROGRESS"] },
-      },
+      where: isTech && techId
+        ? {
+            technicianId: techId,
+            status: { in: ["ASSIGNED", "IN_PROGRESS"] },
+          }
+        : { status: { in: ["ASSIGNED", "IN_PROGRESS"] } },
       include: {
         customer: { select: { name: true, phone: true } },
       },

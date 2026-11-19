@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge } from "@/components/shared/status-badge";
@@ -20,8 +21,29 @@ interface TrackPageProps {
   params: Promise<{ id: string }>;
 }
 
+function formatLogAction(action: string): string {
+  switch (action) {
+    case "CREATED":
+      return "Tiket Pelaporan Dibuat";
+    case "ASSIGNED":
+      return "Teknisi Ditugaskan";
+    case "IN_PROGRESS":
+    case "STATUS_CHANGE":
+      return "Pengerjaan Dimulai di Lapangan";
+    case "RESOLVED":
+      return "Perbaikan Diselesaikan";
+    case "CLOSED":
+      return "Tiket Ditutup & Ulasan Diberikan";
+    default:
+      return action;
+  }
+}
+
 export default async function CustomerTrackTicketPage({ params }: TrackPageProps) {
-  const resolvedParams = await params;
+  const [resolvedParams, session] = await Promise.all([
+    params,
+    auth(),
+  ]);
   const id = resolvedParams.id;
 
   const ticket = await prisma.ticket.findUnique({
@@ -40,6 +62,20 @@ export default async function CustomerTrackTicketPage({ params }: TrackPageProps
   if (!ticket) {
     notFound();
   }
+
+  const role = session?.user?.role;
+  const backHref =
+    role === "ADMIN"
+      ? "/admin/tickets"
+      : role === "TEKNISI"
+      ? "/technician/tasks"
+      : "/customer";
+  const backLabel =
+    role === "ADMIN"
+      ? "Kembali ke Manajemen Tiket"
+      : role === "TEKNISI"
+      ? "Kembali ke Daftar Tugas"
+      : "Kembali ke Portal Pelanggan";
 
   // SLA Calculation
   // Standard target: CRITICAL=2h, HIGH=4h, MEDIUM=8h, LOW=24h
@@ -74,11 +110,11 @@ export default async function CustomerTrackTicketPage({ params }: TrackPageProps
       {/* 2. Judul Tiket (UI_CONTEXT 4.2) */}
       <div>
         <Link
-          href="/customer"
-          className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#475569] hover:text-[#0F172A] mb-3"
+          href={backHref}
+          className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#475569] hover:text-[#0F172A] mb-3 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
-          <span>Kembali ke Portal Pelanggan</span>
+          <span>{backLabel}</span>
         </Link>
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -96,13 +132,29 @@ export default async function CustomerTrackTicketPage({ params }: TrackPageProps
           </div>
 
           <div>
-            <Link
-              href="/customer"
-              className="h-[40px] px-4 rounded-[8px] border border-[#94A3B8] text-[#0F172A] hover:bg-[#F1F5F9] text-[14px] font-medium inline-flex items-center gap-1.5 transition-colors"
-            >
-              <Plus className="h-4 w-4" />
-              <span>+ Buat tiket baru</span>
-            </Link>
+            {role === "ADMIN" ? (
+              <Link
+                href="/admin/tickets"
+                className="h-[40px] px-4 rounded-[8px] border border-[#94A3B8] text-[#0F172A] hover:bg-[#F1F5F9] text-[14px] font-medium inline-flex items-center gap-1.5 transition-colors"
+              >
+                <span>Semua Tiket</span>
+              </Link>
+            ) : role === "TEKNISI" ? (
+              <Link
+                href="/technician/tasks"
+                className="h-[40px] px-4 rounded-[8px] border border-[#94A3B8] text-[#0F172A] hover:bg-[#F1F5F9] text-[14px] font-medium inline-flex items-center gap-1.5 transition-colors"
+              >
+                <span>Daftar Tugas</span>
+              </Link>
+            ) : (
+              <Link
+                href="/customer"
+                className="h-[40px] px-4 rounded-[8px] border border-[#94A3B8] text-[#0F172A] hover:bg-[#F1F5F9] text-[14px] font-medium inline-flex items-center gap-1.5 transition-colors"
+              >
+                <Plus className="h-4 w-4" />
+                <span>+ Buat tiket baru</span>
+              </Link>
+            )}
           </div>
         </div>
       </div>
@@ -132,7 +184,7 @@ export default async function CustomerTrackTicketPage({ params }: TrackPageProps
                       <div className="absolute -left-6 top-1.5 h-3.5 w-3.5 rounded-full bg-[#1D4ED8] ring-4 ring-white" />
                       <div>
                         <h4 className="text-[15px] font-semibold text-[#0F172A]">
-                          {log.action}
+                          {formatLogAction(log.action)}
                         </h4>
                         <p className="text-[13px] text-[#475569] mt-0.5">
                           {formatDateTime(log.createdAt)} &bull; Oleh {log.user.name} ({log.user.role})

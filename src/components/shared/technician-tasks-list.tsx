@@ -10,6 +10,8 @@ import {
   Clock,
   CheckCircle2,
   AlertTriangle,
+  ImageIcon,
+  FileText,
 } from "lucide-react";
 
 export interface TechTaskItem {
@@ -23,6 +25,7 @@ export interface TechTaskItem {
   damagePhotoUrl?: string | null;
   resolvedPhotoUrl?: string | null;
   resolutionNotes?: string | null;
+  adminNotes?: string | null;
   createdAt: string | Date;
   resolvedAt?: string | Date | null;
   customer: {
@@ -167,6 +170,56 @@ export function TechnicianTasksList({ initialTasks }: TechnicianTasksListProps) 
                     {task.description}
                   </p>
                 </div>
+
+                {/* Instruksi Admin jika ada */}
+                {task.adminNotes && (
+                  <div className="p-3 rounded-[8px] bg-[#EFF6FF] border border-[#BFDBFE] text-xs space-y-1">
+                    <span className="font-semibold text-[#1D4ED8] flex items-center gap-1.5">
+                      <FileText className="h-3.5 w-3.5" />
+                      <span>Instruksi Helpdesk Admin:</span>
+                    </span>
+                    <p className="text-[#0F172A] font-medium pl-5">{task.adminNotes}</p>
+                  </div>
+                )}
+
+                {/* Foto Kerusakan dari Pelanggan jika ada */}
+                {task.damagePhotoUrl && (
+                  <div className="p-3 rounded-[8px] bg-[#F8FAFC] border border-[#E2E8F0] space-y-2">
+                    <span className="text-xs font-semibold text-[#475569] flex items-center gap-1.5">
+                      <ImageIcon className="h-3.5 w-3.5 text-[#1D4ED8]" />
+                      <span>Foto Bukti Kerusakan dari Pelanggan:</span>
+                    </span>
+                    <div className="flex items-center gap-3">
+                      <div className="h-14 w-20 rounded-[6px] overflow-hidden border border-[#CBD5E1] bg-[#F1F5F9] shrink-0">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={task.damagePhotoUrl}
+                          alt="Foto Kerusakan"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <a
+                        href={task.damagePhotoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs font-semibold text-[#1D4ED8] hover:underline"
+                      >
+                        Buka Foto Lengkap &rarr;
+                      </a>
+                    </div>
+                  </div>
+                )}
+
+                {/* Catatan Penyelesaian jika tiket sudah RESOLVED / CLOSED */}
+                {(task.status === "RESOLVED" || task.status === "CLOSED") && task.resolutionNotes && (
+                  <div className="p-3 rounded-[8px] bg-[#F0FDF4] border border-[#A7F3D0] text-xs space-y-1">
+                    <span className="font-semibold text-[#065F46] flex items-center gap-1.5">
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                      <span>Catatan Penyelesaian Anda:</span>
+                    </span>
+                    <p className="text-[#0F172A] pl-5">{task.resolutionNotes}</p>
+                  </div>
+                )}
 
                 {/* Pelanggan & Kontak WhatsApp/Telepon */}
                 <div className="pt-2 border-t border-[#E2E8F0] space-y-2">

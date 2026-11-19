@@ -78,10 +78,10 @@ export function TechnicianActions({ ticketId, status }: TechnicianActionsProps) 
           size="mobile-action"
           onClick={handleStart}
           isLoading={isLoading}
-          className="h-[52px] bg-[#1D4ED8] hover:bg-[#1E40AF] text-white font-semibold rounded-[10px]"
+          className="h-[52px] bg-[#1D4ED8] hover:bg-[#1E40AF] text-white font-semibold rounded-[10px] cursor-pointer"
         >
           <Play className="h-5 w-5 fill-current" />
-          <span>Mulai Pengerjaan</span>
+          <span>Terima & Mulai Pengerjaan</span>
         </Button>
       )}
 
@@ -92,10 +92,10 @@ export function TechnicianActions({ ticketId, status }: TechnicianActionsProps) 
             variant="success"
             size="mobile-action"
             onClick={() => setShowResolveModal(true)}
-            className="h-[52px] bg-[#047857] hover:bg-[#065F46] text-white font-semibold rounded-[10px]"
+            className="h-[52px] bg-[#047857] hover:bg-[#065F46] text-white font-semibold rounded-[10px] cursor-pointer"
           >
             <CheckCircle2 className="h-5 w-5" />
-            <span>Tandai Selesai (Resolved)</span>
+            <span>Selesaikan Tugas (Tandai Selesai)</span>
           </Button>
 
           {showResolveModal && (
@@ -107,7 +107,7 @@ export function TechnicianActions({ ticketId, status }: TechnicianActionsProps) 
               <div className="w-full max-w-md rounded-[12px] bg-white border border-[#E2E8F0] p-6 shadow-2xl text-[#0F172A]">
                 <div className="flex items-center justify-between pb-3 border-b border-[#E2E8F0]">
                   <h3 className="text-[18px] font-semibold text-[#0F172A]">
-                    Bukti Pengerjaan & Selesai
+                    Penyelesaian Tugas Lapangan
                   </h3>
                   <button
                     type="button"
@@ -126,14 +126,14 @@ export function TechnicianActions({ ticketId, status }: TechnicianActionsProps) 
                       htmlFor="tech-notes"
                       className="block text-[14px] font-medium text-[#0F172A] mb-1.5"
                     >
-                      Catatan Teknis
+                      Catatan Tindakan Teknis
                     </label>
                     <textarea
                       id="tech-notes"
                       required
                       value={resolutionNotes}
                       onChange={(e) => setResolutionNotes(e.target.value)}
-                      placeholder="Contoh: Penggantian drop core 15m dan konfigurasi ulang redaman optik..."
+                      placeholder="Contoh: Penggantian drop core 15m dan konfigurasi ulang redaman optik ke -18 dBm..."
                       className="w-full h-[88px] resize-none px-3.5 py-2.5 rounded-[8px] border border-[#94A3B8] bg-white text-[14px] text-[#0F172A] placeholder:text-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#047857]"
                     />
                   </div>
@@ -144,7 +144,7 @@ export function TechnicianActions({ ticketId, status }: TechnicianActionsProps) 
                       htmlFor="tech-proof-photo"
                       className="block text-[14px] font-medium text-[#0F172A] mb-1.5"
                     >
-                      Foto Bukti Hasil Kerja
+                      Foto Bukti Hasil Kerja (Opsional)
                     </label>
 
                     <div className="relative h-[96px] border-2 border-dashed border-[#94A3B8] rounded-[8px] flex flex-col items-center justify-center text-center hover:border-[#047857] transition-colors bg-[#F8FAFC]">
@@ -196,9 +196,9 @@ export function TechnicianActions({ ticketId, status }: TechnicianActionsProps) 
                       variant="success"
                       size="mobile-action"
                       isLoading={isLoading}
-                      className="h-[52px] bg-[#047857] hover:bg-[#065F46] text-white font-semibold rounded-[10px]"
+                      className="h-[52px] bg-[#047857] hover:bg-[#065F46] text-white font-semibold rounded-[10px] cursor-pointer"
                     >
-                      Tandai Selesai (Resolved)
+                      Konfirmasi & Selesaikan Tugas
                     </Button>
                   </div>
                 </form>

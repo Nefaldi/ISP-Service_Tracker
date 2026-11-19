@@ -42,10 +42,27 @@ export default async function AdminDashboardPage() {
     }),
     prisma.user.findMany({
       where: { role: "TEKNISI" },
-      select: { id: true, name: true, email: true },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        assignedTickets: {
+          where: { status: { in: ["ASSIGNED", "IN_PROGRESS"] } },
+          select: { id: true },
+        },
+      },
       orderBy: { name: "asc" },
     }),
   ]);
+
+  const technicianOptions = technicians.map((t) => ({
+    id: t.id,
+    name: t.name,
+    email: t.email,
+    phone: t.phone,
+    activeTaskCount: t.assignedTickets ? t.assignedTickets.length : 0,
+  }));
 
   // SLA Warning Count: tickets open/in_progress older than 4 hours
   const fourHoursAgo = getFourHoursAgo();
@@ -261,15 +278,36 @@ export default async function AdminDashboardPage() {
                             ticketNumber={ticket.ticketNumber}
                             ticketTitle={ticket.title}
                             currentTechnicianId={ticket.technicianId}
-                            technicians={technicians}
+                            technicians={technicianOptions}
+                            isReassign={false}
                           />
+                        ) : ticket.status === "ASSIGNED" ? (
+                          <div className="flex items-center justify-end gap-1.5">
+                            <AssignTechnicianDialog
+                              ticketId={ticket.id}
+                              ticketNumber={ticket.ticketNumber}
+                              ticketTitle={ticket.title}
+                              currentTechnicianId={ticket.technicianId}
+                              technicians={technicianOptions}
+                              isReassign={true}
+                            />
+                            <Link href={`/customer/track/${ticket.id}`}>
+                              <button
+                                type="button"
+                                className="h-[36px] px-3 rounded-[8px] border border-[#CBD5E1] text-[#0F172A] text-[13px] font-medium hover:bg-[#F1F5F9] inline-flex items-center gap-1 cursor-pointer"
+                              >
+                                <span>Pantau</span>
+                                <ExternalLink className="h-3.5 w-3.5 text-[#64748B]" />
+                              </button>
+                            </Link>
+                          </div>
                         ) : (
                           <Link href={`/customer/track/${ticket.id}`}>
                             <button
                               type="button"
-                              className="h-[36px] px-3.5 rounded-[8px] border border-[#E2E8F0] text-[#0F172A] text-[13px] font-medium hover:bg-[#F1F5F9] inline-flex items-center gap-1"
+                              className="h-[36px] px-3.5 rounded-[8px] border border-[#E2E8F0] text-[#0F172A] text-[13px] font-medium hover:bg-[#F1F5F9] inline-flex items-center gap-1 cursor-pointer"
                             >
-                              <span>Lihat</span>
+                              <span>Pantau</span>
                               <ExternalLink className="h-3.5 w-3.5 text-[#64748B]" />
                             </button>
                           </Link>

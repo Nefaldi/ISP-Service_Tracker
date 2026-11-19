@@ -19,10 +19,27 @@ export default async function AdminTicketsPage() {
     }),
     prisma.user.findMany({
       where: { role: "TEKNISI" },
-      select: { id: true, name: true, email: true },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        assignedTickets: {
+          where: { status: { in: ["ASSIGNED", "IN_PROGRESS"] } },
+          select: { id: true },
+        },
+      },
       orderBy: { name: "asc" },
     }),
   ]);
+
+  const technicianOptions = technicians.map((t) => ({
+    id: t.id,
+    name: t.name,
+    email: t.email,
+    phone: t.phone,
+    activeTaskCount: t.assignedTickets ? t.assignedTickets.length : 0,
+  }));
 
   return (
     <div className="space-y-6">
@@ -42,7 +59,7 @@ export default async function AdminTicketsPage() {
         </p>
       </div>
 
-      <AdminTicketsTable initialTickets={tickets} technicians={technicians} />
+      <AdminTicketsTable initialTickets={tickets} technicians={technicianOptions} />
     </div>
   );
 }
