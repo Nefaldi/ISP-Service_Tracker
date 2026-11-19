@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import Link from "next/link";
 import Image from "next/image";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { Badge } from "@/components/ui/badge";
@@ -17,7 +16,6 @@ import {
   MessageSquare,
   Clock,
   FileText,
-  Activity,
   CheckCircle2,
 } from "lucide-react";
 
@@ -551,32 +549,6 @@ export function TechnicianTasksList({
                             <TechnicianActions ticketId={task.id} status={task.status} />
                           </div>
                         </div>
-                      </div>
-                    </div>
-
-                    {/* 3. Action Banner Live Tracker */}
-                    <div className="pt-3 border-t border-[#F1F5F9]">
-                      <div className="rounded-[10px] bg-white border border-[#BFDBFE] p-3 sm:p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <div className="h-9 w-9 rounded-full bg-[#EFF6FF] text-[#1D4ED8] flex items-center justify-center shrink-0 border border-[#DBEAFE]">
-                            <Activity className="h-4 w-4" />
-                          </div>
-                          <div className="min-w-0">
-                            <h5 className="text-[13px] font-bold text-[#0F172A] leading-snug">
-                              Live Tracker & Status Real-Time
-                            </h5>
-                            <p className="text-[11px] text-[#64748B] truncate">
-                              Lihat riwayat koordinasi, log aktivitas teknisi, dan pembaruan real-time
-                            </p>
-                          </div>
-                        </div>
-
-                        <Link
-                          href={`/customer/track/${task.id}`}
-                          className="h-[36px] px-4 rounded-[8px] bg-[#1D4ED8] hover:bg-[#1E40AF] text-white text-[12px] font-semibold flex items-center justify-center transition-colors shrink-0 shadow-xs"
-                        >
-                          <span>Buka Live Tracker</span>
-                        </Link>
                       </div>
                     </div>
                   </div>
