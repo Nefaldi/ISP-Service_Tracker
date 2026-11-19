@@ -119,15 +119,6 @@ export default async function AdminDashboardPage() {
         <div className="lg:col-span-2 space-y-6">
           {/* Pusat Fitur & Akses Cepat Admin */}
           <div>
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-[15px] font-bold text-[#0B2A6F]">
-                Fitur Manajemen Sistem
-              </h2>
-              <span className="text-[12px] text-[#64748B]">
-                Akses cepat seluruh modul helpdesk
-              </span>
-            </div>
-
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {/* Modul 1: Manajemen Tiket */}
               <Link
