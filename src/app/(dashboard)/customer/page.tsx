@@ -72,7 +72,7 @@ export default async function CustomerPortalPage() {
 
           {/* Peta Area Pengawasan Card */}
           <AreaMapCard
-            locationTag="Fakultas Teknik"
+            locationTag="Update 15 Jan 2026"
           />
         </div>
       </div>

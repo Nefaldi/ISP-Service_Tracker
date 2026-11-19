@@ -104,7 +104,7 @@ export default async function TechnicianOverviewPage() {
 
           {/* Peta Area Pengawasan */}
           <AreaMapCard
-            locationTag="Fakultas Teknik"
+            locationTag="Update 15 Jan 2026"
           />
 
           {/* Profil Teknisi */}
