@@ -92,7 +92,7 @@ export function TechnicianTasksList({
   return (
     <div className="space-y-4">
       {/* Search and Tabs Toolbar (Consistent with Customer Tickets List) */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-3 border-b border-[#E2E8F0]">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-3 border-b border-[#F1F5F9]">
         <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
           <button
             type="button"
@@ -163,7 +163,7 @@ export function TechnicianTasksList({
             placeholder="Cari tiket atau pelanggan..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full h-[36px] pl-9 pr-3 rounded-[8px] border border-[#94A3B8] bg-white text-[13px] text-[#0F172A] placeholder:text-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#1D4ED8]"
+            className="w-full h-[36px] pl-9 pr-3 rounded-[8px] border border-[#CBD5E1] bg-white text-[13px] text-[#0F172A] placeholder:text-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#1D4ED8]"
           />
         </div>
       </div>
@@ -202,7 +202,7 @@ export function TechnicianTasksList({
             return (
               <div
                 key={task.id}
-                className="rounded-[12px] border border-[#E2E8F0] bg-white p-4 sm:p-5 space-y-4 hover:border-[#1D4ED8] hover:shadow-xs transition-all"
+                className="rounded-[12px] border border-[#E2E8F0]/60 bg-white p-4 sm:p-5 space-y-4 shadow-2xs hover:border-[#1D4ED8] transition-all"
               >
                 {/* Header: Kode tiket + StatusBadge + Priority + Link */}
                 <div className="flex flex-wrap items-center justify-between gap-2">

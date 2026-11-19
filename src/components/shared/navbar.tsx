@@ -57,7 +57,7 @@ export function Navbar({ user }: NavbarProps) {
       : "/customer";
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[#E2E8F0] bg-white h-[68px] flex items-center px-4 sm:px-6">
+    <header className="sticky top-0 z-40 border-b border-[#E2E8F0]/70 bg-white h-[68px] flex items-center px-4 sm:px-6">
       <div className="w-full max-w-[1120px] mx-auto flex items-center justify-between">
         {/* Left: Campus Logo + Greeting + Role Subtitle */}
         <div className="flex items-center gap-3">

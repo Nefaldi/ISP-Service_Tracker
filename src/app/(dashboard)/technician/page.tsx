@@ -73,7 +73,7 @@ export default async function TechnicianOverviewPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         {/* Left Column (Wide 2 spans): Tugas Terakhir Anda */}
         <div className="lg:col-span-2">
-          <Card className="border border-[#E2E8F0] bg-white shadow-xs rounded-[12px] min-h-[460px]">
+          <Card className="border border-[#E2E8F0]/60 bg-white shadow-2xs rounded-[12px] min-h-[460px]">
             <CardHeader className="p-5 pb-3">
               <CardTitle className="text-[17px] font-bold text-[#064E3B]">
                 Tugas Terakhir Anda

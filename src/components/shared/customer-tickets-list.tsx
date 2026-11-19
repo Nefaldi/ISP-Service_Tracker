@@ -126,7 +126,7 @@ export function CustomerTicketsList({
   return (
     <div className="space-y-4">
       {/* Search and Tabs Filter */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-3 border-b border-[#E2E8F0]">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-3 border-b border-[#F1F5F9]">
         <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
           <button
             type="button"
@@ -171,7 +171,7 @@ export function CustomerTicketsList({
             placeholder="Cari nomor atau judul tiket..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full h-[36px] pl-9 pr-3 rounded-[8px] border border-[#94A3B8] bg-white text-[13px] text-[#0F172A] placeholder:text-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#1D4ED8]"
+            className="w-full h-[36px] pl-9 pr-3 rounded-[8px] border border-[#CBD5E1] bg-white text-[13px] text-[#0F172A] placeholder:text-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#1D4ED8]"
           />
         </div>
       </div>
@@ -204,7 +204,7 @@ export function CustomerTicketsList({
             return (
               <div
                 key={ticket.id}
-                className="rounded-[12px] border border-[#E2E8F0] bg-white overflow-hidden shadow-xs hover:border-[#CBD5E1] transition-all"
+                className="rounded-[12px] border border-[#E2E8F0]/60 bg-white overflow-hidden shadow-2xs hover:border-[#CBD5E1] transition-all"
               >
                 {/* Main Card Header */}
                 <div className="p-4 sm:p-5 space-y-3">
@@ -259,7 +259,7 @@ export function CustomerTicketsList({
 
                 {/* Dropdown Panel: Detail & Progres Laporan */}
                 {isExpanded && (
-                  <div className="border-t border-[#E2E8F0] bg-[#F8FAFC] p-4 sm:p-5 space-y-5 animate-in fade-in-50 duration-200">
+                  <div className="border-t border-[#F1F5F9] bg-[#F8FAFC] p-4 sm:p-5 space-y-5 animate-in fade-in-50 duration-200">
                     {/* 1. Alur Progres Stepper */}
                     <div>
                       <div className="flex items-center justify-between mb-3">
@@ -454,7 +454,7 @@ export function CustomerTicketsList({
                     </div>
 
                     {/* 3. Action Banner Live Tracker */}
-                    <div className="pt-3 border-t border-[#E2E8F0]">
+                    <div className="pt-3 border-t border-[#F1F5F9]">
                       <div className="rounded-[10px] bg-white border border-[#BFDBFE] p-3 sm:p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
                         <div className="flex items-center gap-2.5 min-w-0">
                           <div className="h-9 w-9 rounded-full bg-[#EFF6FF] text-[#1D4ED8] flex items-center justify-center shrink-0 border border-[#DBEAFE]">
