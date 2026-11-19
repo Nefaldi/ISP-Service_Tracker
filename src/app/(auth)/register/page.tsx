@@ -15,7 +15,7 @@ export default function RegisterPage() {
       <div className="hidden lg:flex flex-col justify-between bg-[#0B2A6F] text-white p-12 lg:p-16">
         <div>
           <Link
-            href="/"
+            href="/login"
             className="inline-flex items-center gap-3 text-sm font-semibold tracking-wider text-[#BFDBFE] hover:text-white transition-colors"
           >
             <div className="bg-white px-2 py-1 rounded-[8px] shadow-xs flex items-center justify-center">
@@ -68,7 +68,7 @@ export default function RegisterPage() {
       <div className="flex flex-col justify-center items-center px-6 py-12 lg:px-12 bg-white">
         <div className="lg:hidden w-full max-w-[420px] mb-6">
           <Link
-            href="/"
+            href="/login"
             className="text-xs font-bold tracking-wider uppercase text-[#0B2A6F]"
           >
             Service Tracker

@@ -6,6 +6,7 @@ export default auth((req) => {
   const isLoggedIn = !!req.auth;
   const userRole = req.auth?.user?.role;
 
+  const isRootPage = nextUrl.pathname === "/";
   const isLoginPage = nextUrl.pathname.startsWith("/login");
   const isRegisterPage = nextUrl.pathname.startsWith("/register");
   const isAdminRoute = nextUrl.pathname.startsWith("/admin");
@@ -13,6 +14,20 @@ export default auth((req) => {
   const isCustomerRoute = nextUrl.pathname.startsWith("/customer");
   const isCustomerTrackRoute = nextUrl.pathname.startsWith("/customer/track");
   const isProfileRoute = nextUrl.pathname.startsWith("/profile");
+
+  // If user visits root path "/", redirect directly to their role dashboard or /login
+  if (isRootPage) {
+    if (isLoggedIn) {
+      if (userRole === "ADMIN") {
+        return NextResponse.redirect(new URL("/admin", nextUrl));
+      }
+      if (userRole === "TEKNISI") {
+        return NextResponse.redirect(new URL("/technician", nextUrl));
+      }
+      return NextResponse.redirect(new URL("/customer", nextUrl));
+    }
+    return NextResponse.redirect(new URL("/login", nextUrl));
+  }
 
   // If authenticated user visits login page, redirect to appropriate role portal
   if (isLoginPage && isLoggedIn) {
@@ -66,6 +81,7 @@ export default auth((req) => {
 
 export const config = {
   matcher: [
+    "/",
     "/admin/:path*",
     "/technician/:path*",
     "/customer/:path*",
