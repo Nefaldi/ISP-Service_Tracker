@@ -217,21 +217,29 @@ export function CustomerTicketsList({
                 className="rounded-[12px] border border-[#E2E8F0] bg-white overflow-hidden shadow-xs hover:border-[#CBD5E1] transition-all"
               >
                 {/* Main Card Header */}
-                <div className="p-4 sm:p-5">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div className="space-y-1.5 flex-1 min-w-0">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="font-mono text-xs font-bold text-[#1D4ED8]">
-                          #{ticket.ticketNumber}
-                        </span>
-                        <StatusBadge status={ticket.status} />
-                        <Badge variant="priority" value={ticket.priority} />
-                        <span className="text-xs text-[#64748B] hidden sm:inline">
-                          &bull; {ticket.category}
-                        </span>
-                      </div>
+                <div className="p-4 sm:p-5 space-y-3">
+                  {/* Baris Atas: Kode tiket + Status + Priority di kiri, Tanggal tepat di pojok kanan atas */}
+                  <div className="flex items-start sm:items-center justify-between gap-3">
+                    <div className="flex flex-wrap items-center gap-2 min-w-0">
+                      <span className="font-mono text-xs font-bold text-[#1D4ED8]">
+                        #{ticket.ticketNumber}
+                      </span>
+                      <StatusBadge status={ticket.status} />
+                      <Badge variant="priority" value={ticket.priority} />
+                      <span className="text-xs text-[#64748B] hidden sm:inline">
+                        &bull; {ticket.category}
+                      </span>
+                    </div>
 
-                      <h3 className="text-[16px] font-semibold text-[#0F172A]">
+                    <span className="text-[12px] text-[#64748B] shrink-0 font-medium whitespace-nowrap">
+                      {formatDateTime(ticket.createdAt)}
+                    </span>
+                  </div>
+
+                  {/* Baris Utama: Judul & Deskripsi di kiri, Tombol Dropdown di kanan */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-0.5">
+                    <div className="space-y-1 flex-1 min-w-0">
+                      <h3 className="text-[16px] font-semibold text-[#0F172A] leading-snug">
                         {ticket.title}
                       </h3>
 
@@ -240,32 +248,25 @@ export function CustomerTicketsList({
                       </p>
                     </div>
 
-                    {/* Action Controls & Dropdown Button */}
-                    <div className="flex items-center justify-between sm:flex-col sm:items-end gap-2 pt-2 sm:pt-0 border-t sm:border-0 border-[#E2E8F0] shrink-0">
-                      <span className="text-[12px] text-[#64748B]">
-                        {formatDateTime(ticket.createdAt)}
-                      </span>
-
-                      <div className="flex items-center gap-2">
-                        {/* Tombol Dropdown: Detail & Progres */}
-                        <button
-                          type="button"
-                          onClick={() => toggleExpand(ticket.id)}
-                          aria-expanded={isExpanded}
-                          className={`h-[34px] px-3.5 rounded-[8px] text-[12px] font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs ${
-                            isExpanded
-                              ? "bg-[#1D4ED8] text-white hover:bg-[#1E40AF]"
-                              : "border border-[#CBD5E1] bg-[#F8FAFC] hover:bg-[#F1F5F9] text-[#0F172A]"
+                    {/* Tombol Dropdown: Detail & Progres */}
+                    <div className="shrink-0 self-end sm:self-center">
+                      <button
+                        type="button"
+                        onClick={() => toggleExpand(ticket.id)}
+                        aria-expanded={isExpanded}
+                        className={`h-[34px] px-3.5 rounded-[8px] text-[12px] font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs ${
+                          isExpanded
+                            ? "bg-[#1D4ED8] text-white hover:bg-[#1E40AF]"
+                            : "border border-[#CBD5E1] bg-[#F8FAFC] hover:bg-[#F1F5F9] text-[#0F172A]"
+                        }`}
+                      >
+                        <span>{isExpanded ? "Tutup Progres" : "Detail & Progres"}</span>
+                        <ChevronDown
+                          className={`h-3.5 w-3.5 transition-transform duration-200 ${
+                            isExpanded ? "rotate-180 text-white" : "text-[#64748B]"
                           }`}
-                        >
-                          <span>{isExpanded ? "Tutup Progres" : "Detail & Progres"}</span>
-                          <ChevronDown
-                            className={`h-3.5 w-3.5 transition-transform duration-200 ${
-                              isExpanded ? "rotate-180 text-white" : "text-[#64748B]"
-                            }`}
-                          />
-                        </button>
-                      </div>
+                        />
+                      </button>
                     </div>
                   </div>
                 </div>
