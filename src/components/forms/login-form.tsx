@@ -18,7 +18,13 @@ export function LoginForm() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(
-    urlError ? "Sesi telah berakhir atau hak akses tidak diizinkan." : null
+    urlError === "Configuration"
+      ? "Konfigurasi server sedang diperbarui. Silakan muat ulang halaman."
+      : urlError === "CredentialsSignin"
+      ? "Email atau kata sandi tidak sesuai, atau database Supabase sedang dijeda (paused)."
+      : urlError
+      ? "Sesi telah berakhir atau hak akses tidak diizinkan."
+      : null
   );
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -34,7 +40,9 @@ export function LoginForm() {
       });
 
       if (res?.error) {
-        setErrorMessage("Email atau kata sandi tidak sesuai.");
+        setErrorMessage(
+          "Gagal masuk. Periksa kembali email dan kata sandi Anda. Jika proyek Supabase sedang dijeda (inaktif), silakan klik 'Restore/Resume project' di dashboard Supabase."
+        );
         setIsLoading(false);
       } else {
         router.push(callbackUrl);

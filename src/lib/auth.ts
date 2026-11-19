@@ -10,6 +10,11 @@ const loginSchema = z.object({
 });
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  trustHost: true,
+  secret:
+    process.env.AUTH_SECRET ||
+    process.env.NEXTAUTH_SECRET ||
+    "super-secret-auth-key-change-this-in-production-min-32-chars",
   session: {
     strategy: "jwt",
   },
@@ -30,26 +35,36 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
 
         const { email, password } = parsed.data;
-        const user = await prisma.user.findUnique({
-          where: { email },
-        });
 
-        if (!user || !user.password) {
-          return null;
+        try {
+          const user = await prisma.user.findUnique({
+            where: { email },
+          });
+
+          if (!user || !user.password) {
+            return null;
+          }
+
+          const isValid = await bcrypt.compare(password, user.password);
+          if (!isValid) {
+            return null;
+          }
+
+          return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            phone: user.phone,
+          };
+        } catch (dbError: unknown) {
+          console.error("Database connection error during login:", dbError);
+          const msg = dbError instanceof Error ? dbError.message : String(dbError);
+          if (msg.includes("tenant") || msg.includes("Can't reach database") || msg.includes("P1001")) {
+            throw new Error("DATABASE_PAUSED: Database Supabase sedang tidak aktif (paused). Silakan unpause/resume project di dashboard Supabase.");
+          }
+          throw dbError;
         }
-
-        const isValid = await bcrypt.compare(password, user.password);
-        if (!isValid) {
-          return null;
-        }
-
-        return {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          phone: user.phone,
-        };
       },
     }),
   ],
