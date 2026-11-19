@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import { formatDateTime } from "@/lib/utils";
 import {
   Search,
-  ArrowRight,
   Clock,
   CheckCircle2,
   Inbox,
@@ -253,24 +252,19 @@ export function CustomerTicketsList({
                           type="button"
                           onClick={() => toggleExpand(ticket.id)}
                           aria-expanded={isExpanded}
-                          className="h-[34px] px-3 rounded-[8px] border border-[#CBD5E1] bg-[#F8FAFC] hover:bg-[#F1F5F9] text-[#0F172A] text-[12px] font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
+                          className={`h-[34px] px-3.5 rounded-[8px] text-[12px] font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs ${
+                            isExpanded
+                              ? "bg-[#1D4ED8] text-white hover:bg-[#1E40AF]"
+                              : "border border-[#CBD5E1] bg-[#F8FAFC] hover:bg-[#F1F5F9] text-[#0F172A]"
+                          }`}
                         >
                           <span>{isExpanded ? "Tutup Progres" : "Detail & Progres"}</span>
                           <ChevronDown
-                            className={`h-3.5 w-3.5 text-[#64748B] transition-transform duration-200 ${
-                              isExpanded ? "rotate-180" : ""
+                            className={`h-3.5 w-3.5 transition-transform duration-200 ${
+                              isExpanded ? "rotate-180 text-white" : "text-[#64748B]"
                             }`}
                           />
                         </button>
-
-                        {/* Tombol Pantau Live */}
-                        <Link
-                          href={`/customer/track/${ticket.id}`}
-                          className="h-[34px] px-3 rounded-[8px] bg-[#1D4ED8] hover:bg-[#1E40AF] text-white text-[12px] font-semibold flex items-center gap-1.5 transition-colors shrink-0 shadow-2xs"
-                        >
-                          <span>Pantau Live</span>
-                          <ArrowRight className="h-3.5 w-3.5" />
-                        </Link>
                       </div>
                     </div>
                   </div>
