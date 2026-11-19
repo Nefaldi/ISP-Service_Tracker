@@ -2,10 +2,24 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { formatDateTime } from "@/lib/utils";
-import { Search, ArrowRight, Clock, CheckCircle2, Inbox } from "lucide-react";
+import {
+  Search,
+  ArrowRight,
+  Clock,
+  CheckCircle2,
+  Inbox,
+  ChevronDown,
+  Check,
+  Wrench,
+  Phone,
+  MessageSquare,
+  Star,
+  ExternalLink,
+} from "lucide-react";
 
 export interface CustomerTicketItem {
   id: string;
@@ -15,6 +29,9 @@ export interface CustomerTicketItem {
   status: string;
   priority: string;
   category: string;
+  damagePhotoUrl?: string | null;
+  resolvedPhotoUrl?: string | null;
+  resolutionNotes?: string | null;
   createdAt: string | Date;
   resolvedAt?: string | Date | null;
   closedAt?: string | Date | null;
@@ -33,12 +50,45 @@ interface CustomerTicketsListProps {
   limit?: number;
 }
 
+const PROGRESS_STEPS = [
+  { key: "OPEN", label: "Laporan Diterima", desc: "Menunggu verifikasi admin" },
+  { key: "ASSIGNED", label: "Teknisi Ditugaskan", desc: "Admin menunjuk teknisi" },
+  { key: "IN_PROGRESS", label: "Pengerjaan Lapangan", desc: "Teknisi menangani gangguan" },
+  { key: "RESOLVED", label: "Perbaikan Selesai", desc: "Pekerjaan selesai diuji" },
+  { key: "CLOSED", label: "Tiket Ditutup", desc: "Terkonfirmasi & ditutup" },
+];
+
+function getStatusIndex(status: string): number {
+  switch (status) {
+    case "OPEN":
+      return 0;
+    case "ASSIGNED":
+      return 1;
+    case "IN_PROGRESS":
+      return 2;
+    case "RESOLVED":
+      return 3;
+    case "CLOSED":
+      return 4;
+    default:
+      return 0;
+  }
+}
+
 export function CustomerTicketsList({
   initialTickets,
   limit = 3,
 }: CustomerTicketsListProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [tab, setTab] = useState<"ACTIVE" | "HISTORY" | "ALL">("ACTIVE");
+  const [expandedIds, setExpandedIds] = useState<Record<string, boolean>>({});
+
+  const toggleExpand = (id: string) => {
+    setExpandedIds((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
 
   const counts = useMemo(() => {
     return {
@@ -148,48 +198,298 @@ export function CustomerTicketsList({
           </p>
         </div>
       ) : (
-        <div className="space-y-3">
-          {displayedTickets.map((ticket) => (
-            <Link
-              key={ticket.id}
-              href={`/customer/track/${ticket.id}`}
-              className="block rounded-[12px] border border-[#E2E8F0] bg-white p-4 sm:p-5 hover:border-[#1D4ED8] hover:shadow-xs transition-all"
-            >
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs font-bold text-[#1D4ED8]">
-                      #{ticket.ticketNumber}
-                    </span>
-                    <StatusBadge status={ticket.status} />
-                    <Badge variant="priority" value={ticket.priority} />
-                    <span className="text-xs text-[#64748B] hidden sm:inline">
-                      &bull; {ticket.category}
-                    </span>
+        <div className="space-y-3.5">
+          {displayedTickets.map((ticket) => {
+            const isExpanded = !!expandedIds[ticket.id];
+            const currentIdx = getStatusIndex(ticket.status);
+
+            const cleanPhone = ticket.technician?.phone
+              ? ticket.technician.phone.replace(/[^0-9]/g, "")
+              : null;
+            const waNumber = cleanPhone
+              ? cleanPhone.startsWith("0")
+                ? "62" + cleanPhone.slice(1)
+                : cleanPhone
+              : null;
+
+            return (
+              <div
+                key={ticket.id}
+                className="rounded-[12px] border border-[#E2E8F0] bg-white overflow-hidden shadow-xs hover:border-[#CBD5E1] transition-all"
+              >
+                {/* Main Card Header */}
+                <div className="p-4 sm:p-5">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="space-y-1.5 flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-mono text-xs font-bold text-[#1D4ED8]">
+                          #{ticket.ticketNumber}
+                        </span>
+                        <StatusBadge status={ticket.status} />
+                        <Badge variant="priority" value={ticket.priority} />
+                        <span className="text-xs text-[#64748B] hidden sm:inline">
+                          &bull; {ticket.category}
+                        </span>
+                      </div>
+
+                      <h3 className="text-[16px] font-semibold text-[#0F172A]">
+                        {ticket.title}
+                      </h3>
+
+                      <p className="text-[13px] text-[#475569] line-clamp-2">
+                        {ticket.description}
+                      </p>
+                    </div>
+
+                    {/* Action Controls & Dropdown Button */}
+                    <div className="flex items-center justify-between sm:flex-col sm:items-end gap-2 pt-2 sm:pt-0 border-t sm:border-0 border-[#E2E8F0] shrink-0">
+                      <span className="text-[12px] text-[#64748B]">
+                        {formatDateTime(ticket.createdAt)}
+                      </span>
+
+                      <div className="flex items-center gap-2">
+                        {/* Tombol Dropdown: Detail & Progres */}
+                        <button
+                          type="button"
+                          onClick={() => toggleExpand(ticket.id)}
+                          aria-expanded={isExpanded}
+                          className="h-[34px] px-3 rounded-[8px] border border-[#CBD5E1] bg-[#F8FAFC] hover:bg-[#F1F5F9] text-[#0F172A] text-[12px] font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
+                        >
+                          <span>{isExpanded ? "Tutup Progres" : "Detail & Progres"}</span>
+                          <ChevronDown
+                            className={`h-3.5 w-3.5 text-[#64748B] transition-transform duration-200 ${
+                              isExpanded ? "rotate-180" : ""
+                            }`}
+                          />
+                        </button>
+
+                        {/* Tombol Pantau Live */}
+                        <Link
+                          href={`/customer/track/${ticket.id}`}
+                          className="h-[34px] px-3 rounded-[8px] bg-[#1D4ED8] hover:bg-[#1E40AF] text-white text-[12px] font-semibold flex items-center gap-1.5 transition-colors shrink-0 shadow-2xs"
+                        >
+                          <span>Pantau Live</span>
+                          <ArrowRight className="h-3.5 w-3.5" />
+                        </Link>
+                      </div>
+                    </div>
                   </div>
-
-                  <h3 className="text-[16px] font-semibold text-[#0F172A]">
-                    {ticket.title}
-                  </h3>
-
-                  <p className="text-[13px] text-[#475569] line-clamp-2">
-                    {ticket.description}
-                  </p>
                 </div>
 
-                <div className="flex items-center justify-between sm:flex-col sm:items-end gap-2 pt-2 sm:pt-0 border-t sm:border-0 border-[#E2E8F0]">
-                  <span className="text-[12px] text-[#64748B]">
-                    {formatDateTime(ticket.createdAt)}
-                  </span>
+                {/* Dropdown Panel: Detail & Progres Laporan */}
+                {isExpanded && (
+                  <div className="border-t border-[#E2E8F0] bg-[#F8FAFC] p-4 sm:p-5 space-y-5 animate-in fade-in-50 duration-200">
+                    {/* 1. Alur Progres Stepper */}
+                    <div>
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-[12px] font-bold text-[#064E3B] uppercase tracking-wider">
+                          Tahapan Penanganan Gangguan
+                        </span>
+                        <span className="text-[11px] font-medium text-[#64748B]">
+                          Tahap {currentIdx + 1} dari 5
+                        </span>
+                      </div>
 
-                  <span className="inline-flex items-center gap-1 text-[13px] font-medium text-[#1D4ED8] group-hover:translate-x-1 transition-transform">
-                    <span>Pantau Live</span>
-                    <ArrowRight className="h-3.5 w-3.5" />
-                  </span>
-                </div>
+                      {/* Responsive Step Tracker */}
+                      <div className="grid grid-cols-1 sm:grid-cols-5 gap-2 relative">
+                        {PROGRESS_STEPS.map((step, idx) => {
+                          const isDone = idx < currentIdx;
+                          const isActive = idx === currentIdx;
+                          const isUpcoming = idx > currentIdx;
+
+                          return (
+                            <div
+                              key={step.key}
+                              className={`p-2.5 rounded-[8px] border transition-all ${
+                                isActive
+                                  ? "bg-white border-[#1D4ED8] shadow-xs ring-2 ring-[#DBEAFE]"
+                                  : isDone
+                                  ? "bg-[#F0FDF4] border-[#BBF7D0]"
+                                  : "bg-white border-[#E2E8F0] opacity-60"
+                              }`}
+                            >
+                              <div className="flex items-center gap-2 mb-1">
+                                {isDone && (
+                                  <div className="h-5 w-5 rounded-full bg-[#059669] text-white flex items-center justify-center shrink-0">
+                                    <Check className="h-3 w-3 stroke-[3]" />
+                                  </div>
+                                )}
+                                {isActive && (
+                                  <div className="h-5 w-5 rounded-full bg-[#1D4ED8] text-white flex items-center justify-center text-[10px] font-bold shrink-0">
+                                    {idx + 1}
+                                  </div>
+                                )}
+                                {isUpcoming && (
+                                  <div className="h-5 w-5 rounded-full bg-[#E2E8F0] text-[#64748B] flex items-center justify-center text-[10px] font-bold shrink-0">
+                                    {idx + 1}
+                                  </div>
+                                )}
+                                <span
+                                  className={`text-[12px] font-bold truncate ${
+                                    isActive
+                                      ? "text-[#1D4ED8]"
+                                      : isDone
+                                      ? "text-[#065F46]"
+                                      : "text-[#64748B]"
+                                  }`}
+                                >
+                                  {step.label}
+                                </span>
+                              </div>
+                              <p className="text-[11px] text-[#64748B] line-clamp-1">
+                                {step.desc}
+                              </p>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* 2. Grid Informasi Detail Laporan */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+                      {/* Kolom Kiri: Detail Pelaporan */}
+                      <div className="space-y-3 bg-white p-3.5 rounded-[10px] border border-[#E2E8F0]">
+                        <h4 className="text-[12px] font-bold text-[#0F172A] flex items-center gap-1.5 pb-2 border-b border-[#F1F5F9]">
+                          <MessageSquare className="h-3.5 w-3.5 text-[#1D4ED8]" />
+                          <span>Informasi Pengaduan</span>
+                        </h4>
+
+                        <div className="space-y-2 text-[12px]">
+                          <div>
+                            <span className="text-[#64748B]">Deskripsi Masalah:</span>
+                            <p className="text-[#0F172A] mt-0.5 whitespace-pre-wrap">
+                              {ticket.description}
+                            </p>
+                          </div>
+
+                          <div className="flex justify-between pt-1">
+                            <span className="text-[#64748B]">Waktu Dibuat:</span>
+                            <span className="font-medium text-[#0F172A]">
+                              {formatDateTime(ticket.createdAt)}
+                            </span>
+                          </div>
+
+                          {ticket.damagePhotoUrl && (
+                            <div className="pt-2">
+                              <span className="text-[#64748B] block mb-1">
+                                Foto Bukti Kerusakan:
+                              </span>
+                              <a
+                                href={ticket.damagePhotoUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-block relative w-20 h-20 rounded-[6px] overflow-hidden border border-[#CBD5E1] hover:opacity-90"
+                              >
+                                <Image
+                                  src={ticket.damagePhotoUrl}
+                                  alt="Bukti kerusakan"
+                                  fill
+                                  className="object-cover"
+                                />
+                              </a>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Kolom Kanan: Teknisi & Penyelesaian */}
+                      <div className="space-y-3 bg-white p-3.5 rounded-[10px] border border-[#E2E8F0]">
+                        <h4 className="text-[12px] font-bold text-[#0F172A] flex items-center gap-1.5 pb-2 border-b border-[#F1F5F9]">
+                          <Wrench className="h-3.5 w-3.5 text-[#059669]" />
+                          <span>Pelaksana & Penyelesaian</span>
+                        </h4>
+
+                        <div className="space-y-2.5 text-[12px]">
+                          {/* Teknisi Info */}
+                          <div>
+                            <span className="text-[#64748B]">Teknisi Penanggung Jawab:</span>
+                            {ticket.technician ? (
+                              <div className="mt-1 flex items-center justify-between p-2 rounded-[6px] bg-[#F0FDF4] border border-[#DCFCE7]">
+                                <div className="min-w-0">
+                                  <p className="font-semibold text-[#065F46] truncate">
+                                    {ticket.technician.name}
+                                  </p>
+                                  {ticket.technician.phone && (
+                                    <p className="text-[11px] text-[#047857]">
+                                      {ticket.technician.phone}
+                                    </p>
+                                  )}
+                                </div>
+
+                                {waNumber && (
+                                  <a
+                                    href={`https://wa.me/${waNumber}?text=Halo%20Teknisi%2C%20saya%20pelapor%20tiket%20%23${ticket.ticketNumber}`}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="px-2.5 py-1 rounded-[6px] bg-[#16A34A] text-white text-[11px] font-semibold flex items-center gap-1 hover:bg-[#15803D]"
+                                  >
+                                    <Phone className="h-3 w-3" />
+                                    <span>WhatsApp</span>
+                                  </a>
+                                )}
+                              </div>
+                            ) : (
+                              <p className="text-[12px] text-[#D97706] font-medium mt-0.5 bg-[#FFFBEB] p-2 rounded-[6px] border border-[#FEF3C7]">
+                                Sedang menunggu penugasan teknisi oleh Administrator.
+                              </p>
+                            )}
+                          </div>
+
+                          {/* Catatan Penyelesaian (Jika ada) */}
+                          {ticket.resolutionNotes && (
+                            <div className="p-2.5 rounded-[6px] bg-[#F0FDF4] border border-[#BBF7D0]">
+                              <span className="font-semibold text-[#065F46] block text-[11px]">
+                                Catatan Penyelesaian Lapangan:
+                              </span>
+                              <p className="text-[#047857] text-[12px] mt-0.5">
+                                {ticket.resolutionNotes}
+                              </p>
+                            </div>
+                          )}
+
+                          {/* Ulasan Pelanggan (Jika ada) */}
+                          {ticket.feedback && (
+                            <div className="p-2.5 rounded-[6px] bg-[#FFFBEB] border border-[#FDE68A]">
+                              <div className="flex items-center gap-1 text-[#D97706] mb-0.5">
+                                {[...Array(ticket.feedback.rating)].map((_, i) => (
+                                  <Star
+                                    key={i}
+                                    className="h-3.5 w-3.5 fill-[#D97706] text-[#D97706]"
+                                  />
+                                ))}
+                                <span className="text-[11px] font-bold ml-1">
+                                  {ticket.feedback.rating}/5
+                                </span>
+                              </div>
+                              {ticket.feedback.comment && (
+                                <p className="text-[11px] text-[#92400E]">
+                                  &ldquo;{ticket.feedback.comment}&rdquo;
+                                </p>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 3. Footer Link ke Live Tracker */}
+                    <div className="pt-2 flex items-center justify-between border-t border-[#E2E8F0]">
+                      <span className="text-[11px] text-[#64748B]">
+                        Pantau riwayat teknisi, log perubahan, dan verifikasi penyelesaian secara lengkap
+                      </span>
+                      <Link
+                        href={`/customer/track/${ticket.id}`}
+                        className="text-[12px] font-semibold text-[#1D4ED8] hover:text-[#1E40AF] hover:underline flex items-center gap-1"
+                      >
+                        <span>Buka Live Tracker Lengkap</span>
+                        <ExternalLink className="h-3.5 w-3.5" />
+                      </Link>
+                    </div>
+                  </div>
+                )}
               </div>
-            </Link>
-          ))}
+            );
+          })}
 
           {/* Footer note when more tickets exist */}
           {limit && filteredTickets.length > limit && (
