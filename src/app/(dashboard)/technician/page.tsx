@@ -1,17 +1,10 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { TechnicianTasksList } from "@/components/shared/technician-tasks-list";
+import { ReportSummaryCard } from "@/components/shared/report-summary-card";
+import { AreaMapCard } from "@/components/shared/area-map-card";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import {
-  Wrench,
-  Clock,
-  AlertTriangle,
-  CheckCircle,
-  Phone,
-  Mail,
-  ShieldCheck,
-  Info,
-} from "lucide-react";
+import { Wrench, Phone, Mail, ShieldCheck } from "lucide-react";
 
 export const metadata = {
   title: "Portal Teknisi - Service Tracker",
@@ -86,25 +79,60 @@ export default async function TechnicianOverviewPage() {
         </p>
       </div>
 
-      {/* 2-Column Responsive Layout (Consistent with Customer Portal) */}
+      {/* 2-Column Responsive Layout (Consistent with Customer Portal & Reference UI) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-        {/* Left Column: Profile Card, Metrics, and SLA Guide */}
+        {/* Left / Main Column: Task List */}
+        <div className="lg:col-span-2 space-y-4">
+          <Card>
+            <CardHeader className="pb-3 border-b border-[#E2E8F0] mb-4">
+              <CardTitle className="text-[18px]">
+                Tugas Terakhir Anda ({tasks.length})
+              </CardTitle>
+              <CardDescription className="text-[14px]">
+                Pantau tahapan penanganan tugas lapangan Anda
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <TechnicianTasksList initialTasks={formattedTasks} />
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right / Sidebar Column: Summary, Map, & Profile */}
         <div className="lg:col-span-1 space-y-5">
+          {/* Ringkasan Tugas (Consistent with Reference UI) */}
+          <ReportSummaryCard
+            title="Ringkasan Tugas"
+            historyHref="/technician/tasks"
+            totalLabel="Total Tugas"
+            totalCount={tasks.length}
+            inProgressLabel="Sedang Diproses"
+            inProgressCount={assignedCount + inProgressCount}
+            resolvedLabel="Selesai"
+            resolvedCount={completedCount}
+          />
+
+          {/* Peta Area Pengawasan (Consistent with Reference UI) */}
+          <AreaMapCard
+            locationTag="Fakultas Teknik"
+            subtitle="Wilayah Distribusi Jaringan FO Kampus"
+          />
+
           {/* Technician Profile Card */}
           <Card>
-            <CardHeader className="pb-3 border-b border-[#E2E8F0] mb-3">
-              <CardTitle className="text-[17px] flex items-center gap-2">
-                <Wrench className="h-5 w-5 text-[#1D4ED8]" />
-                <span>Profil Teknisi Lapangan</span>
+            <CardHeader className="pb-3 border-b border-[#E2E8F0]">
+              <CardTitle className="text-[16px] font-bold text-[#0F172A] flex items-center gap-2">
+                <Wrench className="h-4 w-4 text-[#1D4ED8]" />
+                <span>Profil Teknisi</span>
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3.5">
+            <CardContent className="space-y-3 pt-3.5">
               <div className="flex items-center gap-3">
-                <div className="h-12 w-12 rounded-full bg-[#EDE9FE] text-[#5B21B6] flex items-center justify-center font-bold text-lg border border-[#DDD6FE]">
-                  <Wrench className="h-6 w-6" />
+                <div className="h-11 w-11 rounded-full bg-[#EDE9FE] text-[#5B21B6] flex items-center justify-center font-bold text-base border border-[#DDD6FE] shrink-0">
+                  <Wrench className="h-5 w-5" />
                 </div>
-                <div>
-                  <h3 className="font-semibold text-[16px] text-[#0F172A]">
+                <div className="min-w-0">
+                  <h3 className="font-semibold text-[15px] text-[#0F172A] truncate">
                     {techUser?.name || "Teknisi Jaringan"}
                   </h3>
                   <div className="flex items-center gap-1.5 mt-0.5">
@@ -132,87 +160,6 @@ export default async function TechnicianOverviewPage() {
                   </div>
                 )}
               </div>
-            </CardContent>
-          </Card>
-
-          {/* 3 Metric Summary Cards */}
-          <div className="grid grid-cols-3 gap-2.5">
-            <div className="rounded-[12px] border border-[#BFDBFE] bg-[#EFF6FF] p-3 text-center shadow-xs">
-              <Clock className="h-4 w-4 text-[#1D4ED8] mx-auto mb-1" />
-              <div className="text-[24px] font-bold text-[#1D4ED8] leading-tight">
-                {assignedCount}
-              </div>
-              <span className="text-[11px] text-[#1E40AF] font-semibold block mt-0.5">
-                Ditugaskan
-              </span>
-            </div>
-
-            <div className="rounded-[12px] border border-[#DDD6FE] bg-[#EDE9FE] p-3 text-center shadow-xs">
-              <AlertTriangle className="h-4 w-4 text-[#5B21B6] mx-auto mb-1" />
-              <div className="text-[24px] font-bold text-[#5B21B6] leading-tight">
-                {inProgressCount}
-              </div>
-              <span className="text-[11px] text-[#5B21B6] font-semibold block mt-0.5">
-                Dikerjakan
-              </span>
-            </div>
-
-            <div className="rounded-[12px] border border-[#A7F3D0] bg-[#D1FAE5] p-3 text-center shadow-xs">
-              <CheckCircle className="h-4 w-4 text-[#065F46] mx-auto mb-1" />
-              <div className="text-[24px] font-bold text-[#065F46] leading-tight">
-                {completedCount}
-              </div>
-              <span className="text-[11px] text-[#065F46] font-semibold block mt-0.5">
-                Selesai
-              </span>
-            </div>
-          </div>
-
-          {/* SLA Standard Reference Card */}
-          <Card className="bg-[#F8FAFC]">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-[15px] flex items-center gap-2 text-[#0F172A]">
-                <Info className="h-4 w-4 text-[#1D4ED8]" />
-                <span>Target Waktu Layanan (SLA)</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 text-xs">
-              <div className="flex items-center justify-between py-1 border-b border-[#E2E8F0]">
-                <span className="font-semibold text-[#DC2626]">Critical (Mendesak)</span>
-                <span className="font-mono font-bold text-[#0F172A]">2 Jam</span>
-              </div>
-              <div className="flex items-center justify-between py-1 border-b border-[#E2E8F0]">
-                <span className="font-semibold text-[#EA580C]">High (Penting)</span>
-                <span className="font-mono font-bold text-[#0F172A]">4 Jam</span>
-              </div>
-              <div className="flex items-center justify-between py-1 border-b border-[#E2E8F0]">
-                <span className="font-semibold text-[#D97706]">Medium (Standar)</span>
-                <span className="font-mono font-bold text-[#0F172A]">8 Jam</span>
-              </div>
-              <div className="flex items-center justify-between py-1">
-                <span className="font-semibold text-[#2563EB]">Low (Normal)</span>
-                <span className="font-mono font-bold text-[#0F172A]">24 Jam</span>
-              </div>
-              <p className="text-[11px] text-[#64748B] pt-1">
-                Pastikan mengunggah foto bukti kerja sebelum menandai tiket selesai.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Right Column: Main Task List */}
-        <div className="lg:col-span-2 space-y-4">
-          <Card>
-            <CardHeader className="pb-3 border-b border-[#E2E8F0] mb-4">
-              <CardTitle className="text-[18px]">
-                Daftar Tugas Perbaikan ({tasks.length})
-              </CardTitle>
-              <CardDescription className="text-[14px]">
-                Kelola penugasan tiket lapangan, hubungi pelanggan, dan laporkan penyelesaian perbaikan
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <TechnicianTasksList initialTasks={formattedTasks} />
             </CardContent>
           </Card>
         </div>
