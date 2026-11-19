@@ -10,7 +10,13 @@ export const metadata = {
 
 export default async function CustomerPortalPage() {
   const session = await auth();
-  const customerId = session?.user?.id;
+  const dbUser = session?.user?.email
+    ? await prisma.user.findUnique({
+        where: { email: session.user.email },
+        select: { id: true },
+      })
+    : null;
+  const customerId = dbUser?.id || session?.user?.id;
 
   const tickets = await prisma.ticket.findMany({
     where: { customerId },

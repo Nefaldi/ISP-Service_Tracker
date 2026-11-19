@@ -6,18 +6,25 @@ export default auth((req) => {
   const isLoggedIn = !!req.auth;
   const userRole = req.auth?.user?.role;
 
-  const isAuthPage =
-    nextUrl.pathname.startsWith("/login") ||
-    nextUrl.pathname.startsWith("/register");
+  const isLoginPage = nextUrl.pathname.startsWith("/login");
+  const isRegisterPage = nextUrl.pathname.startsWith("/register");
   const isAdminRoute = nextUrl.pathname.startsWith("/admin");
   const isTechnicianRoute = nextUrl.pathname.startsWith("/technician");
   const isCustomerRoute = nextUrl.pathname.startsWith("/customer");
 
   // If authenticated user visits login page, redirect to appropriate role portal
-  if (isAuthPage && isLoggedIn) {
+  if (isLoginPage && isLoggedIn) {
     if (userRole === "ADMIN") {
       return NextResponse.redirect(new URL("/admin", nextUrl));
     }
+    if (userRole === "TEKNISI") {
+      return NextResponse.redirect(new URL("/technician", nextUrl));
+    }
+    return NextResponse.redirect(new URL("/customer", nextUrl));
+  }
+
+  // Non-admin authenticated users cannot access registration page
+  if (isRegisterPage && isLoggedIn && userRole !== "ADMIN") {
     if (userRole === "TEKNISI") {
       return NextResponse.redirect(new URL("/technician", nextUrl));
     }

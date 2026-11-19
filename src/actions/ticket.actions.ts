@@ -36,6 +36,22 @@ export const closeTicketReviewSchema = z.object({
   comment: z.string().optional(),
 });
 
+// Helper to resolve effective user ID from active database by email
+async function getEffectiveUserId(session: { user?: { id?: string; email?: string | null } }): Promise<string> {
+  if (session.user?.email) {
+    try {
+      const dbUser = await prisma.user.findUnique({
+        where: { email: session.user.email },
+        select: { id: true },
+      });
+      if (dbUser?.id) return dbUser.id;
+    } catch {
+      // fallback to session.user.id
+    }
+  }
+  return session.user?.id || "";
+}
+
 /**
  * 1. Open: Customer creates a new ticket
  */
@@ -47,7 +63,7 @@ export async function createTicket(formData: {
   damagePhotoUrl?: string;
 }) {
   const session = await auth();
-  if (!session?.user?.id) {
+  if (!session?.user?.id && !session?.user?.email) {
     return { success: false, error: "Unauthorized. Silakan login terlebih dahulu." };
   }
 
@@ -57,6 +73,7 @@ export async function createTicket(formData: {
   }
 
   const { title, description, category, priority, damagePhotoUrl } = parsed.data;
+  const effectiveUserId = await getEffectiveUserId(session);
 
   // Generate unique readable Ticket Number: TICK-YYYYMM-XXXX
   const dateStr = new Date().toISOString().slice(0, 7).replace("-", "");
@@ -72,11 +89,11 @@ export async function createTicket(formData: {
         category,
         priority: priority as Priority,
         damagePhotoUrl: damagePhotoUrl || null,
-        customerId: session.user.id,
+        customerId: effectiveUserId,
         status: "OPEN",
         logs: {
           create: {
-            userId: session.user.id,
+            userId: effectiveUserId,
             action: "CREATED",
             newStatus: "OPEN",
             notes: "Tiket pelaporan dibuat oleh pelanggan.",
@@ -138,6 +155,7 @@ export async function assignTechnician(input: {
     const previousStatus = existing.status;
     const newStatus: TicketStatus = "ASSIGNED";
 
+    const effectiveAdminId = await getEffectiveUserId(session);
     const updated = await prisma.ticket.update({
       where: { id: ticketId },
       data: {
@@ -145,7 +163,7 @@ export async function assignTechnician(input: {
         status: newStatus,
         logs: {
           create: {
-            userId: session.user.id,
+            userId: effectiveAdminId,
             action: "ASSIGNED",
             previousStatus,
             newStatus,
@@ -194,13 +212,14 @@ export async function startProgress(ticketId: string) {
     const previousStatus = existing.status;
     const newStatus: TicketStatus = "IN_PROGRESS";
 
+    const effectiveTechId = await getEffectiveUserId(session);
     const updated = await prisma.ticket.update({
       where: { id: ticketId },
       data: {
         status: newStatus,
         logs: {
           create: {
-            userId: session.user.id,
+            userId: effectiveTechId,
             action: "STATUS_CHANGE",
             previousStatus,
             newStatus,
@@ -258,6 +277,7 @@ export async function resolveTicket(input: {
     const previousStatus = existing.status;
     const newStatus: TicketStatus = "RESOLVED";
 
+    const effectiveTechId = await getEffectiveUserId(session);
     const updated = await prisma.ticket.update({
       where: { id: ticketId },
       data: {
@@ -267,7 +287,7 @@ export async function resolveTicket(input: {
         resolvedAt: new Date(),
         logs: {
           create: {
-            userId: session.user.id,
+            userId: effectiveTechId,
             action: "RESOLVED",
             previousStatus,
             newStatus,
@@ -325,8 +345,14 @@ export async function closeTicketAndReview(input: {
       include: { feedback: true },
     });
 
+    const effectiveUserId = await getEffectiveUserId(session);
+
     if (!existing) return { success: false, error: "Tiket tidak ditemukan." };
-    if (existing.customerId !== session.user.id && session.user.role !== "ADMIN") {
+    if (
+      existing.customerId !== effectiveUserId &&
+      existing.customerId !== session.user.id &&
+      session.user.role !== "ADMIN"
+    ) {
       return { success: false, error: "Hanya pemilik tiket yang dapat menutup dan memberikan ulasan." };
     }
 
@@ -341,7 +367,7 @@ export async function closeTicketAndReview(input: {
           closedAt: new Date(),
           logs: {
             create: {
-              userId: session.user.id,
+              userId: effectiveUserId,
               action: "CLOSED",
               previousStatus,
               newStatus,
@@ -355,7 +381,7 @@ export async function closeTicketAndReview(input: {
         await tx.feedback.create({
           data: {
             ticketId,
-            customerId: session.user.id,
+            customerId: effectiveUserId,
             rating,
             comment: comment || null,
           },

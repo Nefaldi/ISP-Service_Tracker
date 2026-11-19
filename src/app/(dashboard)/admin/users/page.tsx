@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { AdminUsersTable } from "@/components/shared/admin-users-table";
-import { ArrowLeft, UserPlus } from "lucide-react";
+import { CreateUserDialog } from "@/components/forms/create-user-dialog";
+import { ArrowLeft } from "lucide-react";
 
 export const metadata = {
   title: "Manajemen Pengguna - Service Tracker Admin",
@@ -45,13 +46,9 @@ export default async function AdminUsersPage() {
           </p>
         </div>
 
-        <Link
-          href="/register"
-          className="h-[40px] px-4 rounded-[8px] bg-[#1D4ED8] hover:bg-[#1E40AF] text-white text-[14px] font-medium inline-flex items-center gap-2 shadow-xs transition-colors"
-        >
-          <UserPlus className="h-4 w-4" />
-          <span>Tambah Akun Baru</span>
-        </Link>
+        <div className="flex items-center gap-2">
+          <CreateUserDialog />
+        </div>
       </div>
 
       <AdminUsersTable initialUsers={users} />

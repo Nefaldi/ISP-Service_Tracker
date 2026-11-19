@@ -12,7 +12,7 @@ const loginSchema = z.object({
 // Fallback Demo Users when cloud database is paused / restoring
 const FALLBACK_DEMO_USERS = [
   {
-    id: "usr_demo_admin_01",
+    id: "cmvzewmur0000v2u41w05f0v2",
     name: "Siti Rahmawati (Admin)",
     email: "admin@tracker.com",
     role: "ADMIN" as const,
@@ -20,7 +20,7 @@ const FALLBACK_DEMO_USERS = [
     plainPassword: "admin123",
   },
   {
-    id: "usr_demo_tech_01",
+    id: "cmvzewnv60001v2u4g8l861p7",
     name: "Ahmad Fauzi (Teknisi Jaringan)",
     email: "teknisi@tracker.com",
     role: "TEKNISI" as const,
@@ -28,7 +28,7 @@ const FALLBACK_DEMO_USERS = [
     plainPassword: "teknisi123",
   },
   {
-    id: "usr_demo_cust_01",
+    id: "cmvzewpw30003v2u4cikkdkcl",
     name: "PT Solusi Maju Bersama (Customer)",
     email: "customer@tracker.com",
     role: "CUSTOMER" as const,

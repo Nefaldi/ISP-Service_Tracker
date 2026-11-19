@@ -8,7 +8,13 @@ export const metadata = {
 
 export default async function TechnicianTasksPage() {
   const session = await auth();
-  const techId = session?.user?.id;
+  const dbUser = session?.user?.email
+    ? await prisma.user.findUnique({
+        where: { email: session.user.email },
+        select: { id: true },
+      })
+    : null;
+  const techId = dbUser?.id || session?.user?.id;
   const techName = session?.user?.name || "Teknisi";
 
   const tasks = await prisma.ticket.findMany({

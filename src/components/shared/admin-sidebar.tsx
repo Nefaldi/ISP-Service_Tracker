@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import {
@@ -72,9 +73,7 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
         {/* Brand / Logo */}
         <div className="flex items-center justify-between pb-6 pt-2 px-2 border-b border-[#1E3A8A]">
           <Link href="/admin" className="flex items-center gap-2.5">
-            <div className="h-8 w-8 rounded-[8px] bg-[#1D4ED8] flex items-center justify-center text-white">
-              <Ticket className="h-4 w-4" />
-            </div>
+            <Image src="/Logo.jpeg" alt="Logo" width={32} height={32} className="h-8 w-8 rounded-[8px] object-cover shrink-0" />
             <div>
               <span className="block text-[15px] font-bold tracking-tight text-white leading-tight">
                 Service Tracker

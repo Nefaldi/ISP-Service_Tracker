@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { LoginForm } from "@/components/forms/login-form";
 import { Wrench, User, ShieldCheck } from "lucide-react";
 
@@ -15,9 +16,10 @@ export default function LoginPage() {
         <div>
           <Link
             href="/"
-            className="text-sm font-semibold tracking-wider uppercase text-[#BFDBFE] hover:text-white transition-colors"
+            className="inline-flex items-center gap-2.5 text-sm font-semibold tracking-wider text-[#BFDBFE] hover:text-white transition-colors"
           >
-            Service Tracker
+            <Image src="/Logo.jpeg" alt="Logo" width={32} height={32} className="h-8 w-8 rounded-lg object-contain" />
+            <span>Service Tracker</span>
           </Link>
 
           <div className="mt-20 max-w-lg">

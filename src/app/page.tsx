@@ -1,9 +1,9 @@
 import Link from "next/link";
+import Image from "next/image";
 import { auth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import {
-  Ticket,
   ShieldCheck,
   Wrench,
   User,
@@ -19,10 +19,10 @@ export default async function HomePage() {
       {/* Top Header */}
       <header className="border-b border-[#E2E8F0] bg-white h-[64px] flex items-center px-4 sm:px-6">
         <div className="w-full flex items-center justify-between max-w-6xl mx-auto">
-          <div className="flex items-center gap-2 font-bold text-[18px] tracking-tight text-[#0B2A6F]">
-            <Ticket className="h-5 w-5 text-[#1D4ED8]" />
+          <Link href="/" className="flex items-center gap-2.5 font-bold text-[18px] tracking-tight text-[#0B2A6F]">
+            <Image src="/Logo.jpeg" alt="Logo" width={32} height={32} className="h-8 w-8 rounded-lg object-contain" />
             <span>Service Tracker</span>
-          </div>
+          </Link>
 
           <div className="flex items-center gap-3">
             {session?.user ? (
