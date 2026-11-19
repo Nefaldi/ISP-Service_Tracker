@@ -111,20 +111,13 @@ export function Navbar({ user }: NavbarProps) {
           {/* Action Button: "+ Buat Laporan" for customer, or Portal Link */}
           {user?.role === "CUSTOMER" ? (
             <div className="flex items-center gap-2">
-              {isCustomerReports ? (
+              {isCustomerReports && (
                 <Link
                   href="/customer"
                   className="h-[38px] px-3.5 rounded-[8px] border border-[#CBD5E1] bg-white text-[13px] font-semibold text-[#0F172A] hover:bg-[#F8FAFC] hover:border-[#94A3B8] transition-colors flex items-center gap-1.5 shadow-2xs"
                 >
                   <ArrowLeft className="h-4 w-4 text-[#64748B]" />
                   <span>Kembali</span>
-                </Link>
-              ) : (
-                <Link
-                  href="/customer/reports"
-                  className="h-[38px] px-3.5 rounded-[8px] border border-[#CBD5E1] bg-white text-[13px] font-semibold text-[#0F172A] hover:bg-[#F8FAFC] hover:border-[#94A3B8] transition-colors hidden sm:flex items-center"
-                >
-                  <span>Daftar Laporan</span>
                 </Link>
               )}
               <CreateTicketDialog buttonText="Buat Laporan" />
