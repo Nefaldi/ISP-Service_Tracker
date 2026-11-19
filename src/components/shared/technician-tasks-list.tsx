@@ -12,7 +12,6 @@ import {
   ChevronDown,
   Check,
   Wrench,
-  Phone,
   MessageSquare,
   Clock,
   FileText,
@@ -226,15 +225,6 @@ export function TechnicianTasksList({
                 ? 8
                 : 24;
 
-            const cleanPhone = task.customer.phone
-              ? task.customer.phone.replace(/[^0-9]/g, "")
-              : null;
-            const waNumber = cleanPhone
-              ? cleanPhone.startsWith("0")
-                ? "62" + cleanPhone.slice(1)
-                : cleanPhone
-              : null;
-
             return (
               <div
                 key={task.id}
@@ -296,9 +286,6 @@ export function TechnicianTasksList({
                       <span>
                         Pelapor: <strong className="text-[#0F172A]">{task.customer.name}</strong>
                       </span>
-                      {task.customer.phone && (
-                        <span className="hidden sm:inline">&bull; {task.customer.phone}</span>
-                      )}
                     </div>
 
                     <div className="flex items-center gap-2">
@@ -385,7 +372,7 @@ export function TechnicianTasksList({
                       <div className="space-y-3 bg-white p-3.5 rounded-[10px] border border-[#E2E8F0]">
                         <h4 className="text-[12px] font-bold text-[#0F172A] flex items-center gap-1.5 pb-2 border-b border-[#F1F5F9]">
                           <MessageSquare className="h-3.5 w-3.5 text-[#1D4ED8]" />
-                          <span>Informasi Pengaduan & Pelanggan</span>
+                          <span>Informasi Pengaduan</span>
                         </h4>
 
                         <div className="space-y-2.5 text-[12px]">
@@ -396,52 +383,22 @@ export function TechnicianTasksList({
                             </p>
                           </div>
 
-                          <div className="pt-2 border-t border-[#F1F5F9] space-y-1.5">
-                            <span className="text-[#64748B] block">Data Kontak Pelanggan:</span>
-                            <div className="p-2.5 rounded-[6px] bg-[#EFF6FF] border border-[#BFDBFE] space-y-2">
-                              <div className="flex items-center justify-between">
-                                <div>
-                                  <p className="font-semibold text-[#1D4ED8] truncate">
-                                    {task.customer.name}
-                                  </p>
-                                  {task.customer.phone && (
-                                    <p className="text-[11px] text-[#1E40AF]">
-                                      {task.customer.phone}
-                                    </p>
-                                  )}
-                                </div>
+                          <div className="flex justify-between pt-1 border-t border-[#F1F5F9]">
+                            <span className="text-[#64748B]">Pelapor:</span>
+                            <span className="font-medium text-[#0F172A]">
+                              {task.customer.name}
+                            </span>
+                          </div>
 
-                                <div className="flex items-center gap-1.5">
-                                  {waNumber && (
-                                    <a
-                                      href={`https://wa.me/${waNumber}?text=Halo%20${encodeURIComponent(
-                                        task.customer.name
-                                      )},%20saya%20teknisi%20Service%20Tracker%20terkait%20laporan%20%23${task.ticketNumber}`}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="px-2.5 py-1 rounded-[6px] bg-[#2563EB] text-white text-[11px] font-semibold flex items-center gap-1 hover:bg-[#1D4ED8]"
-                                    >
-                                      <MessageSquare className="h-3 w-3" />
-                                      <span>WhatsApp</span>
-                                    </a>
-                                  )}
-
-                                  {task.customer.phone && (
-                                    <a
-                                      href={`tel:${task.customer.phone}`}
-                                      className="px-2.5 py-1 rounded-[6px] bg-[#EFF6FF] border border-[#BFDBFE] text-[#1D4ED8] text-[11px] font-semibold flex items-center gap-1 hover:bg-[#DBEAFE]"
-                                    >
-                                      <Phone className="h-3 w-3" />
-                                      <span>Telepon</span>
-                                    </a>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
+                          <div className="flex justify-between">
+                            <span className="text-[#64748B]">Waktu Dibuat:</span>
+                            <span className="font-medium text-[#0F172A]">
+                              {formatDateTime(task.createdAt)}
+                            </span>
                           </div>
 
                           {task.damagePhotoUrl && (
-                            <div className="pt-2">
+                            <div className="pt-2 border-t border-[#F1F5F9]">
                               <span className="text-[#64748B] block mb-1">
                                 Foto Bukti Kerusakan dari Pelanggan:
                               </span>
