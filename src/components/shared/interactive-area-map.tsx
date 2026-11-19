@@ -479,21 +479,22 @@ export default function InteractiveAreaMap() {
         </div>
       </div>
 
-      {/* Top Right Basemap Selector Menu */}
-      <div className="absolute top-2.5 right-12 z-10">
+      {/* Bottom Left Controls: Basemap Selector above Layer Toggles */}
+      <div className="absolute bottom-2.5 left-2.5 z-10 flex flex-col items-start gap-1.5">
+        {/* Basemap Selector Menu */}
         <div className="relative">
           <button
             type="button"
             onClick={() => setShowBasemapMenu(!showBasemapMenu)}
             title="Pilih Jenis Basemap"
-            className="h-[30px] px-2.5 rounded-[6px] bg-white hover:bg-[#F8FAFC] border border-[#CBD5E1] text-[#0F172A] text-[11px] font-semibold shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="h-[28px] px-2.5 rounded-[6px] bg-white hover:bg-[#F8FAFC] border border-[#CBD5E1] text-[#0F172A] text-[11px] font-semibold shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
           >
             <MapIcon className="h-3.5 w-3.5 text-[#059669]" />
             <span>{BASEMAP_CONFIGS[basemapType].name}</span>
           </button>
 
           {showBasemapMenu && (
-            <div className="absolute right-0 mt-1.5 w-36 rounded-[8px] bg-white border border-[#E2E8F0] shadow-lg py-1 z-20 text-[12px]">
+            <div className="absolute left-0 bottom-full mb-1.5 w-40 rounded-[8px] bg-white border border-[#E2E8F0] shadow-lg py-1 z-20 text-[12px]">
               <button
                 type="button"
                 onClick={() => handleBasemapChange("streets")}
@@ -533,37 +534,37 @@ export default function InteractiveAreaMap() {
             </div>
           )}
         </div>
-      </div>
 
-      {/* Layer Toggles (Bottom Left) */}
-      <div className="absolute bottom-2.5 left-2.5 z-10 flex items-center gap-1.5 bg-white/95 backdrop-blur-xs p-1 rounded-[8px] border border-[#CBD5E1] shadow-xs">
-        <button
-          type="button"
-          onClick={() => setShowODP(!showODP)}
-          title="Tampilkan/Sembunyikan Titik ODP"
-          className={`h-[26px] px-2 rounded-[5px] text-[11px] font-semibold flex items-center gap-1 transition-colors cursor-pointer ${
-            showODP
-              ? "bg-[#059669] text-white"
-              : "bg-[#F1F5F9] text-[#64748B] hover:text-[#0F172A]"
-          }`}
-        >
-          <MapPin className="h-3 w-3" />
-          <span>ODP ({counts.odp})</span>
-        </button>
+        {/* Layer Toggles (ODP & Cust) */}
+        <div className="flex items-center gap-1.5 bg-white/95 backdrop-blur-xs p-1 rounded-[8px] border border-[#CBD5E1] shadow-xs">
+          <button
+            type="button"
+            onClick={() => setShowODP(!showODP)}
+            title="Tampilkan/Sembunyikan Titik ODP"
+            className={`h-[26px] px-2 rounded-[5px] text-[11px] font-semibold flex items-center gap-1 transition-colors cursor-pointer ${
+              showODP
+                ? "bg-[#059669] text-white"
+                : "bg-[#F1F5F9] text-[#64748B] hover:text-[#0F172A]"
+            }`}
+          >
+            <MapPin className="h-3 w-3" />
+            <span>ODP ({counts.odp})</span>
+          </button>
 
-        <button
-          type="button"
-          onClick={() => setShowCustomers(!showCustomers)}
-          title="Tampilkan/Sembunyikan Titik Pelanggan"
-          className={`h-[26px] px-2 rounded-[5px] text-[11px] font-semibold flex items-center gap-1 transition-colors cursor-pointer ${
-            showCustomers
-              ? "bg-[#2563EB] text-white"
-              : "bg-[#F1F5F9] text-[#64748B] hover:text-[#0F172A]"
-          }`}
-        >
-          <Users className="h-3 w-3" />
-          <span>Cust ({counts.customers})</span>
-        </button>
+          <button
+            type="button"
+            onClick={() => setShowCustomers(!showCustomers)}
+            title="Tampilkan/Sembunyikan Titik Pelanggan"
+            className={`h-[26px] px-2 rounded-[5px] text-[11px] font-semibold flex items-center gap-1 transition-colors cursor-pointer ${
+              showCustomers
+                ? "bg-[#2563EB] text-white"
+                : "bg-[#F1F5F9] text-[#64748B] hover:text-[#0F172A]"
+            }`}
+          >
+            <Users className="h-3 w-3" />
+            <span>Cust ({counts.customers})</span>
+          </button>
+        </div>
       </div>
 
       {/* Floating Action Buttons (Bottom Right) */}
