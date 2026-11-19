@@ -207,7 +207,7 @@ export function CustomerTicketsList({
                 className="rounded-[12px] border border-[#E2E8F0]/60 bg-white overflow-hidden shadow-2xs hover:border-[#CBD5E1] transition-all"
               >
                 {/* Main Card Header */}
-                <div className="p-4 sm:p-5 space-y-3">
+                <div className="p-3.5 sm:p-4 space-y-2.5">
                   {/* Baris Atas: Kode tiket + Status + Priority di kiri, Tanggal tepat di pojok kanan atas */}
                   <div className="flex items-start sm:items-center justify-between gap-3">
                     <div className="flex flex-wrap items-center gap-2 min-w-0">

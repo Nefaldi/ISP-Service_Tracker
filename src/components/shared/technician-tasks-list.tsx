@@ -202,7 +202,7 @@ export function TechnicianTasksList({
             return (
               <div
                 key={task.id}
-                className="rounded-[12px] border border-[#E2E8F0]/60 bg-white p-4 sm:p-5 space-y-4 shadow-2xs hover:border-[#1D4ED8] transition-all"
+                className="rounded-[12px] border border-[#E2E8F0]/60 bg-white p-3.5 sm:p-4 space-y-3 shadow-2xs hover:border-[#1D4ED8] transition-all"
               >
                 {/* Header: Kode tiket + StatusBadge + Priority + Link */}
                 <div className="flex flex-wrap items-center justify-between gap-2">

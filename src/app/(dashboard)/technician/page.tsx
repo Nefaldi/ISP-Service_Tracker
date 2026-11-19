@@ -74,15 +74,15 @@ export default async function TechnicianOverviewPage() {
         {/* Left Column (Wide 2 spans): Tugas Terakhir Anda */}
         <div className="lg:col-span-2">
           <Card className="border border-[#E2E8F0]/60 bg-white shadow-2xs rounded-[12px] min-h-[460px]">
-            <CardHeader className="p-5 pb-3">
-              <CardTitle className="text-[17px] font-bold text-[#064E3B]">
+            <CardHeader className="px-5 pt-3.5 pb-2">
+              <CardTitle className="text-[16px] font-bold text-[#064E3B] leading-snug">
                 Tugas Terakhir Anda
               </CardTitle>
-              <CardDescription className="text-[13px] text-[#64748B] mt-0.5">
+              <CardDescription className="text-[12px] text-[#64748B] mt-0.5">
                 Pantau tahapan penanganan tugas lapangan Anda
               </CardDescription>
             </CardHeader>
-            <CardContent className="p-5 pt-0">
+            <CardContent className="px-5 pb-5 pt-1">
               <TechnicianTasksList initialTasks={formattedTasks} limit={3} />
             </CardContent>
           </Card>
@@ -108,14 +108,14 @@ export default async function TechnicianOverviewPage() {
           />
 
           {/* Profil Teknisi */}
-          <Card className="border border-[#E2E8F0] bg-white shadow-xs rounded-[12px]">
-            <CardHeader className="py-3 px-4 border-b border-[#E2E8F0]">
-              <CardTitle className="text-[15px] font-bold text-[#064E3B] flex items-center gap-2">
+          <Card className="border border-[#E2E8F0]/60 bg-white shadow-2xs rounded-[12px]">
+            <CardHeader className="py-2.5 px-4 border-b border-[#F1F5F9]">
+              <CardTitle className="text-[14px] font-bold text-[#064E3B] flex items-center gap-2">
                 <Wrench className="h-4 w-4 text-[#166534]" />
                 <span>Profil Pelaksana</span>
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-4 space-y-3">
+            <CardContent className="p-3.5 space-y-3">
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-full bg-[#EDE9FE] text-[#5B21B6] flex items-center justify-center font-bold text-sm border border-[#DDD6FE] shrink-0">
                   <Wrench className="h-4 w-4" />

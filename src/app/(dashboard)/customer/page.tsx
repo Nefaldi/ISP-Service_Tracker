@@ -42,15 +42,15 @@ export default async function CustomerPortalPage() {
         {/* Left Column (Wide 2 spans): Laporan Terakhir Anda */}
         <div className="lg:col-span-2">
           <Card className="border border-[#E2E8F0]/60 bg-white shadow-2xs rounded-[12px] min-h-[460px]">
-            <CardHeader className="p-5 pb-3">
-              <CardTitle className="text-[17px] font-bold text-[#064E3B]">
+            <CardHeader className="px-5 pt-3.5 pb-2">
+              <CardTitle className="text-[16px] font-bold text-[#064E3B] leading-snug">
                 Laporan Terakhir Anda
               </CardTitle>
-              <CardDescription className="text-[13px] text-[#64748B] mt-0.5">
+              <CardDescription className="text-[12px] text-[#64748B] mt-0.5">
                 Pantau tahapan penanganan laporan Anda
               </CardDescription>
             </CardHeader>
-            <CardContent className="p-5 pt-0">
+            <CardContent className="px-5 pb-5 pt-1">
               <CustomerTicketsList initialTickets={tickets} limit={3} />
             </CardContent>
           </Card>

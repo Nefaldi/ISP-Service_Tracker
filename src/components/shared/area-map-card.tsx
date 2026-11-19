@@ -27,9 +27,9 @@ export function AreaMapCard({
 }: AreaMapCardProps) {
   return (
     <Card className="overflow-hidden border border-[#E2E8F0]/60 bg-white shadow-2xs rounded-[12px]">
-      <CardHeader className="py-3 px-4 border-b border-[#F1F5F9]">
+      <CardHeader className="py-2.5 px-4 border-b border-[#F1F5F9]">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-[15px] font-bold text-[#064E3B]">
+          <CardTitle className="text-[14px] font-bold text-[#064E3B]">
             Peta Area Pengawasan
           </CardTitle>
           <span className="text-[12px] font-medium text-[#64748B]">
