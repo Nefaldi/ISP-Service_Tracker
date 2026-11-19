@@ -29,32 +29,6 @@ export function AuthContainer({ initialTab = "login" }: AuthContainerProps) {
 
   return (
     <div className="w-full max-w-[420px] mx-auto py-6">
-      {/* Tab Switcher: Masuk vs Daftar Akun */}
-      <div className="flex rounded-[10px] bg-[#F1F5F9] p-1 mb-6 border border-[#E2E8F0]">
-        <button
-          type="button"
-          onClick={() => handleSwitchTab("login")}
-          className={`flex-1 py-2 text-[14px] font-semibold rounded-[8px] transition-all cursor-pointer text-center ${
-            activeTab === "login"
-              ? "bg-white text-[#0B2A6F] shadow-xs"
-              : "text-[#64748B] hover:text-[#0F172A]"
-          }`}
-        >
-          Masuk
-        </button>
-        <button
-          type="button"
-          onClick={() => handleSwitchTab("register")}
-          className={`flex-1 py-2 text-[14px] font-semibold rounded-[8px] transition-all cursor-pointer text-center ${
-            activeTab === "register"
-              ? "bg-white text-[#0B2A6F] shadow-xs"
-              : "text-[#64748B] hover:text-[#0F172A]"
-          }`}
-        >
-          Daftar Akun
-        </button>
-      </div>
-
       {/* Form Content */}
       <div className="transition-all duration-200">
         {activeTab === "login" ? (
