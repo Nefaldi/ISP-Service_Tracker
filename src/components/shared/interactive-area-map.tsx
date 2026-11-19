@@ -504,7 +504,7 @@ export default function InteractiveAreaMap() {
                     : "text-[#475569]"
                 }`}
               >
-                <span>Peta Jalan (Google)</span>
+                <span>Peta Jalan Google</span>
                 {basemapType === "streets" && <span>✓</span>}
               </button>
               <button

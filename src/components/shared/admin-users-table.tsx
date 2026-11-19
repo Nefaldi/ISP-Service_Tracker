@@ -131,7 +131,7 @@ export function AdminUsersTable({ initialUsers }: AdminUsersTableProps) {
                   Email
                 </th>
                 <th className="py-3.5 px-4 text-[14px] font-medium text-[#475569]">
-                  Peran (Role)
+                  Peran
                 </th>
                 <th className="py-3.5 px-4 text-[14px] font-medium text-[#475569]">
                   No. Telepon

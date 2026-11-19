@@ -20,7 +20,7 @@ async function main() {
 
   const admin = await prisma.user.create({
     data: {
-      name: "Siti Rahmawati (Admin)",
+      name: "Siti Rahmawati",
       email: "admin@tracker.com",
       password: adminPassword,
       role: "ADMIN",
@@ -30,7 +30,7 @@ async function main() {
 
   const teknisi1 = await prisma.user.create({
     data: {
-      name: "Ahmad Fauzi (Teknisi Jaringan)",
+      name: "Ahmad Fauzi",
       email: "teknisi@tracker.com",
       password: teknisiPassword,
       role: "TEKNISI",
@@ -40,7 +40,7 @@ async function main() {
 
   const teknisi2 = await prisma.user.create({
     data: {
-      name: "Budi Santoso (Teknisi Hardware)",
+      name: "Budi Santoso",
       email: "budi.teknisi@tracker.com",
       password: teknisiPassword,
       role: "TEKNISI",
@@ -50,7 +50,7 @@ async function main() {
 
   const customer = await prisma.user.create({
     data: {
-      name: "PT Solusi Maju Bersama (Customer)",
+      name: "PT Solusi Maju Bersama",
       email: "customer@tracker.com",
       password: customerPassword,
       role: "CUSTOMER",

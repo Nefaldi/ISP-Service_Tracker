@@ -188,7 +188,7 @@ export function CreateTicketForm() {
               >
                 <option value="Gangguan Jaringan Fiber">Gangguan Jaringan Fiber</option>
                 <option value="Perangkat Modem / Router">Perangkat Modem / Router</option>
-                <option value="Kecepatan Lambat (Bandwidth)">Kecepatan Lambat (Bandwidth)</option>
+                <option value="Kecepatan Lambat (Bandwidth)">Kecepatan Lambat</option>
                 <option value="Kabel Putus / Fisik">Kabel Putus / Fisik</option>
                 <option value="Lainnya">Lainnya</option>
               </select>
@@ -199,7 +199,7 @@ export function CreateTicketForm() {
                 htmlFor="ticket-priority"
                 className="block text-[14px] font-medium text-[#0F172A] mb-1.5"
               >
-                Tingkat Urgensi (Prioritas)
+                Tingkat Urgensi
               </label>
               <select
                 id="ticket-priority"
@@ -207,10 +207,10 @@ export function CreateTicketForm() {
                 onChange={(e) => setPriority(e.target.value as Priority)}
                 className="w-full h-[48px] px-3.5 py-2 rounded-[8px] border border-[#94A3B8] bg-white text-[14px] text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#1D4ED8]"
               >
-                <option value="LOW">Low (Normal - 24 Jam)</option>
-                <option value="MEDIUM">Medium (Standar - 8 Jam)</option>
-                <option value="HIGH">High (Penting - 4 Jam)</option>
-                <option value="CRITICAL">Critical (Mendesak - 2 Jam)</option>
+                <option value="LOW">Low - Normal 24 Jam</option>
+                <option value="MEDIUM">Medium - Standar 8 Jam</option>
+                <option value="HIGH">High - Penting 4 Jam</option>
+                <option value="CRITICAL">Critical - Mendesak 2 Jam</option>
               </select>
             </div>
           </div>
@@ -239,7 +239,7 @@ export function CreateTicketForm() {
               htmlFor="ticket-photo"
               className="block text-[14px] font-medium text-[#0F172A] mb-1.5"
             >
-              Foto Bukti Kerusakan (Opsional)
+              Foto Bukti Kerusakan
             </label>
 
             <div className="relative border-2 border-dashed border-[#94A3B8] rounded-[8px] p-5 text-center hover:border-[#1D4ED8] transition-colors bg-[#F8FAFC]">
@@ -277,7 +277,7 @@ export function CreateTicketForm() {
                     Klik atau tarik foto ke sini untuk mengunggah
                   </p>
                   <p className="text-[12px] text-[#64748B] mt-0.5">
-                    Format PNG, JPG, atau WebP (maks. 10MB)
+                    Format PNG, JPG, atau WebP maksimal 10MB
                   </p>
                 </div>
               )}

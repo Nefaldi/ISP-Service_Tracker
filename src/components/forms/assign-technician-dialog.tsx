@@ -153,7 +153,7 @@ export function AssignTechnicianDialog({
                           {tech.name} —{" "}
                           {tech.activeTaskCount !== undefined
                             ? tech.activeTaskCount === 0
-                              ? "Tersedia (0 tugas)"
+                              ? "Tersedia"
                               : `${tech.activeTaskCount} tugas aktif`
                             : tech.email}
                         </option>
@@ -170,7 +170,7 @@ export function AssignTechnicianDialog({
                     htmlFor={`notes-tech-${ticketId}`}
                     className="block text-[14px] font-semibold text-[#0F172A] mb-1.5"
                   >
-                    Catatan / Instruksi Kerja (Opsional)
+                    Catatan / Instruksi Kerja
                   </label>
                   <textarea
                     id={`notes-tech-${ticketId}`}

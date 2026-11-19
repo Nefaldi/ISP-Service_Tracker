@@ -105,7 +105,7 @@ export default async function AdminDashboardPage() {
         <Card className="p-5">
           <div className="flex items-center justify-between">
             <span className="text-[14px] font-medium text-[#475569]">
-              Tiket Baru (Open)
+              Tiket Baru
             </span>
             <div className="h-8 w-8 rounded-full bg-[#FEF3C7] text-[#92400E] flex items-center justify-center">
               <Clock className="h-4 w-4" />

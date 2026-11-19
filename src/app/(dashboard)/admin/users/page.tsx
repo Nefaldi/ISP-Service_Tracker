@@ -42,7 +42,7 @@ export default async function AdminUsersPage() {
             Manajemen Pengguna & Staf
           </h1>
           <p className="text-[14px] text-[#475569] mt-1">
-            Daftar seluruh akun terdaftar (Admin, Teknisi Lapangan, dan Pelanggan)
+            Daftar seluruh akun terdaftar dalam sistem
           </p>
         </div>
 

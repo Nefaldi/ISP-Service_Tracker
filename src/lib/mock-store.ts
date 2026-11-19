@@ -75,7 +75,7 @@ function initializeStore(): MockStoreState {
   const users: MockUser[] = [
     {
       id: "cmvzewmur0000v2u41w05f0v2",
-      name: "Siti Rahmawati (Admin)",
+      name: "Siti Rahmawati",
       email: "admin@tracker.com",
       password: adminHash,
       role: "ADMIN",
@@ -86,7 +86,7 @@ function initializeStore(): MockStoreState {
     },
     {
       id: "cmvzewnv60001v2u4g8l861p7",
-      name: "Ahmad Fauzi (Teknisi Jaringan)",
+      name: "Ahmad Fauzi",
       email: "teknisi@tracker.com",
       password: techHash,
       role: "TEKNISI",
@@ -97,7 +97,7 @@ function initializeStore(): MockStoreState {
     },
     {
       id: "cmvzewov40002v2u43n9ijb2m",
-      name: "Budi Santoso (Teknisi Hardware)",
+      name: "Budi Santoso",
       email: "budi.teknisi@tracker.com",
       password: techHash,
       role: "TEKNISI",
@@ -108,7 +108,7 @@ function initializeStore(): MockStoreState {
     },
     {
       id: "cmvzewpw30003v2u4cikkdkcl",
-      name: "PT Solusi Maju Bersama (Customer)",
+      name: "PT Solusi Maju Bersama",
       email: "customer@tracker.com",
       password: custHash,
       role: "CUSTOMER",
@@ -240,7 +240,7 @@ function initializeStore(): MockStoreState {
       action: "ASSIGNED",
       previousStatus: "OPEN",
       newStatus: "ASSIGNED",
-      notes: "Ditugaskan oleh Siti Rahmawati (Admin) ke Ahmad Fauzi (Teknisi Jaringan).",
+      notes: "Ditugaskan oleh Siti Rahmawati ke Ahmad Fauzi.",
       createdAt: h(4.5),
     },
     {

@@ -144,7 +144,7 @@ export function TechnicianActions({ ticketId, status, onSuccess }: TechnicianAct
             onClick={() => setShowResolveModal(true)}
             className="h-[52px] bg-[#1D4ED8] hover:bg-[#1E40AF] text-white font-semibold rounded-[10px] cursor-pointer"
           >
-            <span>Selesaikan Tugas (Tandai Selesai)</span>
+            <span>Selesaikan Tugas</span>
           </Button>
 
           {showResolveModal && (
@@ -193,7 +193,7 @@ export function TechnicianActions({ ticketId, status, onSuccess }: TechnicianAct
                       htmlFor="tech-proof-photo"
                       className="block text-[14px] font-medium text-[#0F172A] mb-1.5"
                     >
-                      Foto Bukti Hasil Kerja (Opsional)
+                      Foto Bukti Hasil Kerja
                     </label>
 
                     <div className="relative h-[96px] border-2 border-dashed border-[#94A3B8] rounded-[8px] flex flex-col items-center justify-center text-center hover:border-[#2563EB] transition-colors bg-[#F8FAFC]">
@@ -231,7 +231,7 @@ export function TechnicianActions({ ticketId, status, onSuccess }: TechnicianAct
                             Ambil atau pilih foto bukti
                           </span>
                           <span className="text-[11px] text-[#64748B]">
-                            Format JPG, PNG (maks. 10MB)
+                            Format JPG, PNG maksimal 10MB
                           </span>
                         </div>
                       )}

@@ -166,7 +166,7 @@ export default async function CustomerTrackTicketPage({ params }: TrackPageProps
                           {formatLogAction(log.action)}
                         </h4>
                         <p className="text-[13px] text-[#475569] mt-0.5">
-                          {formatDateTime(log.createdAt)} &bull; Oleh {log.user.name} ({log.user.role})
+                          {formatDateTime(log.createdAt)} &bull; Oleh {log.user.name}
                         </p>
                         {log.notes && (
                           <p className="text-[14px] text-[#0F172A] bg-[#F8FAFC] border border-[#E2E8F0] p-3 rounded-[8px] mt-2">
@@ -322,7 +322,7 @@ export default async function CustomerTrackTicketPage({ params }: TrackPageProps
                           className="h-[36px] w-full rounded-[8px] border border-[#BFDBFE] bg-[#EFF6FF] text-[#1D4ED8] hover:bg-[#DBEAFE] text-[13px] font-medium inline-flex items-center justify-center gap-1.5 transition-colors"
                         >
                           <Phone className="h-3.5 w-3.5" />
-                          <span>Hubungi Teknisi ({ticket.technician.phone})</span>
+                          <span>Hubungi Teknisi</span>
                         </a>
                       </div>
                     )}
@@ -354,7 +354,7 @@ export default async function CustomerTrackTicketPage({ params }: TrackPageProps
                   {elapsedHours <= targetHours ? "Tepat Waktu" : "Melewati Batas"}
                 </div>
                 <p className="text-[14px] text-[#475569] mt-2">
-                  Total waktu penanganan: {elapsedHours.toFixed(1)} jam (Target: {targetHours} jam)
+                  Total waktu penanganan: {elapsedHours.toFixed(1)} jam • Target {targetHours} jam
                 </p>
               </div>
             ) : (
@@ -363,7 +363,7 @@ export default async function CustomerTrackTicketPage({ params }: TrackPageProps
                   {remainingHoursFormatted}
                 </div>
                 <p className="text-[14px] text-[#475569] mt-2">
-                  Tersisa dari target {targetHours} jam ({ticket.priority})
+                  Tersisa dari target {targetHours} jam • Prioritas {ticket.priority}
                 </p>
               </div>
             )}

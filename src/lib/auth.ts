@@ -13,7 +13,7 @@ const loginSchema = z.object({
 const FALLBACK_DEMO_USERS = [
   {
     id: "cmvzewmur0000v2u41w05f0v2",
-    name: "Siti Rahmawati (Admin)",
+    name: "Siti Rahmawati",
     email: "admin@tracker.com",
     role: "ADMIN" as const,
     phone: "081234567890",
@@ -21,7 +21,7 @@ const FALLBACK_DEMO_USERS = [
   },
   {
     id: "cmvzewnv60001v2u4g8l861p7",
-    name: "Ahmad Fauzi (Teknisi Jaringan)",
+    name: "Ahmad Fauzi",
     email: "teknisi@tracker.com",
     role: "TEKNISI" as const,
     phone: "081234567891",
@@ -29,7 +29,7 @@ const FALLBACK_DEMO_USERS = [
   },
   {
     id: "cmvzewpw30003v2u4cikkdkcl",
-    name: "PT Solusi Maju Bersama (Customer)",
+    name: "PT Solusi Maju Bersama",
     email: "customer@tracker.com",
     role: "CUSTOMER" as const,
     phone: "081234567893",
