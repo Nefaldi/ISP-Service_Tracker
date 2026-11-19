@@ -44,6 +44,16 @@ body {
 }
 
 /* Custom Leaflet Styling */
+.leaflet-container {
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 1 !important;
+  font-family: inherit !important;
+  background-color: #E2E8F0 !important;
+}
+.leaflet-tile {
+  visibility: inherit !important;
+}
 .custom-leaflet-popup .leaflet-popup-content-wrapper {
   border-radius: 10px;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);

@@ -14,7 +14,7 @@ const InteractiveAreaMap = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="w-full h-[300px] bg-[#F8FAFC] flex flex-col items-center justify-center gap-2 text-[#64748B]">
+      <div className="w-full h-[340px] bg-[#F8FAFC] flex flex-col items-center justify-center gap-2 text-[#64748B]">
         <Loader2 className="h-5 w-5 animate-spin text-[#059669]" />
         <span className="text-[12px] font-medium">Memuat peta interaktif jaringan FO...</span>
       </div>

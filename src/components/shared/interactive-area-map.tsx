@@ -2,7 +2,16 @@
 
 import { useEffect, useRef, useState, useMemo } from "react";
 import L from "leaflet";
-import { Maximize2, Minimize2, RotateCcw, X, Activity, MapPin, Users } from "lucide-react";
+import {
+  Maximize2,
+  Minimize2,
+  RotateCcw,
+  X,
+  Activity,
+  MapPin,
+  Users,
+  Map as MapIcon,
+} from "lucide-react";
 import kmzNetworkData from "@/data/kmz-network.json";
 
 interface SelectedItem {
@@ -11,6 +20,29 @@ interface SelectedItem {
   coords: [number, number];
   details?: string;
 }
+
+type BasemapKey = "streets" | "satellite" | "esri";
+
+const BASEMAP_CONFIGS: Record<
+  BasemapKey,
+  { name: string; url: string; maxZoom: number; subdomains?: string }
+> = {
+  streets: {
+    name: "Peta Jalan",
+    url: "https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
+    maxZoom: 20,
+  },
+  satellite: {
+    name: "Citra Satelit",
+    url: "https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}",
+    maxZoom: 20,
+  },
+  esri: {
+    name: "Esri Topo",
+    url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+    maxZoom: 19,
+  },
+};
 
 // Static Center & bounds from KMZ data
 const INITIAL_CENTER: [number, number] = [
@@ -25,6 +57,7 @@ const INITIAL_BOUNDS: L.LatLngBoundsExpression = [
 export default function InteractiveAreaMap() {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
+  const currentTileLayerRef = useRef<L.TileLayer | null>(null);
 
   // Layer groups references
   const popGroupRef = useRef<L.LayerGroup | null>(null);
@@ -39,6 +72,8 @@ export default function InteractiveAreaMap() {
   const [selectedItem, setSelectedItem] = useState<SelectedItem | null>(null);
   const [showCustomers, setShowCustomers] = useState(false);
   const [showODP, setShowODP] = useState(true);
+  const [basemapType, setBasemapType] = useState<BasemapKey>("streets");
+  const [showBasemapMenu, setShowBasemapMenu] = useState(false);
 
   // Total summary counts
   const counts = useMemo(() => kmzNetworkData.meta.counts, []);
@@ -50,25 +85,23 @@ export default function InteractiveAreaMap() {
     const map = L.map(mapContainerRef.current, {
       center: INITIAL_CENTER,
       zoom: kmzNetworkData.meta.defaultZoom,
-      minZoom: 11,
-      maxZoom: 19,
+      minZoom: 10,
+      maxZoom: 20,
       zoomControl: false,
       attributionControl: false,
     });
 
     mapInstanceRef.current = map;
 
-    // Fit map to full KMZ network bounds
-    map.fitBounds(INITIAL_BOUNDS, { padding: [20, 20] });
+    // Add Primary Basemap Tile Layer (Google Roadmap default)
+    const baseTile = L.tileLayer(BASEMAP_CONFIGS.streets.url, {
+      maxZoom: BASEMAP_CONFIGS.streets.maxZoom,
+      keepBuffer: 4,
+    }).addTo(map);
+    currentTileLayerRef.current = baseTile;
 
-    // Add minimal Voyager map tiles
-    L.tileLayer(
-      "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
-      {
-        maxZoom: 19,
-        subdomains: "abcd",
-      }
-    ).addTo(map);
+    // Fit map to full KMZ network bounds
+    map.fitBounds(INITIAL_BOUNDS, { padding: [25, 25] });
 
     // Zoom control
     L.control.zoom({ position: "topright" }).addTo(map);
@@ -77,14 +110,15 @@ export default function InteractiveAreaMap() {
     const boundaryCoords = kmzNetworkData.boundary as [number, number][];
     const boundaryLayer = L.polygon(boundaryCoords, {
       color: "#059669",
-      weight: 2,
+      weight: 2.5,
       dashArray: "6, 6",
       fillColor: "#10B981",
-      fillOpacity: 0.07,
+      fillOpacity: 0.08,
     });
     boundaryLayer.bindTooltip("Area Pengawasan Jaringan FO (KMZ 15 Jan 2026)", {
       direction: "center",
-      className: "bg-white/90 text-[#064E3B] font-semibold text-xs px-2 py-1 rounded shadow-xs border border-[#E2E8F0]",
+      className:
+        "bg-white/95 text-[#064E3B] font-semibold text-xs px-2.5 py-1 rounded shadow-xs border border-[#E2E8F0]",
     });
     const boundaryGroup = L.layerGroup([boundaryLayer]).addTo(map);
     boundaryGroupRef.current = boundaryGroup;
@@ -98,23 +132,26 @@ export default function InteractiveAreaMap() {
       const glow = L.polyline(coords, {
         color: "#34D399",
         weight: 6,
-        opacity: 0.35,
+        opacity: 0.4,
       });
 
       // Core line
       const line = L.polyline(coords, {
         color: "#059669",
-        weight: 2.5,
-        opacity: 0.9,
+        weight: 3,
+        opacity: 0.95,
       });
 
-      line.bindPopup(`
+      line.bindPopup(
+        `
         <div style="font-family: inherit; font-size: 12px; color: #0F172A; min-width: 170px;">
           <span style="font-size: 10px; font-weight: 700; color: #059669; text-transform: uppercase;">Kabel FO Distribusi</span>
           <div style="font-weight: 700; font-size: 13px; color: #064E3B; margin-top: 2px;">${cable.name}</div>
           <div style="font-size: 11px; color: #64748B; margin-top: 4px;">Panjang rute: ${coords.length} titik koordinat</div>
         </div>
-      `, { className: "custom-leaflet-popup" });
+      `,
+        { className: "custom-leaflet-popup" }
+      );
 
       line.on("click", () => {
         setSelectedItem({
@@ -138,8 +175,8 @@ export default function InteractiveAreaMap() {
         className: "custom-leaflet-marker",
         html: `
           <div style="position: relative; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px;">
-            <span style="position: absolute; width: 32px; height: 32px; border-radius: 9999px; background-color: rgba(99, 102, 241, 0.25); animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;"></span>
-            <div style="position: relative; width: 24px; height: 24px; border-radius: 9999px; background-color: #EEF2FF; border: 2.5px solid #4F46E5; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+            <span style="position: absolute; width: 32px; height: 32px; border-radius: 9999px; background-color: rgba(99, 102, 241, 0.35); animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;"></span>
+            <div style="position: relative; width: 24px; height: 24px; border-radius: 9999px; background-color: #EEF2FF; border: 2.5px solid #4F46E5; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.25);">
               <div style="width: 8px; height: 8px; border-radius: 9999px; background-color: #4F46E5;"></div>
             </div>
           </div>
@@ -150,7 +187,8 @@ export default function InteractiveAreaMap() {
       });
 
       const marker = L.marker(coords, { icon: popIcon });
-      marker.bindPopup(`
+      marker.bindPopup(
+        `
         <div style="font-family: inherit; font-size: 12px; color: #0F172A; min-width: 190px;">
           <span style="font-size: 10px; font-weight: 700; color: #4F46E5; background: #EEF2FF; padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">POP Gateway Core</span>
           <div style="font-weight: 700; font-size: 14px; color: #312E81; margin: 4px 0 2px;">${pop.name}</div>
@@ -159,7 +197,9 @@ export default function InteractiveAreaMap() {
             <span style="color: #64748B;">Koordinat:</span> <span style="font-mono; font-weight: 600;">${pop.lat}, ${pop.lng}</span>
           </div>
         </div>
-      `, { className: "custom-leaflet-popup" });
+      `,
+        { className: "custom-leaflet-popup" }
+      );
 
       marker.on("click", () => {
         setSelectedItem({
@@ -183,8 +223,8 @@ export default function InteractiveAreaMap() {
         className: "custom-leaflet-marker",
         html: `
           <div style="position: relative; display: flex; align-items: center; justify-content: center; width: 30px; height: 30px;">
-            <span style="position: absolute; width: 24px; height: 24px; border-radius: 9999px; background-color: rgba(234, 88, 12, 0.2); animation: pulse 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;"></span>
-            <div style="position: relative; width: 20px; height: 20px; border-radius: 6px; background-color: #FFF7ED; border: 2px solid #EA580C; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">
+            <span style="position: absolute; width: 24px; height: 24px; border-radius: 9999px; background-color: rgba(234, 88, 12, 0.25); animation: pulse 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;"></span>
+            <div style="position: relative; width: 20px; height: 20px; border-radius: 6px; background-color: #FFF7ED; border: 2px solid #EA580C; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
               <div style="width: 7px; height: 7px; border-radius: 2px; background-color: #EA580C;"></div>
             </div>
           </div>
@@ -195,7 +235,8 @@ export default function InteractiveAreaMap() {
       });
 
       const marker = L.marker(coords, { icon: odcIcon });
-      marker.bindPopup(`
+      marker.bindPopup(
+        `
         <div style="font-family: inherit; font-size: 12px; color: #0F172A; min-width: 180px;">
           <span style="font-size: 10px; font-weight: 700; color: #EA580C; background: #FFF7ED; padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">ODC (Distribution Cabinet)</span>
           <div style="font-weight: 700; font-size: 13px; color: #9A3412; margin: 4px 0 2px;">${odc.name}</div>
@@ -204,7 +245,9 @@ export default function InteractiveAreaMap() {
             <span style="color: #64748B;">Koordinat:</span> <span style="font-mono; font-weight: 600;">${odc.lat}, ${odc.lng}</span>
           </div>
         </div>
-      `, { className: "custom-leaflet-popup" });
+      `,
+        { className: "custom-leaflet-popup" }
+      );
 
       marker.on("click", () => {
         setSelectedItem({
@@ -232,7 +275,7 @@ export default function InteractiveAreaMap() {
         className: "custom-leaflet-marker",
         html: `
           <div style="position: relative; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px;">
-            <div style="width: 14px; height: 14px; border-radius: 9999px; background-color: ${bgColor}; border: 2px solid ${markerColor}; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(0,0,0,0.12);">
+            <div style="width: 15px; height: 15px; border-radius: 9999px; background-color: ${bgColor}; border: 2px solid ${markerColor}; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(0,0,0,0.18);">
               <div style="width: 5px; height: 5px; border-radius: 9999px; background-color: ${markerColor};"></div>
             </div>
           </div>
@@ -243,7 +286,8 @@ export default function InteractiveAreaMap() {
       });
 
       const marker = L.marker(coords, { icon: odpIcon });
-      marker.bindPopup(`
+      marker.bindPopup(
+        `
         <div style="font-family: inherit; font-size: 12px; color: #0F172A; min-width: 170px;">
           <span style="font-size: 10px; font-weight: 700; color: ${markerColor}; background: ${bgColor}; padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">
             ${isKantor ? "Kantor Operasional" : "ODP (Distribution Point)"}
@@ -253,7 +297,9 @@ export default function InteractiveAreaMap() {
             <span style="color: #64748B;">Koordinat:</span> <span style="font-mono; font-weight: 600;">${odp.lat}, ${odp.lng}</span>
           </div>
         </div>
-      `, { className: "custom-leaflet-popup" });
+      `,
+        { className: "custom-leaflet-popup" }
+      );
 
       marker.on("click", () => {
         setSelectedItem({
@@ -277,7 +323,7 @@ export default function InteractiveAreaMap() {
         className: "custom-leaflet-marker",
         html: `
           <div style="position: relative; display: flex; align-items: center; justify-content: center; width: 14px; height: 14px;">
-            <div style="width: 8px; height: 8px; border-radius: 9999px; background-color: #2563EB; border: 1.5px solid #FFFFFF; box-shadow: 0 1px 2px rgba(0,0,0,0.25);"></div>
+            <div style="width: 8px; height: 8px; border-radius: 9999px; background-color: #2563EB; border: 1.5px solid #FFFFFF; box-shadow: 0 1px 3px rgba(0,0,0,0.3);"></div>
           </div>
         `,
         iconSize: [14, 14],
@@ -286,7 +332,8 @@ export default function InteractiveAreaMap() {
       });
 
       const marker = L.marker(coords, { icon: custIcon });
-      marker.bindPopup(`
+      marker.bindPopup(
+        `
         <div style="font-family: inherit; font-size: 12px; color: #0F172A; min-width: 170px;">
           <span style="font-size: 10px; font-weight: 700; color: #2563EB; background: #EFF6FF; padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">Titik Pelanggan (FTTH)</span>
           <div style="font-weight: 700; font-size: 13px; color: #1E3A8A; margin: 4px 0 2px;">${cust.name}</div>
@@ -295,7 +342,9 @@ export default function InteractiveAreaMap() {
             <span style="color: #64748B;">Koordinat:</span> <span style="font-mono; font-weight: 600;">${cust.lat}, ${cust.lng}</span>
           </div>
         </div>
-      `, { className: "custom-leaflet-popup" });
+      `,
+        { className: "custom-leaflet-popup" }
+      );
 
       marker.on("click", () => {
         setSelectedItem({
@@ -311,17 +360,52 @@ export default function InteractiveAreaMap() {
     const customersGroup = L.layerGroup(custMarkers);
     customersGroupRef.current = customersGroup;
 
-    // Invalidate size on load
-    const timer = setTimeout(() => {
+    // Responsive Resize Observer
+    const resizeObserver = new ResizeObserver(() => {
       map.invalidateSize();
-    }, 250);
+    });
+    if (mapContainerRef.current) {
+      resizeObserver.observe(mapContainerRef.current);
+    }
+
+    // Timer triggers to ensure tiles load immediately after DOM layout
+    const t1 = setTimeout(() => map.invalidateSize(), 50);
+    const t2 = setTimeout(() => map.invalidateSize(), 250);
+    const t3 = setTimeout(() => map.invalidateSize(), 600);
 
     return () => {
-      clearTimeout(timer);
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      resizeObserver.disconnect();
       map.remove();
       mapInstanceRef.current = null;
     };
   }, []);
+
+  // Handle switching basemaps
+  const handleBasemapChange = (type: BasemapKey) => {
+    if (!mapInstanceRef.current) return;
+    const map = mapInstanceRef.current;
+
+    // Remove old basemap
+    if (currentTileLayerRef.current) {
+      map.removeLayer(currentTileLayerRef.current);
+    }
+
+    // Add new basemap
+    const config = BASEMAP_CONFIGS[type];
+    const newTile = L.tileLayer(config.url, {
+      maxZoom: config.maxZoom,
+      keepBuffer: 4,
+    }).addTo(map);
+
+    // Ensure basemap sits behind vector and marker layers
+    newTile.bringToBack();
+    currentTileLayerRef.current = newTile;
+    setBasemapType(type);
+    setShowBasemapMenu(false);
+  };
 
   // Toggle ODP visibility
   useEffect(() => {
@@ -368,16 +452,21 @@ export default function InteractiveAreaMap() {
       className={`relative w-full transition-all duration-300 flex flex-col ${
         isFullscreen
           ? "fixed inset-0 z-50 bg-white h-screen w-screen p-4 sm:p-6"
-          : "h-[300px] rounded-b-[12px]"
+          : "h-[340px] rounded-b-[12px]"
       }`}
     >
-      {/* Map Container */}
+      {/* Map Container with explicit inline style */}
       <div
         ref={mapContainerRef}
-        className="w-full flex-1 relative z-0 bg-[#F1F5F9]"
+        style={{
+          width: "100%",
+          height: "100%",
+          minHeight: isFullscreen ? "100%" : "300px",
+        }}
+        className="relative z-0 bg-[#E2E8F0]"
       />
 
-      {/* Top Floating Badge */}
+      {/* Top Left Floating Badge */}
       <div className="absolute top-2.5 left-2.5 z-10 flex flex-wrap items-center gap-1.5 pointer-events-none">
         <div className="bg-white/95 backdrop-blur-xs px-2.5 py-1 rounded-[6px] shadow-xs border border-[#E2E8F0] flex items-center gap-1.5">
           <span className="relative flex h-2 w-2">
@@ -390,7 +479,63 @@ export default function InteractiveAreaMap() {
         </div>
       </div>
 
-      {/* Layer Toggles & Action Controls (Bottom Left & Right) */}
+      {/* Top Right Basemap Selector Menu */}
+      <div className="absolute top-2.5 right-12 z-10">
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => setShowBasemapMenu(!showBasemapMenu)}
+            title="Pilih Jenis Basemap"
+            className="h-[30px] px-2.5 rounded-[6px] bg-white hover:bg-[#F8FAFC] border border-[#CBD5E1] text-[#0F172A] text-[11px] font-semibold shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+          >
+            <MapIcon className="h-3.5 w-3.5 text-[#059669]" />
+            <span>{BASEMAP_CONFIGS[basemapType].name}</span>
+          </button>
+
+          {showBasemapMenu && (
+            <div className="absolute right-0 mt-1.5 w-36 rounded-[8px] bg-white border border-[#E2E8F0] shadow-lg py-1 z-20 text-[12px]">
+              <button
+                type="button"
+                onClick={() => handleBasemapChange("streets")}
+                className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-[#F1F5F9] transition-colors cursor-pointer ${
+                  basemapType === "streets"
+                    ? "font-bold text-[#059669] bg-[#F0FDF4]"
+                    : "text-[#475569]"
+                }`}
+              >
+                <span>Peta Jalan (Google)</span>
+                {basemapType === "streets" && <span>✓</span>}
+              </button>
+              <button
+                type="button"
+                onClick={() => handleBasemapChange("satellite")}
+                className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-[#F1F5F9] transition-colors cursor-pointer ${
+                  basemapType === "satellite"
+                    ? "font-bold text-[#059669] bg-[#F0FDF4]"
+                    : "text-[#475569]"
+                }`}
+              >
+                <span>Citra Satelit</span>
+                {basemapType === "satellite" && <span>✓</span>}
+              </button>
+              <button
+                type="button"
+                onClick={() => handleBasemapChange("esri")}
+                className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-[#F1F5F9] transition-colors cursor-pointer ${
+                  basemapType === "esri"
+                    ? "font-bold text-[#059669] bg-[#F0FDF4]"
+                    : "text-[#475569]"
+                }`}
+              >
+                <span>Esri Topografi</span>
+                {basemapType === "esri" && <span>✓</span>}
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Layer Toggles (Bottom Left) */}
       <div className="absolute bottom-2.5 left-2.5 z-10 flex items-center gap-1.5 bg-white/95 backdrop-blur-xs p-1 rounded-[8px] border border-[#CBD5E1] shadow-xs">
         <button
           type="button"
@@ -421,7 +566,7 @@ export default function InteractiveAreaMap() {
         </button>
       </div>
 
-      {/* Floating Action Buttons */}
+      {/* Floating Action Buttons (Bottom Right) */}
       <div className="absolute bottom-2.5 right-2.5 z-10 flex items-center gap-1.5">
         <button
           type="button"
