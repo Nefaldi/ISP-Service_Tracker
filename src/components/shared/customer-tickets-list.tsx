@@ -17,7 +17,8 @@ import {
   Phone,
   MessageSquare,
   Star,
-  ExternalLink,
+  Activity,
+  ArrowRight,
 } from "lucide-react";
 
 export interface CustomerTicketItem {
@@ -466,18 +467,31 @@ export function CustomerTicketsList({
                       </div>
                     </div>
 
-                    {/* 3. Footer Link ke Live Tracker */}
-                    <div className="pt-2 flex items-center justify-between border-t border-[#E2E8F0]">
-                      <span className="text-[11px] text-[#64748B]">
-                        Pantau riwayat teknisi, log perubahan, dan verifikasi penyelesaian secara lengkap
-                      </span>
-                      <Link
-                        href={`/customer/track/${ticket.id}`}
-                        className="text-[12px] font-semibold text-[#1D4ED8] hover:text-[#1E40AF] hover:underline flex items-center gap-1"
-                      >
-                        <span>Buka Live Tracker Lengkap</span>
-                        <ExternalLink className="h-3.5 w-3.5" />
-                      </Link>
+                    {/* 3. Action Banner Live Tracker */}
+                    <div className="pt-3 border-t border-[#E2E8F0]">
+                      <div className="rounded-[10px] bg-white border border-[#BFDBFE] p-3 sm:p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div className="h-9 w-9 rounded-full bg-[#EFF6FF] text-[#1D4ED8] flex items-center justify-center shrink-0 border border-[#DBEAFE]">
+                            <Activity className="h-4 w-4" />
+                          </div>
+                          <div className="min-w-0">
+                            <h5 className="text-[13px] font-bold text-[#0F172A] leading-snug">
+                              Live Tracker & Status Real-Time
+                            </h5>
+                            <p className="text-[11px] text-[#64748B] truncate">
+                              Lihat riwayat perbaikan, log aktivitas teknisi, dan verifikasi tiket
+                            </p>
+                          </div>
+                        </div>
+
+                        <Link
+                          href={`/customer/track/${ticket.id}`}
+                          className="h-[36px] px-4 rounded-[8px] bg-[#1D4ED8] hover:bg-[#1E40AF] text-white text-[12px] font-semibold flex items-center justify-center gap-1.5 transition-colors shrink-0 shadow-xs"
+                        >
+                          <span>Buka Live Tracker</span>
+                          <ArrowRight className="h-3.5 w-3.5 stroke-[2.5]" />
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 )}
