@@ -11,6 +11,7 @@ export default auth((req) => {
   const isAdminRoute = nextUrl.pathname.startsWith("/admin");
   const isTechnicianRoute = nextUrl.pathname.startsWith("/technician");
   const isCustomerRoute = nextUrl.pathname.startsWith("/customer");
+  const isCustomerTrackRoute = nextUrl.pathname.startsWith("/customer/track");
   const isProfileRoute = nextUrl.pathname.startsWith("/profile");
 
   // If authenticated user visits login page, redirect to appropriate role portal
@@ -53,7 +54,8 @@ export default auth((req) => {
     );
   }
 
-  if (isCustomerRoute && userRole !== "CUSTOMER") {
+  // Customer route check: allow /customer/track to be viewed by ADMIN and TEKNISI for oversight
+  if (isCustomerRoute && !isCustomerTrackRoute && userRole !== "CUSTOMER") {
     return NextResponse.redirect(
       new URL("/login?error=AccessDeniedCustomerRoleRequired", nextUrl)
     );

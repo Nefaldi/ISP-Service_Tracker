@@ -219,14 +219,20 @@ export function AdminTicketsTable({
                   >
                     <td className="py-3.5 px-4">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="font-mono text-xs font-bold text-[#1D4ED8]">
+                        <Link
+                          href={`/admin/tickets/${ticket.id}`}
+                          className="font-mono text-xs font-bold text-[#1D4ED8] hover:underline"
+                        >
                           #{ticket.ticketNumber}
-                        </span>
+                        </Link>
                         <Badge variant="priority" value={ticket.priority} />
                       </div>
-                      <div className="font-medium text-[15px] text-[#0F172A] line-clamp-1">
+                      <Link
+                        href={`/admin/tickets/${ticket.id}`}
+                        className="font-medium text-[15px] text-[#0F172A] hover:text-[#1D4ED8] transition-colors line-clamp-1 block"
+                      >
                         {ticket.title}
-                      </div>
+                      </Link>
                       <div className="text-[12px] text-[#64748B]">
                         {formatDateTime(ticket.createdAt)}
                       </div>
@@ -282,7 +288,7 @@ export function AdminTicketsTable({
                             technicians={technicians}
                             isReassign={true}
                           />
-                          <Link href={`/customer/track/${ticket.id}`}>
+                          <Link href={`/admin/tickets/${ticket.id}`}>
                             <Button
                               size="sm"
                               variant="outline"
@@ -293,7 +299,7 @@ export function AdminTicketsTable({
                           </Link>
                         </div>
                       ) : (
-                        <Link href={`/customer/track/${ticket.id}`}>
+                        <Link href={`/admin/tickets/${ticket.id}`}>
                           <Button
                             size="sm"
                             variant="outline"

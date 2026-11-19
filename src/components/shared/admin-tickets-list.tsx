@@ -428,7 +428,7 @@ export function AdminTicketsList({
                       />
                     ) : null}
 
-                    <Link href={`/customer/track/${ticket.id}`}>
+                    <Link href={`/admin/tickets/${ticket.id}`}>
                       <button
                         type="button"
                         className="h-[34px] px-3 rounded-[6px] border border-[#CBD5E1] bg-white text-[12px] font-semibold text-[#0F172A] hover:bg-[#F8FAFC] inline-flex items-center gap-1 transition-colors cursor-pointer"
