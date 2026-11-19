@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Link from "next/link";
 import { StatusBadge } from "@/components/shared/status-badge";
+import { Badge } from "@/components/ui/badge";
 import { TechnicianActions } from "@/components/forms/technician-actions";
 import { formatDateTime } from "@/lib/utils";
 import {
@@ -12,6 +14,8 @@ import {
   AlertTriangle,
   ImageIcon,
   FileText,
+  Search,
+  ExternalLink,
 } from "lucide-react";
 
 export interface TechTaskItem {
@@ -39,11 +43,13 @@ interface TechnicianTasksListProps {
 }
 
 export function TechnicianTasksList({ initialTasks }: TechnicianTasksListProps) {
-  const [filterTab, setFilterTab] = useState<"ALL" | "ASSIGNED" | "IN_PROGRESS" | "RESOLVED">("ALL");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterTab, setFilterTab] = useState<"ACTIVE" | "ASSIGNED" | "IN_PROGRESS" | "RESOLVED" | "ALL">("ACTIVE");
 
   const counts = useMemo(() => {
     return {
       all: initialTasks.length,
+      active: initialTasks.filter((t) => t.status === "ASSIGNED" || t.status === "IN_PROGRESS").length,
       assigned: initialTasks.filter((t) => t.status === "ASSIGNED").length,
       inProgress: initialTasks.filter((t) => t.status === "IN_PROGRESS").length,
       resolved: initialTasks.filter((t) => t.status === "RESOLVED" || t.status === "CLOSED").length,
@@ -52,84 +58,120 @@ export function TechnicianTasksList({ initialTasks }: TechnicianTasksListProps) 
 
   const filteredTasks = useMemo(() => {
     return initialTasks.filter((task) => {
-      if (filterTab === "ASSIGNED") return task.status === "ASSIGNED";
-      if (filterTab === "IN_PROGRESS") return task.status === "IN_PROGRESS";
-      if (filterTab === "RESOLVED") return task.status === "RESOLVED" || task.status === "CLOSED";
-      return true;
+      const keyword = searchTerm.toLowerCase().trim();
+      const matchKeyword =
+        !keyword ||
+        task.ticketNumber.toLowerCase().includes(keyword) ||
+        task.title.toLowerCase().includes(keyword) ||
+        task.customer.name.toLowerCase().includes(keyword) ||
+        task.category.toLowerCase().includes(keyword);
+
+      let matchTab = true;
+      if (filterTab === "ACTIVE") matchTab = task.status === "ASSIGNED" || task.status === "IN_PROGRESS";
+      else if (filterTab === "ASSIGNED") matchTab = task.status === "ASSIGNED";
+      else if (filterTab === "IN_PROGRESS") matchTab = task.status === "IN_PROGRESS";
+      else if (filterTab === "RESOLVED") matchTab = task.status === "RESOLVED" || task.status === "CLOSED";
+
+      return matchKeyword && matchTab;
     });
-  }, [initialTasks, filterTab]);
+  }, [initialTasks, searchTerm, filterTab]);
 
   return (
     <div className="space-y-4">
-      {/* Filter Tabs (Horizontal Scrollable on Mobile) */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
-        <button
-          type="button"
-          onClick={() => setFilterTab("ALL")}
-          className={`h-[36px] px-3.5 rounded-[8px] text-[13px] font-semibold whitespace-nowrap transition-colors ${
-            filterTab === "ALL"
-              ? "bg-[#0F172A] text-white"
-              : "bg-white border border-[#E2E8F0] text-[#475569] hover:bg-[#F1F5F9]"
-          }`}
-        >
-          Semua ({counts.all})
-        </button>
+      {/* Search and Tabs Toolbar (Consistent with Customer Tickets List) */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-3 border-b border-[#E2E8F0]">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+          <button
+            type="button"
+            onClick={() => setFilterTab("ACTIVE")}
+            className={`h-[36px] px-3.5 rounded-[8px] text-[13px] font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 cursor-pointer ${
+              filterTab === "ACTIVE"
+                ? "bg-[#1D4ED8] text-white"
+                : "bg-[#F1F5F9] text-[#475569] hover:bg-[#E2E8F0]"
+            }`}
+          >
+            <Clock className="h-4 w-4" />
+            <span>Sedang Berjalan ({counts.active})</span>
+          </button>
 
-        <button
-          type="button"
-          onClick={() => setFilterTab("ASSIGNED")}
-          className={`h-[36px] px-3.5 rounded-[8px] text-[13px] font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 ${
-            filterTab === "ASSIGNED"
-              ? "bg-[#1D4ED8] text-white"
-              : "bg-white border border-[#BFDBFE] text-[#1D4ED8] hover:bg-[#EFF6FF]"
-          }`}
-        >
-          <Clock className="h-3.5 w-3.5" />
-          <span>Ditugaskan ({counts.assigned})</span>
-        </button>
+          <button
+            type="button"
+            onClick={() => setFilterTab("ASSIGNED")}
+            className={`h-[36px] px-3.5 rounded-[8px] text-[13px] font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 cursor-pointer ${
+              filterTab === "ASSIGNED"
+                ? "bg-[#1D4ED8] text-white"
+                : "bg-[#F1F5F9] text-[#475569] hover:bg-[#E2E8F0]"
+            }`}
+          >
+            <span>Ditugaskan ({counts.assigned})</span>
+          </button>
 
-        <button
-          type="button"
-          onClick={() => setFilterTab("IN_PROGRESS")}
-          className={`h-[36px] px-3.5 rounded-[8px] text-[13px] font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 ${
-            filterTab === "IN_PROGRESS"
-              ? "bg-[#5B21B6] text-white"
-              : "bg-white border border-[#DDD6FE] text-[#5B21B6] hover:bg-[#EDE9FE]"
-          }`}
-        >
-          <AlertTriangle className="h-3.5 w-3.5" />
-          <span>Sedang Dikerjakan ({counts.inProgress})</span>
-        </button>
+          <button
+            type="button"
+            onClick={() => setFilterTab("IN_PROGRESS")}
+            className={`h-[36px] px-3.5 rounded-[8px] text-[13px] font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 cursor-pointer ${
+              filterTab === "IN_PROGRESS"
+                ? "bg-[#5B21B6] text-white"
+                : "bg-[#F1F5F9] text-[#475569] hover:bg-[#E2E8F0]"
+            }`}
+          >
+            <AlertTriangle className="h-4 w-4" />
+            <span>Dikerjakan ({counts.inProgress})</span>
+          </button>
 
-        <button
-          type="button"
-          onClick={() => setFilterTab("RESOLVED")}
-          className={`h-[36px] px-3.5 rounded-[8px] text-[13px] font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 ${
-            filterTab === "RESOLVED"
-              ? "bg-[#047857] text-white"
-              : "bg-white border border-[#A7F3D0] text-[#065F46] hover:bg-[#D1FAE5]"
-          }`}
-        >
-          <CheckCircle2 className="h-3.5 w-3.5" />
-          <span>Selesai ({counts.resolved})</span>
-        </button>
+          <button
+            type="button"
+            onClick={() => setFilterTab("RESOLVED")}
+            className={`h-[36px] px-3.5 rounded-[8px] text-[13px] font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 cursor-pointer ${
+              filterTab === "RESOLVED"
+                ? "bg-[#047857] text-white"
+                : "bg-[#F1F5F9] text-[#475569] hover:bg-[#E2E8F0]"
+            }`}
+          >
+            <CheckCircle2 className="h-4 w-4" />
+            <span>Riwayat Selesai ({counts.resolved})</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setFilterTab("ALL")}
+            className={`h-[36px] px-2.5 text-[13px] font-medium text-[#64748B] hover:text-[#0F172A] cursor-pointer ${
+              filterTab === "ALL" ? "underline font-bold text-[#0F172A]" : ""
+            }`}
+          >
+            Semua ({counts.all})
+          </button>
+        </div>
+
+        <div className="relative w-full sm:w-[240px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#64748B]" />
+          <input
+            type="text"
+            aria-label="Cari tugas lapangan"
+            placeholder="Cari tiket atau pelanggan..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full h-[36px] pl-9 pr-3 rounded-[8px] border border-[#94A3B8] bg-white text-[13px] text-[#0F172A] placeholder:text-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#1D4ED8]"
+          />
+        </div>
       </div>
 
-      {/* Task Cards List (UI_CONTEXT 4.4: mobile 390px, vertical spacing 16px) */}
+      {/* Task Cards List */}
       {filteredTasks.length === 0 ? (
         <div className="py-12 text-center rounded-[12px] border border-[#E2E8F0] bg-white p-6">
           <Clock className="h-8 w-8 text-[#94A3B8] mx-auto mb-2" />
           <h3 className="text-[16px] font-semibold text-[#0F172A]">
-            Tidak ada tugas
+            Tidak ada tugas lapangan
           </h3>
           <p className="text-[13px] text-[#64748B] mt-1">
-            Belum ada tugas lapangan pada kategori ini.
+            {filterTab === "ACTIVE"
+              ? "Tidak ada tugas perbaikan yang sedang aktif saat ini."
+              : "Belum ada tugas pada kategori ini."}
           </p>
         </div>
       ) : (
         <div className="space-y-4">
           {filteredTasks.map((task) => {
-            // Target SLA
             const targetHours =
               task.priority === "CRITICAL"
                 ? 2
@@ -151,34 +193,54 @@ export function TechnicianTasksList({ initialTasks }: TechnicianTasksListProps) 
             return (
               <div
                 key={task.id}
-                className="rounded-[12px] border border-[#E2E8F0] bg-white p-4 sm:p-5 space-y-3.5 shadow-xs"
+                className="rounded-[12px] border border-[#E2E8F0] bg-white p-4 sm:p-5 space-y-4 hover:border-[#1D4ED8] hover:shadow-xs transition-all"
               >
-                {/* Header: Kode tiket + StatusBadge (UI_CONTEXT 4.4) */}
-                <div className="flex items-center justify-between gap-2">
-                  <span className="font-mono text-[14px] font-medium text-[#475569]">
-                    #{task.ticketNumber}
-                  </span>
-                  <StatusBadge status={task.status} />
+                {/* Header: Kode tiket + StatusBadge + Priority + Link */}
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xs font-bold text-[#1D4ED8]">
+                      #{task.ticketNumber}
+                    </span>
+                    <StatusBadge status={task.status} />
+                    <Badge variant="priority" value={task.priority} />
+                    <span className="text-xs text-[#64748B] hidden sm:inline">
+                      &bull; {task.category}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-[#64748B]">
+                      {formatDateTime(task.createdAt)}
+                    </span>
+                    <Link
+                      href={`/customer/track/${task.id}`}
+                      className="text-xs font-semibold text-[#1D4ED8] hover:underline inline-flex items-center gap-0.5"
+                      title="Lihat Halaman Live Tracker"
+                    >
+                      <span>Detail</span>
+                      <ExternalLink className="h-3 w-3" />
+                    </Link>
+                  </div>
                 </div>
 
-                {/* Judul Masalah (16px semibold - UI_CONTEXT 4.4) */}
+                {/* Judul & Deskripsi Masalah */}
                 <div>
                   <h2 className="text-[16px] font-semibold text-[#0F172A] leading-snug">
                     {task.title}
                   </h2>
-                  <p className="text-[13px] text-[#475569] mt-1 line-clamp-2">
+                  <p className="text-[14px] text-[#475569] mt-1 whitespace-pre-line">
                     {task.description}
                   </p>
                 </div>
 
                 {/* Instruksi Admin jika ada */}
                 {task.adminNotes && (
-                  <div className="p-3 rounded-[8px] bg-[#EFF6FF] border border-[#BFDBFE] text-xs space-y-1">
+                  <div className="p-3.5 rounded-[8px] bg-[#EFF6FF] border border-[#BFDBFE] text-xs space-y-1">
                     <span className="font-semibold text-[#1D4ED8] flex items-center gap-1.5">
-                      <FileText className="h-3.5 w-3.5" />
+                      <FileText className="h-4 w-4" />
                       <span>Instruksi Helpdesk Admin:</span>
                     </span>
-                    <p className="text-[#0F172A] font-medium pl-5">{task.adminNotes}</p>
+                    <p className="text-[#0F172A] font-medium pl-5 text-[13px]">{task.adminNotes}</p>
                   </div>
                 )}
 
@@ -186,11 +248,11 @@ export function TechnicianTasksList({ initialTasks }: TechnicianTasksListProps) 
                 {task.damagePhotoUrl && (
                   <div className="p-3 rounded-[8px] bg-[#F8FAFC] border border-[#E2E8F0] space-y-2">
                     <span className="text-xs font-semibold text-[#475569] flex items-center gap-1.5">
-                      <ImageIcon className="h-3.5 w-3.5 text-[#1D4ED8]" />
+                      <ImageIcon className="h-4 w-4 text-[#1D4ED8]" />
                       <span>Foto Bukti Kerusakan dari Pelanggan:</span>
                     </span>
                     <div className="flex items-center gap-3">
-                      <div className="h-14 w-20 rounded-[6px] overflow-hidden border border-[#CBD5E1] bg-[#F1F5F9] shrink-0">
+                      <div className="h-16 w-24 rounded-[6px] overflow-hidden border border-[#CBD5E1] bg-[#F1F5F9] shrink-0">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={task.damagePhotoUrl}
@@ -214,63 +276,57 @@ export function TechnicianTasksList({ initialTasks }: TechnicianTasksListProps) 
                 {(task.status === "RESOLVED" || task.status === "CLOSED") && task.resolutionNotes && (
                   <div className="p-3 rounded-[8px] bg-[#F0FDF4] border border-[#A7F3D0] text-xs space-y-1">
                     <span className="font-semibold text-[#065F46] flex items-center gap-1.5">
-                      <CheckCircle2 className="h-3.5 w-3.5" />
+                      <CheckCircle2 className="h-4 w-4" />
                       <span>Catatan Penyelesaian Anda:</span>
                     </span>
-                    <p className="text-[#0F172A] pl-5">{task.resolutionNotes}</p>
+                    <p className="text-[#0F172A] pl-5 text-[13px]">{task.resolutionNotes}</p>
                   </div>
                 )}
 
-                {/* Pelanggan & Kontak WhatsApp/Telepon */}
-                <div className="pt-2 border-t border-[#E2E8F0] space-y-2">
-                  <div className="flex items-center justify-between text-[13px]">
-                    <span className="font-medium text-[#0F172A]">
-                      {task.customer.name}
+                {/* Informasi Pelanggan & Kontak WhatsApp/Telepon */}
+                <div className="pt-3 border-t border-[#E2E8F0] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <span className="block text-[11px] font-semibold uppercase tracking-wider text-[#64748B]">
+                      Pelanggan Pelapor
                     </span>
-                    <span className="text-[#64748B] text-xs">
-                      {formatDateTime(task.createdAt)}
+                    <span className="font-semibold text-[14px] text-[#0F172A]">
+                      {task.customer.name}
                     </span>
                   </div>
 
-                  {task.customer.phone && (
-                    <div className="grid grid-cols-2 gap-2 pt-1">
-                      {waNumber && (
-                        <a
-                          href={`https://wa.me/${waNumber}?text=Halo%20${encodeURIComponent(
-                            task.customer.name
-                          )},%20saya%20teknisi%20Service%20Tracker%20terkait%20laporan%20%23${task.ticketNumber}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="h-[38px] rounded-[8px] bg-[#D1FAE5] hover:bg-[#A7F3D0] text-[#065F46] border border-[#A7F3D0] text-xs font-semibold inline-flex items-center justify-center gap-1.5 transition-colors"
-                        >
-                          <MessageSquare className="h-3.5 w-3.5" />
-                          <span>WhatsApp</span>
-                        </a>
-                      )}
+                  <div className="flex items-center gap-2">
+                    {waNumber && (
+                      <a
+                        href={`https://wa.me/${waNumber}?text=Halo%20${encodeURIComponent(
+                          task.customer.name
+                        )},%20saya%20teknisi%20Service%20Tracker%20terkait%20laporan%20%23${task.ticketNumber}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="h-[36px] px-3.5 rounded-[8px] bg-[#D1FAE5] hover:bg-[#A7F3D0] text-[#065F46] border border-[#A7F3D0] text-xs font-semibold inline-flex items-center justify-center gap-1.5 transition-colors"
+                      >
+                        <MessageSquare className="h-3.5 w-3.5" />
+                        <span>WhatsApp</span>
+                      </a>
+                    )}
 
+                    {task.customer.phone && (
                       <a
                         href={`tel:${task.customer.phone}`}
-                        className="h-[38px] rounded-[8px] bg-[#EFF6FF] hover:bg-[#DBEAFE] text-[#1D4ED8] border border-[#BFDBFE] text-xs font-semibold inline-flex items-center justify-center gap-1.5 transition-colors"
+                        className="h-[36px] px-3.5 rounded-[8px] bg-[#EFF6FF] hover:bg-[#DBEAFE] text-[#1D4ED8] border border-[#BFDBFE] text-xs font-semibold inline-flex items-center justify-center gap-1.5 transition-colors"
                       >
                         <Phone className="h-3.5 w-3.5" />
                         <span>Telepon</span>
                       </a>
+                    )}
+
+                    <div className="rounded-[8px] bg-[#EFF6FF] border border-[#BFDBFE] px-3 py-1.5 text-xs text-[#1D4ED8] font-medium hidden md:inline-flex items-center gap-1">
+                      <Clock className="h-3.5 w-3.5" />
+                      <span>SLA: {targetHours} Jam</span>
                     </div>
-                  )}
-                </div>
-
-                {/* Kotak SLA Kecil (latar brand-50 - UI_CONTEXT 4.4) */}
-                <div className="rounded-[8px] bg-[#EFF6FF] border border-[#BFDBFE] p-2.5 flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-1.5 text-[#1D4ED8] font-medium">
-                    <Clock className="h-3.5 w-3.5" />
-                    <span>Target SLA: {targetHours} Jam</span>
                   </div>
-                  <span className="font-semibold text-[#1E40AF]">
-                    Prioritas {task.priority}
-                  </span>
                 </div>
 
-                {/* Tombol Aksi Utama (UI_CONTEXT 4.4: 52px tombol aksi teknisi) */}
+                {/* Tombol Aksi Teknisi */}
                 <div className="pt-2">
                   <TechnicianActions ticketId={task.id} status={task.status} />
                 </div>

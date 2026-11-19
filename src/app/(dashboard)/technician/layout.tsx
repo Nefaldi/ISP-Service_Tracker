@@ -11,7 +11,7 @@ export default async function TechnicianLayout({
   return (
     <div className="min-h-screen flex flex-col bg-[#F6F7F9]">
       <Navbar user={session?.user} />
-      <main className="flex-1 w-full max-w-[480px] mx-auto p-4 sm:p-5">
+      <main className="flex-1 w-full max-w-[1120px] mx-auto p-4 sm:p-6 lg:py-8">
         {children}
       </main>
     </div>

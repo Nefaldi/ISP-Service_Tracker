@@ -61,7 +61,7 @@ export function Navbar({ user }: NavbarProps) {
                         : "text-[#475569] hover:text-[#0F172A]"
                     }`}
                   >
-                    Ikhtisar
+                    Portal Teknisi
                   </Link>
                   <Link
                     href="/technician/tasks"
@@ -71,7 +71,7 @@ export function Navbar({ user }: NavbarProps) {
                         : "text-[#475569] hover:text-[#0F172A]"
                     }`}
                   >
-                    Tugas Lapangan
+                    Daftar Tugas
                   </Link>
                 </>
               )}

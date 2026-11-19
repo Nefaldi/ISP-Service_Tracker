@@ -1,9 +1,17 @@
-import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { StatusBadge } from "@/components/shared/status-badge";
-import { formatDateTime } from "@/lib/utils";
-import { CheckCircle, Clock, ArrowRight, AlertTriangle } from "lucide-react";
+import { TechnicianTasksList } from "@/components/shared/technician-tasks-list";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Wrench,
+  Clock,
+  AlertTriangle,
+  CheckCircle,
+  Phone,
+  Mail,
+  ShieldCheck,
+  Info,
+} from "lucide-react";
 
 export const metadata = {
   title: "Portal Teknisi - Service Tracker",
@@ -14,14 +22,15 @@ export default async function TechnicianOverviewPage() {
   const dbUser = session?.user?.email
     ? await prisma.user.findUnique({
         where: { email: session.user.email },
-        select: { id: true },
+        select: { id: true, name: true, email: true, phone: true },
       })
     : null;
+
   const techId = dbUser?.id || session?.user?.id;
-  const techName = session?.user?.name || "Teknisi";
+  const techUser = dbUser || session?.user;
   const isTech = session?.user?.role === "TEKNISI";
 
-  const [assignedCount, inProgressCount, completedCount, activeTasks] = await Promise.all([
+  const [assignedCount, inProgressCount, completedCount, tasks] = await Promise.all([
     prisma.ticket.count({
       where: isTech && techId ? { technicianId: techId, status: "ASSIGNED" } : { status: "ASSIGNED" },
     }),
@@ -34,109 +43,179 @@ export default async function TechnicianOverviewPage() {
         : { status: { in: ["RESOLVED", "CLOSED"] } },
     }),
     prisma.ticket.findMany({
-      where: isTech && techId
-        ? {
-            technicianId: techId,
-            status: { in: ["ASSIGNED", "IN_PROGRESS"] },
-          }
-        : { status: { in: ["ASSIGNED", "IN_PROGRESS"] } },
+      where: isTech && techId ? { technicianId: techId } : {},
       include: {
         customer: { select: { name: true, phone: true } },
+        logs: {
+          where: { action: "ASSIGNED" },
+          orderBy: { createdAt: "desc" },
+          take: 1,
+          select: { notes: true, user: { select: { name: true } } },
+        },
       },
       orderBy: { createdAt: "desc" },
     }),
   ]);
 
+  const formattedTasks = tasks.map((task) => ({
+    id: task.id,
+    ticketNumber: task.ticketNumber,
+    title: task.title,
+    description: task.description,
+    status: task.status,
+    priority: task.priority,
+    category: task.category,
+    damagePhotoUrl: task.damagePhotoUrl,
+    resolvedPhotoUrl: task.resolvedPhotoUrl,
+    resolutionNotes: task.resolutionNotes,
+    createdAt: task.createdAt,
+    resolvedAt: task.resolvedAt,
+    customer: task.customer,
+    adminNotes: task.logs[0]?.notes || null,
+  }));
+
   return (
-    <div className="space-y-4">
-      {/* Sapaan & Judul */}
+    <div className="space-y-6">
+      {/* Page Title (Consistent with Customer Portal) */}
       <div>
-        <p className="text-[13px] text-[#475569] font-medium">
-          Halo, {techName}
-        </p>
-        <h1 className="text-[24px] font-bold tracking-tight text-[#0F172A]">
-          Ikhtisar Pekerjaan
+        <h1 className="text-[28px] font-bold tracking-tight text-[#0F172A]">
+          Portal Teknisi Lapangan
         </h1>
+        <p className="text-[14px] text-[#475569] mt-1">
+          Pantau penugasan tiket, kelola progres pengerjaan di lapangan, dan laporkan bukti penyelesaian perbaikan secara real-time
+        </p>
       </div>
 
-      {/* 3 Metric Cards */}
-      <div className="grid grid-cols-3 gap-2.5">
-        <div className="rounded-[12px] border border-[#BFDBFE] bg-[#EFF6FF] p-3 text-center">
-          <Clock className="h-4 w-4 text-[#1D4ED8] mx-auto mb-1" />
-          <div className="text-[22px] font-bold text-[#1D4ED8] leading-tight">
-            {assignedCount}
-          </div>
-          <span className="text-[11px] text-[#1E40AF] font-medium">Ditugaskan</span>
-        </div>
-
-        <div className="rounded-[12px] border border-[#DDD6FE] bg-[#EDE9FE] p-3 text-center">
-          <AlertTriangle className="h-4 w-4 text-[#5B21B6] mx-auto mb-1" />
-          <div className="text-[22px] font-bold text-[#5B21B6] leading-tight">
-            {inProgressCount}
-          </div>
-          <span className="text-[11px] text-[#5B21B6] font-medium">Dikerjakan</span>
-        </div>
-
-        <div className="rounded-[12px] border border-[#A7F3D0] bg-[#D1FAE5] p-3 text-center">
-          <CheckCircle className="h-4 w-4 text-[#065F46] mx-auto mb-1" />
-          <div className="text-[22px] font-bold text-[#065F46] leading-tight">
-            {completedCount}
-          </div>
-          <span className="text-[11px] text-[#065F46] font-medium">Selesai</span>
-        </div>
-      </div>
-
-      {/* Button to tasks page */}
-      <div>
-        <Link
-          href="/technician/tasks"
-          className="w-full h-[48px] rounded-[10px] bg-[#1D4ED8] hover:bg-[#1E40AF] text-white text-[15px] font-semibold flex items-center justify-center gap-2 shadow-xs transition-colors"
-        >
-          <span>Buka Daftar Tugas ({assignedCount + inProgressCount})</span>
-          <ArrowRight className="h-4 w-4" />
-        </Link>
-      </div>
-
-      {/* Active Tasks Preview */}
-      <div className="pt-2 space-y-3">
-        <h2 className="text-[16px] font-semibold text-[#0F172A]">
-          Tugas Aktif Terkini
-        </h2>
-
-        {activeTasks.length === 0 ? (
-          <div className="py-8 text-center rounded-[12px] border border-[#E2E8F0] bg-white p-4">
-            <CheckCircle className="h-7 w-7 text-[#047857] mx-auto mb-1.5" />
-            <p className="text-[14px] font-semibold text-[#0F172A]">
-              Semua tugas telah terselesaikan
-            </p>
-            <p className="text-[12px] text-[#64748B] mt-0.5">
-              Belum ada tugas baru yang ditugaskan kepada Anda.
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {activeTasks.map((task) => (
-              <Link
-                key={task.id}
-                href="/technician/tasks"
-                className="block rounded-[12px] border border-[#E2E8F0] bg-white p-4 hover:border-[#1D4ED8] transition-colors"
-              >
-                <div className="flex items-center justify-between gap-2 mb-1.5">
-                  <span className="font-mono text-xs font-bold text-[#1D4ED8]">
-                    #{task.ticketNumber}
-                  </span>
-                  <StatusBadge status={task.status} />
+      {/* 2-Column Responsive Layout (Consistent with Customer Portal) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        {/* Left Column: Profile Card, Metrics, and SLA Guide */}
+        <div className="lg:col-span-1 space-y-5">
+          {/* Technician Profile Card */}
+          <Card>
+            <CardHeader className="pb-3 border-b border-[#E2E8F0] mb-3">
+              <CardTitle className="text-[17px] flex items-center gap-2">
+                <Wrench className="h-5 w-5 text-[#1D4ED8]" />
+                <span>Profil Teknisi Lapangan</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3.5">
+              <div className="flex items-center gap-3">
+                <div className="h-12 w-12 rounded-full bg-[#EDE9FE] text-[#5B21B6] flex items-center justify-center font-bold text-lg border border-[#DDD6FE]">
+                  <Wrench className="h-6 w-6" />
                 </div>
-                <h3 className="text-[15px] font-semibold text-[#0F172A] line-clamp-1">
-                  {task.title}
-                </h3>
-                <p className="text-[12px] text-[#64748B] mt-1">
-                  {task.customer.name} &bull; {formatDateTime(task.createdAt)}
-                </p>
-              </Link>
-            ))}
+                <div>
+                  <h3 className="font-semibold text-[16px] text-[#0F172A]">
+                    {techUser?.name || "Teknisi Jaringan"}
+                  </h3>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#EDE9FE] text-[#5B21B6] border border-[#DDD6FE]">
+                      <ShieldCheck className="h-3 w-3" />
+                      <span>Teknisi Lapangan</span>
+                    </span>
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#D1FAE5] text-[#065F46] border border-[#A7F3D0]">
+                      <span className="h-1.5 w-1.5 rounded-full bg-[#059669]"></span>
+                      <span>Aktif</span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-[#E2E8F0] space-y-2 text-[13px] text-[#475569]">
+                <div className="flex items-center gap-2">
+                  <Mail className="h-4 w-4 text-[#64748B] shrink-0" />
+                  <span className="truncate">{techUser?.email || "teknisi@tracker.com"}</span>
+                </div>
+                {techUser?.phone && (
+                  <div className="flex items-center gap-2">
+                    <Phone className="h-4 w-4 text-[#64748B] shrink-0" />
+                    <span>{techUser.phone}</span>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* 3 Metric Summary Cards */}
+          <div className="grid grid-cols-3 gap-2.5">
+            <div className="rounded-[12px] border border-[#BFDBFE] bg-[#EFF6FF] p-3 text-center shadow-xs">
+              <Clock className="h-4 w-4 text-[#1D4ED8] mx-auto mb-1" />
+              <div className="text-[24px] font-bold text-[#1D4ED8] leading-tight">
+                {assignedCount}
+              </div>
+              <span className="text-[11px] text-[#1E40AF] font-semibold block mt-0.5">
+                Ditugaskan
+              </span>
+            </div>
+
+            <div className="rounded-[12px] border border-[#DDD6FE] bg-[#EDE9FE] p-3 text-center shadow-xs">
+              <AlertTriangle className="h-4 w-4 text-[#5B21B6] mx-auto mb-1" />
+              <div className="text-[24px] font-bold text-[#5B21B6] leading-tight">
+                {inProgressCount}
+              </div>
+              <span className="text-[11px] text-[#5B21B6] font-semibold block mt-0.5">
+                Dikerjakan
+              </span>
+            </div>
+
+            <div className="rounded-[12px] border border-[#A7F3D0] bg-[#D1FAE5] p-3 text-center shadow-xs">
+              <CheckCircle className="h-4 w-4 text-[#065F46] mx-auto mb-1" />
+              <div className="text-[24px] font-bold text-[#065F46] leading-tight">
+                {completedCount}
+              </div>
+              <span className="text-[11px] text-[#065F46] font-semibold block mt-0.5">
+                Selesai
+              </span>
+            </div>
           </div>
-        )}
+
+          {/* SLA Standard Reference Card */}
+          <Card className="bg-[#F8FAFC]">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-[15px] flex items-center gap-2 text-[#0F172A]">
+                <Info className="h-4 w-4 text-[#1D4ED8]" />
+                <span>Target Waktu Layanan (SLA)</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2 text-xs">
+              <div className="flex items-center justify-between py-1 border-b border-[#E2E8F0]">
+                <span className="font-semibold text-[#DC2626]">Critical (Mendesak)</span>
+                <span className="font-mono font-bold text-[#0F172A]">2 Jam</span>
+              </div>
+              <div className="flex items-center justify-between py-1 border-b border-[#E2E8F0]">
+                <span className="font-semibold text-[#EA580C]">High (Penting)</span>
+                <span className="font-mono font-bold text-[#0F172A]">4 Jam</span>
+              </div>
+              <div className="flex items-center justify-between py-1 border-b border-[#E2E8F0]">
+                <span className="font-semibold text-[#D97706]">Medium (Standar)</span>
+                <span className="font-mono font-bold text-[#0F172A]">8 Jam</span>
+              </div>
+              <div className="flex items-center justify-between py-1">
+                <span className="font-semibold text-[#2563EB]">Low (Normal)</span>
+                <span className="font-mono font-bold text-[#0F172A]">24 Jam</span>
+              </div>
+              <p className="text-[11px] text-[#64748B] pt-1">
+                Pastikan mengunggah foto bukti kerja sebelum menandai tiket selesai.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right Column: Main Task List */}
+        <div className="lg:col-span-2 space-y-4">
+          <Card>
+            <CardHeader className="pb-3 border-b border-[#E2E8F0] mb-4">
+              <CardTitle className="text-[18px]">
+                Daftar Tugas Perbaikan ({tasks.length})
+              </CardTitle>
+              <CardDescription className="text-[14px]">
+                Kelola penugasan tiket lapangan, hubungi pelanggan, dan laporkan penyelesaian perbaikan
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <TechnicianTasksList initialTasks={formattedTasks} />
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

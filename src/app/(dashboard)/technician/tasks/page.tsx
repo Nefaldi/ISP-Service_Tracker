@@ -1,9 +1,12 @@
+import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { TechnicianTasksList } from "@/components/shared/technician-tasks-list";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { ArrowLeft } from "lucide-react";
 
 export const metadata = {
-  title: "Tugas Hari Ini - Service Tracker Teknisi",
+  title: "Daftar Tugas Lapangan - Service Tracker Teknisi",
 };
 
 export default async function TechnicianTasksPage() {
@@ -15,7 +18,6 @@ export default async function TechnicianTasksPage() {
       })
     : null;
   const techId = dbUser?.id || session?.user?.id;
-  const techName = session?.user?.name || "Teknisi";
 
   const isTech = session?.user?.role === "TEKNISI";
   const whereClause = isTech && techId ? { technicianId: techId } : {};
@@ -52,18 +54,36 @@ export default async function TechnicianTasksPage() {
   }));
 
   return (
-    <div className="space-y-4">
-      {/* Sapaan kecil & Judul "Tugas hari ini" (24px) - UI_CONTEXT 4.4 */}
+    <div className="space-y-6">
       <div>
-        <p className="text-[13px] text-[#475569] font-medium">
-          Halo, {techName}
-        </p>
-        <h1 className="text-[24px] font-bold tracking-tight text-[#0F172A]">
-          Tugas hari ini
+        <Link
+          href="/technician"
+          className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#475569] hover:text-[#0F172A] mb-2 transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          <span>Kembali ke Portal Teknisi</span>
+        </Link>
+        <h1 className="text-[28px] font-bold tracking-tight text-[#0F172A]">
+          Daftar Tugas Perbaikan Lapangan
         </h1>
+        <p className="text-[14px] text-[#475569] mt-1">
+          Kelola seluruh tugas perbaikan jaringan yang ditugaskan kepada Anda secara terperinci
+        </p>
       </div>
 
-      <TechnicianTasksList initialTasks={formattedTasks} />
+      <Card>
+        <CardHeader className="pb-3 border-b border-[#E2E8F0] mb-4">
+          <CardTitle className="text-[18px]">
+            Semua Tugas Lapangan ({tasks.length})
+          </CardTitle>
+          <CardDescription className="text-[14px]">
+            Gunakan filter status atau kotak pencarian untuk menemukan tiket dengan cepat
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <TechnicianTasksList initialTasks={formattedTasks} />
+        </CardContent>
+      </Card>
     </div>
   );
 }
