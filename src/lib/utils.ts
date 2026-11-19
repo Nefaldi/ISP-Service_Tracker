@@ -50,14 +50,29 @@ export function formatTicketStatus(status: string): string {
 export function getPriorityBadgeClass(priority: string): string {
   switch (priority) {
     case "CRITICAL":
-      return "bg-red-100 text-red-800 border-red-300 dark:bg-red-950 dark:text-red-300";
+      return "bg-[#FEE2E2] text-[#991B1B] border-[#FCA5A5]";
     case "HIGH":
-      return "bg-orange-100 text-orange-800 border-orange-300 dark:bg-orange-950 dark:text-orange-300";
+      return "bg-[#FFEDD5] text-[#9A3412] border-[#FDBA74]";
     case "MEDIUM":
-      return "bg-yellow-100 text-yellow-800 border-yellow-300 dark:bg-yellow-950 dark:text-yellow-300";
+      return "bg-[#FEF9C3] text-[#854D0E] border-[#FDE047]";
     case "LOW":
-      return "bg-green-100 text-green-800 border-green-300 dark:bg-green-950 dark:text-green-300";
+      return "bg-[#DCFCE7] text-[#166534] border-[#86EFAC]";
     default:
-      return "bg-gray-100 text-gray-800 border-gray-200";
+      return "bg-[#F1F5F9] text-[#475569] border-[#E2E8F0]";
+  }
+}
+
+export function formatPriority(priority: string): string {
+  switch (priority) {
+    case "CRITICAL":
+      return "Critical";
+    case "HIGH":
+      return "High";
+    case "MEDIUM":
+      return "Medium";
+    case "LOW":
+      return "Low";
+    default:
+      return priority;
   }
 }

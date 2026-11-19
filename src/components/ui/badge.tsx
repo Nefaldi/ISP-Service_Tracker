@@ -1,5 +1,5 @@
 import React from "react";
-import { cn, getPriorityBadgeClass, getStatusBadgeClass, formatTicketStatus } from "@/lib/utils";
+import { cn, getPriorityBadgeClass, getStatusBadgeClass, formatTicketStatus, formatPriority } from "@/lib/utils";
 
 interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   variant?: "status" | "priority" | "default";
@@ -21,6 +21,7 @@ export function Badge({
     displayText = formatTicketStatus(value);
   } else if (variant === "priority" && value) {
     badgeClass = getPriorityBadgeClass(value);
+    displayText = formatPriority(value);
   }
 
   return (
