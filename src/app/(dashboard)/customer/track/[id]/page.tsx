@@ -1,49 +1,23 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { StatusBadge } from "@/components/shared/status-badge";
 import { Badge } from "@/components/ui/badge";
+import { TicketStepper } from "@/components/shared/ticket-stepper";
 import { CustomerReviewCard } from "@/components/forms/customer-review-card";
 import { formatDateTime } from "@/lib/utils";
 import {
   ArrowLeft,
-  CheckCircle2,
   Clock,
   Wrench,
-  Activity,
-  FileCheck,
-  Image as ImageIcon,
+  Plus,
   Phone,
-  MessageSquare,
+  ImageIcon,
 } from "lucide-react";
 
 interface TrackPageProps {
   params: Promise<{ id: string }>;
-}
-
-const LIFECYCLE_STEPS = [
-  { key: "OPEN", label: "1. Open", desc: "Laporan Diterima", icon: Clock },
-  { key: "ASSIGNED", label: "2. Assigned", desc: "Teknisi Ditugaskan", icon: Wrench },
-  { key: "IN_PROGRESS", label: "3. In Progress", desc: "Perbaikan Berjalan", icon: Activity },
-  { key: "RESOLVED", label: "4. Resolved", desc: "Pekerjaan Selesai", icon: CheckCircle2 },
-  { key: "CLOSED", label: "5. Closed", desc: "Verifikasi & CSAT", icon: FileCheck },
-];
-
-function getStepIndex(status: string): number {
-  switch (status) {
-    case "OPEN":
-      return 0;
-    case "ASSIGNED":
-      return 1;
-    case "IN_PROGRESS":
-      return 2;
-    case "RESOLVED":
-      return 3;
-    case "CLOSED":
-      return 4;
-    default:
-      return 0;
-  }
 }
 
 export default async function CustomerTrackTicketPage({ params }: TrackPageProps) {
@@ -55,7 +29,7 @@ export default async function CustomerTrackTicketPage({ params }: TrackPageProps
       customer: { select: { id: true, name: true, email: true, phone: true } },
       technician: { select: { id: true, name: true, email: true, phone: true } },
       logs: {
-        orderBy: { createdAt: "asc" },
+        orderBy: { createdAt: "desc" },
         include: { user: { select: { name: true, role: true } } },
       },
       feedback: true,
@@ -66,179 +40,201 @@ export default async function CustomerTrackTicketPage({ params }: TrackPageProps
     notFound();
   }
 
-  const currentStep = getStepIndex(ticket.status);
+  // SLA Calculation
+  // Standard target: CRITICAL=2h, HIGH=4h, MEDIUM=8h, LOW=24h
+  const targetHours =
+    ticket.priority === "CRITICAL"
+      ? 2
+      : ticket.priority === "HIGH"
+      ? 4
+      : ticket.priority === "MEDIUM"
+      ? 8
+      : 24;
+
+  const createdTime = new Date(ticket.createdAt).getTime();
+  const endTime = ticket.resolvedAt
+    ? new Date(ticket.resolvedAt).getTime()
+    // eslint-disable-next-line react-hooks/purity
+    : Date.now();
+  const elapsedMs = endTime - createdTime;
+  const elapsedHours = elapsedMs / (1000 * 60 * 60);
+
+  const remainingHours = Math.max(0, targetHours - elapsedHours);
+  const remainingHoursFormatted =
+    remainingHours >= 1
+      ? `${Math.floor(remainingHours)} Jam ${Math.round((remainingHours % 1) * 60)} Mnt`
+      : `${Math.round(remainingHours * 60)} Menit`;
+
+  const isResolvedOrClosed =
+    ticket.status === "RESOLVED" || ticket.status === "CLOSED";
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto">
+    <div className="space-y-6">
+      {/* 2. Judul Tiket (UI_CONTEXT 4.2) */}
       <div>
         <Link
           href="/customer"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 mb-2"
+          className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#475569] hover:text-[#0F172A] mb-3"
         >
-          <ArrowLeft className="h-3.5 w-3.5" />
+          <ArrowLeft className="h-4 w-4" />
           <span>Kembali ke Portal Pelanggan</span>
         </Link>
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2">
-              <span className="font-mono text-sm font-bold text-blue-600">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-[14px] font-mono font-medium text-[#475569]">
                 #{ticket.ticketNumber}
               </span>
+              <StatusBadge status={ticket.status} />
               <Badge variant="priority" value={ticket.priority} />
-              <Badge variant="status" value={ticket.status} />
             </div>
-            <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 mt-1">
+            <h1 className="text-[30px] font-bold text-[#0F172A] tracking-tight leading-tight">
               {ticket.title}
             </h1>
           </div>
-          <span className="text-xs text-zinc-500">
-            Dibuat pada: {formatDateTime(ticket.createdAt)}
-          </span>
+
+          <div>
+            <Link
+              href="/customer"
+              className="h-[40px] px-4 rounded-[8px] border border-[#94A3B8] text-[#0F172A] hover:bg-[#F1F5F9] text-[14px] font-medium inline-flex items-center gap-1.5 transition-colors"
+            >
+              <Plus className="h-4 w-4" />
+              <span>+ Buat tiket baru</span>
+            </Link>
+          </div>
         </div>
       </div>
 
-      {/* Real-time Lifecycle Tracker Progress Stepper */}
-      <Card className="border-blue-100 bg-white dark:bg-zinc-900 shadow-md">
-        <CardHeader className="pb-2">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <CardTitle className="text-sm font-semibold uppercase tracking-wider text-zinc-500">
-              Status Alur Pengerjaan (Live SSE Tracker)
-            </CardTitle>
-            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-medium dark:bg-emerald-950/40 dark:border-emerald-900 dark:text-emerald-300">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
-              <span>Koneksi Real-Time Aktif</span>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-2">
-            {LIFECYCLE_STEPS.map((step, idx) => {
-              const Icon = step.icon;
-              const isPast = idx < currentStep;
-              const isCurrent = idx === currentStep;
+      {/* 3. Stepper 5 Tahap dalam Satu Kartu Putih (UI_CONTEXT 4.2) */}
+      <TicketStepper currentStatus={ticket.status} />
 
-              return (
-                <div
-                  key={step.key}
-                  className={`flex flex-col items-center text-center p-3 rounded-xl border transition-all ${
-                    isCurrent
-                      ? "border-blue-500 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 ring-2 ring-blue-500/20"
-                      : isPast
-                      ? "border-emerald-300 bg-emerald-50/50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-300"
-                      : "border-zinc-200 bg-zinc-50/50 dark:border-zinc-800 dark:bg-zinc-950/30 text-zinc-400"
-                  }`}
-                >
-                  <div
-                    className={`h-9 w-9 rounded-full flex items-center justify-center mb-2 ${
-                      isCurrent
-                        ? "bg-blue-600 text-white animate-pulse"
-                        : isPast
-                        ? "bg-emerald-500 text-white"
-                        : "bg-zinc-200 text-zinc-500 dark:bg-zinc-800"
-                    }`}
-                  >
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <span className="text-xs font-bold leading-tight">{step.label}</span>
-                  <span className="text-[11px] opacity-80 mt-0.5">{step.desc}</span>
-                </div>
-              );
-            })}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Ticket Details & Evidence Photos */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-2 space-y-6">
+      {/* 4. Grid Dua Kolom (UI_CONTEXT 4.2: auto-fit, min 320px) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        {/* Kolom Kiri: Riwayat Pengerjaan & Detail Kerusakan (Span 2) */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Kartu Riwayat Pengerjaan */}
           <Card>
-            <CardHeader>
-              <CardTitle>Informasi Gangguan & Penanganan</CardTitle>
+            <CardHeader className="border-b border-[#E2E8F0] pb-3 mb-4">
+              <CardTitle className="text-[18px]">Riwayat Pengerjaan</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {ticket.logs.length === 0 ? (
+                <p className="text-[14px] text-[#64748B] py-4 text-center">
+                  Belum ada log peristiwa yang tercatat.
+                </p>
+              ) : (
+                <div className="relative pl-6 space-y-6 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-[2px] before:bg-[#E2E8F0]">
+                  {ticket.logs.map((log) => (
+                    <div key={log.id} className="relative">
+                      {/* Log Dot */}
+                      <div className="absolute -left-6 top-1.5 h-3.5 w-3.5 rounded-full bg-[#1D4ED8] ring-4 ring-white" />
+                      <div>
+                        <h4 className="text-[15px] font-semibold text-[#0F172A]">
+                          {log.action}
+                        </h4>
+                        <p className="text-[13px] text-[#475569] mt-0.5">
+                          {formatDateTime(log.createdAt)} &bull; Oleh {log.user.name} ({log.user.role})
+                        </p>
+                        {log.notes && (
+                          <p className="text-[14px] text-[#0F172A] bg-[#F8FAFC] border border-[#E2E8F0] p-3 rounded-[8px] mt-2">
+                            {log.notes}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Kartu Informasi Kendala & Lampiran Bukti */}
+          <Card>
+            <CardHeader className="border-b border-[#E2E8F0] pb-3 mb-4">
+              <CardTitle className="text-[18px]">Detail Gangguan & Dokumentasi</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <h4 className="text-xs font-semibold uppercase text-zinc-500 mb-1">
-                  Deskripsi Kendala
-                </h4>
-                <p className="text-sm text-zinc-800 dark:text-zinc-200 whitespace-pre-line bg-zinc-50 dark:bg-zinc-900 p-3 rounded-lg">
+                <span className="block text-xs font-semibold uppercase tracking-wider text-[#64748B] mb-1">
+                  Deskripsi Laporan
+                </span>
+                <p className="text-[15px] text-[#0F172A] bg-[#F8FAFC] p-3.5 rounded-[8px] border border-[#E2E8F0] whitespace-pre-line">
                   {ticket.description}
                 </p>
               </div>
 
               {ticket.resolutionNotes && (
                 <div>
-                  <h4 className="text-xs font-semibold uppercase text-emerald-600 mb-1">
-                    Catatan Perbaikan Teknisi
-                  </h4>
-                  <p className="text-sm text-zinc-800 dark:text-zinc-200 whitespace-pre-line bg-emerald-50/50 border border-emerald-200 dark:border-emerald-900 p-3 rounded-lg">
+                  <span className="block text-xs font-semibold uppercase tracking-wider text-[#065F46] mb-1">
+                    Catatan Penyelesaian Teknisi
+                  </span>
+                  <p className="text-[15px] text-[#0F172A] bg-[#D1FAE5]/40 p-3.5 rounded-[8px] border border-[#A7F3D0] whitespace-pre-line">
                     {ticket.resolutionNotes}
                   </p>
                 </div>
               )}
 
-              {/* Photos Gallery */}
+              {/* Foto Bukti Kerusakan & Bukti Hasil Kerja */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                 <div>
-                  <h4 className="text-xs font-semibold uppercase text-zinc-500 mb-2 flex items-center gap-1.5">
-                    <ImageIcon className="h-3.5 w-3.5 text-blue-500" />
+                  <span className="block text-xs font-semibold uppercase tracking-wider text-[#64748B] mb-2 flex items-center gap-1.5">
+                    <ImageIcon className="h-4 w-4 text-[#1D4ED8]" />
                     <span>Foto Bukti Kerusakan</span>
-                  </h4>
+                  </span>
                   {ticket.damagePhotoUrl ? (
                     <div className="space-y-2">
-                      <div className="relative aspect-video rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 group">
+                      <div className="aspect-video rounded-[8px] overflow-hidden border border-[#E2E8F0] bg-[#F1F5F9]">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={ticket.damagePhotoUrl}
-                          alt="Foto Kerusakan"
-                          className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                          alt="Foto Bukti Kerusakan"
+                          className="w-full h-full object-cover"
                         />
                       </div>
                       <a
                         href={ticket.damagePhotoUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-block text-xs text-blue-600 hover:underline"
+                        className="text-[13px] text-[#1D4ED8] hover:underline inline-block font-medium"
                       >
-                        Buka Foto Ukuran Penuh ↗
+                        Lihat Gambar Asli &rarr;
                       </a>
                     </div>
                   ) : (
-                    <div className="p-4 rounded-lg border border-dashed border-zinc-200 text-xs text-zinc-400 text-center dark:border-zinc-800">
-                      Tidak ada foto lampiran
+                    <div className="p-4 rounded-[8px] border border-dashed border-[#CBD5E1] text-[13px] text-[#64748B] text-center">
+                      Tidak ada foto kerusakan dilampirkan
                     </div>
                   )}
                 </div>
 
                 <div>
-                  <h4 className="text-xs font-semibold uppercase text-zinc-500 mb-2 flex items-center gap-1.5">
-                    <ImageIcon className="h-3.5 w-3.5 text-emerald-500" />
+                  <span className="block text-xs font-semibold uppercase tracking-wider text-[#64748B] mb-2 flex items-center gap-1.5">
+                    <ImageIcon className="h-4 w-4 text-[#065F46]" />
                     <span>Foto Bukti Hasil Kerja</span>
-                  </h4>
+                  </span>
                   {ticket.resolvedPhotoUrl ? (
                     <div className="space-y-2">
-                      <div className="relative aspect-video rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 group">
+                      <div className="aspect-video rounded-[8px] overflow-hidden border border-[#E2E8F0] bg-[#F1F5F9]">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={ticket.resolvedPhotoUrl}
-                          alt="Foto Hasil Kerja"
-                          className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                          alt="Foto Bukti Hasil Kerja"
+                          className="w-full h-full object-cover"
                         />
                       </div>
                       <a
                         href={ticket.resolvedPhotoUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-block text-xs text-emerald-600 hover:underline"
+                        className="text-[13px] text-[#065F46] hover:underline inline-block font-medium"
                       >
-                        Buka Foto Ukuran Penuh ↗
+                        Lihat Gambar Hasil Kerja &rarr;
                       </a>
                     </div>
                   ) : (
-                    <div className="p-4 rounded-lg border border-dashed border-zinc-200 text-xs text-zinc-400 text-center dark:border-zinc-800">
-                      Menunggu foto penyelesaian dari teknisi
+                    <div className="p-4 rounded-[8px] border border-dashed border-[#CBD5E1] text-[13px] text-[#64748B] text-center">
+                      Foto perbaikan akan diunggah setelah teknisi selesai
                     </div>
                   )}
                 </div>
@@ -246,8 +242,8 @@ export default async function CustomerTrackTicketPage({ params }: TrackPageProps
             </CardContent>
           </Card>
 
-          {/* Customer Verification & CSAT Review Card (Shows when resolved or closed) */}
-          {(ticket.status === "RESOLVED" || ticket.status === "CLOSED") && (
+          {/* 6. Kartu Verifikasi Ulasan CSAT (Tahap Closed/Resolved) */}
+          {isResolvedOrClosed && (
             <CustomerReviewCard
               ticketId={ticket.id}
               isClosed={ticket.status === "CLOSED"}
@@ -255,108 +251,91 @@ export default async function CustomerTrackTicketPage({ params }: TrackPageProps
               existingComment={ticket.feedback?.comment}
             />
           )}
-
-          {/* Audit Logs Trail */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Histori Aktivitas & Audit SLA</CardTitle>
-              <CardDescription>
-                Pencatatan setiap mutasi status yang divalidasi oleh Prisma ORM
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="relative pl-6 space-y-4 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-zinc-200 dark:before:bg-zinc-800">
-                {ticket.logs.map((log) => (
-                  <div key={log.id} className="relative text-xs">
-                    <div className="absolute -left-6 top-1 h-3 w-3 rounded-full bg-blue-500 border-2 border-white dark:border-zinc-950" />
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-zinc-900 dark:text-zinc-100">
-                        {log.action}
-                      </span>
-                      <span className="text-zinc-400">•</span>
-                      <span className="text-zinc-500">{log.user.name} ({log.user.role})</span>
-                      <span className="text-zinc-400">•</span>
-                      <span className="text-zinc-400">{formatDateTime(log.createdAt)}</span>
-                    </div>
-                    {log.notes && (
-                      <p className="text-zinc-600 dark:text-zinc-400 mt-0.5">{log.notes}</p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
         </div>
 
-        {/* Sidebar Info */}
+        {/* Kolom Kanan: Kartu Teknisi & Kartu SLA (UI_CONTEXT 4.2) */}
         <div className="space-y-6">
+          {/* Kartu Teknisi */}
           <Card>
-            <CardHeader>
-              <CardTitle className="text-sm font-semibold uppercase tracking-wider text-zinc-500">
-                Pihak Terkait
-              </CardTitle>
+            <CardHeader className="border-b border-[#E2E8F0] pb-3 mb-4">
+              <CardTitle className="text-[18px]">Teknisi Penanggung Jawab</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4 text-xs">
-              <div>
-                <span className="text-zinc-400 font-medium">Pelapor / Pelanggan</span>
-                <p className="font-bold text-zinc-800 dark:text-zinc-200 text-sm mt-0.5">
-                  {ticket.customer.name}
-                </p>
-                <p className="text-zinc-500">{ticket.customer.email}</p>
-                <p className="text-zinc-500">{ticket.customer.phone || "-"}</p>
-              </div>
+            <CardContent>
+              {ticket.technician ? (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-[#EDE9FE] text-[#5B21B6] flex items-center justify-center font-bold">
+                      <Wrench className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-[16px] font-semibold text-[#0F172A]">
+                        {ticket.technician.name}
+                      </h4>
+                      <p className="text-[13px] text-[#475569]">
+                        Teknisi Lapangan
+                      </p>
+                    </div>
+                  </div>
 
-              <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800">
-                <span className="text-zinc-400 font-medium">Teknisi Lapangan</span>
-                {ticket.technician ? (
-                  <div className="space-y-1.5 mt-0.5">
-                    <p className="font-bold text-zinc-800 dark:text-zinc-200 text-sm">
-                      {ticket.technician.name}
-                    </p>
-                    <p className="text-zinc-500">{ticket.technician.email}</p>
+                  <div className="pt-2 border-t border-[#E2E8F0] space-y-2">
+                    <div className="text-[13px] text-[#475569]">
+                      <span className="font-medium text-[#0F172A]">Email: </span>
+                      {ticket.technician.email}
+                    </div>
+
                     {ticket.technician.phone && (
-                      <div className="pt-1 flex items-center justify-between gap-2">
-                        <span className="text-zinc-600 dark:text-zinc-300 font-medium">
-                          {ticket.technician.phone}
-                        </span>
-                        <div className="flex items-center gap-1">
-                          <a
-                            href={`https://wa.me/${ticket.technician.phone
-                              .replace(/[^0-9]/g, "")
-                              .replace(/^0/, "62")}?text=Halo%20${encodeURIComponent(
-                              ticket.technician.name
-                            )},%20saya%20pelanggan%20terkait%20tiket%20%23${ticket.ticketNumber}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[11px] font-semibold hover:bg-emerald-200 transition-colors"
-                          >
-                            <MessageSquare className="h-3 w-3" />
-                            <span>WA</span>
-                          </a>
-                          <a
-                            href={`tel:${ticket.technician.phone}`}
-                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-[11px] font-semibold hover:bg-blue-200 transition-colors"
-                          >
-                            <Phone className="h-3 w-3" />
-                            <span>Telp</span>
-                          </a>
-                        </div>
+                      <div className="pt-1">
+                        <a
+                          href={`tel:${ticket.technician.phone}`}
+                          className="h-[36px] w-full rounded-[8px] border border-[#BFDBFE] bg-[#EFF6FF] text-[#1D4ED8] hover:bg-[#DBEAFE] text-[13px] font-medium inline-flex items-center justify-center gap-1.5 transition-colors"
+                        >
+                          <Phone className="h-3.5 w-3.5" />
+                          <span>Hubungi Teknisi ({ticket.technician.phone})</span>
+                        </a>
                       </div>
                     )}
                   </div>
-                ) : (
-                  <p className="text-zinc-400 italic mt-0.5">Belum ditugaskan oleh Admin</p>
-                )}
-              </div>
-
-              <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800">
-                <span className="text-zinc-400 font-medium">Kategori & Layanan</span>
-                <p className="font-semibold text-zinc-800 dark:text-zinc-200 mt-0.5">
-                  {ticket.category}
-                </p>
-              </div>
+                </div>
+              ) : (
+                <div className="text-center py-4">
+                  <Clock className="h-8 w-8 text-[#94A3B8] mx-auto mb-2" />
+                  <p className="text-[14px] font-medium text-[#0F172A]">
+                    Menunggu Penugasan
+                  </p>
+                  <p className="text-[13px] text-[#64748B] mt-1">
+                    Helpdesk sedang menentukan teknisi terdekat untuk menangani laporan Anda.
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
+
+          {/* Kartu SLA (UI_CONTEXT 4.2: latar brand-50, border brand-border, hitung mundur 32px bold) */}
+          <div className="rounded-[12px] border border-[#BFDBFE] bg-[#EFF6FF] p-6 text-[#0F172A]">
+            <span className="block text-xs font-semibold uppercase tracking-wider text-[#1D4ED8] mb-1">
+              Target Kepatuhan SLA
+            </span>
+
+            {isResolvedOrClosed ? (
+              <div className="mt-3">
+                <div className="text-[32px] font-bold text-[#065F46] leading-none">
+                  {elapsedHours <= targetHours ? "Tepat Waktu" : "Melewati Batas"}
+                </div>
+                <p className="text-[14px] text-[#475569] mt-2">
+                  Total waktu penanganan: {elapsedHours.toFixed(1)} jam (Target: {targetHours} jam)
+                </p>
+              </div>
+            ) : (
+              <div className="mt-3">
+                <div className="text-[32px] font-bold text-[#1D4ED8] leading-none">
+                  {remainingHoursFormatted}
+                </div>
+                <p className="text-[14px] text-[#475569] mt-2">
+                  Tersisa dari target {targetHours} jam ({ticket.priority})
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

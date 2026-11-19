@@ -5,8 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { registerUser } from "@/actions/user.actions";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { UserPlus, AlertCircle, CheckCircle2, ArrowRight } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { AlertCircle, CheckCircle2, ArrowRight } from "lucide-react";
 
 export function RegisterForm() {
   const router = useRouter();
@@ -51,7 +51,7 @@ export function RegisterForm() {
         setIsSuccess(true);
         setTimeout(() => {
           router.push(`/login?email=${encodeURIComponent(email)}`);
-        }, 2000);
+        }, 1500);
       } else {
         setErrorMessage(res.error || "Gagal mendaftarkan akun.");
       }
@@ -63,148 +63,180 @@ export function RegisterForm() {
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto shadow-xl">
-      <CardHeader className="text-center pb-2">
-        <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-900/50 dark:text-emerald-400">
-          <UserPlus className="h-6 w-6" />
-        </div>
-        <CardTitle className="text-2xl font-bold">Daftar Akun Baru</CardTitle>
-        <CardDescription>
-          Web Service Tracker & Manajemen Tiket Helpdesk
-        </CardDescription>
-      </CardHeader>
+    <div className="w-full max-w-[420px] mx-auto py-8">
+      <div className="mb-6">
+        <h1 className="text-[28px] font-bold text-[#0F172A] tracking-tight">
+          Daftar akun baru
+        </h1>
+        <p className="text-[14px] text-[#475569] mt-1.5">
+          Buat akun pelanggan untuk melaporkan gangguan dan melacak progres teknisi.
+        </p>
+      </div>
 
-      <CardContent>
-        {isSuccess ? (
-          <div className="py-6 text-center space-y-3">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-900/50 dark:text-emerald-400">
-              <CheckCircle2 className="h-7 w-7" />
-            </div>
-            <h4 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
-              Registrasi Berhasil!
-            </h4>
-            <p className="text-xs text-zinc-500">
-              Akun Anda telah terdaftar. Sedang mengalihkan ke halaman masuk...
-            </p>
-            <div className="pt-2">
-              <Link href="/login">
-                <Button size="sm" variant="primary" className="gap-2">
-                  <span>Masuk Sekarang</span>
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-            </div>
+      {isSuccess ? (
+        <div className="p-6 text-center space-y-3 bg-[#D1FAE5] rounded-[12px] border border-[#A7F3D0]">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#065F46] text-white">
+            <CheckCircle2 className="h-6 w-6" />
           </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {errorMessage && (
-              <div className="flex items-center gap-2 p-3 text-sm text-red-700 bg-red-50 rounded-lg border border-red-200 dark:bg-red-950/50 dark:text-red-300 dark:border-red-900">
-                <AlertCircle className="h-4 w-4 shrink-0" />
-                <span>{errorMessage}</span>
-              </div>
-            )}
-
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 mb-1">
-                Nama Lengkap
-              </label>
-              <input
-                type="text"
-                required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Contoh: PT Maju Bersama / Ahmad"
-                className="w-full px-3.5 py-2 rounded-lg border border-zinc-300 bg-white text-zinc-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
-              />
+          <h4 className="text-[18px] font-bold text-[#065F46]">
+            Pendaftaran Berhasil!
+          </h4>
+          <p className="text-[14px] text-[#065F46]">
+            Akun Anda telah terdaftar. Sedang mengalihkan ke halaman masuk...
+          </p>
+          <div className="pt-2">
+            <Link href="/login">
+              <Button size="sm" variant="primary" className="gap-2">
+                <span>Masuk Sekarang</span>
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {errorMessage && (
+            <div
+              role="alert"
+              className="flex items-start gap-2.5 p-3.5 text-[14px] text-[#991B1B] bg-[#FEF2F2] rounded-[8px] border border-[#FCA5A5]"
+            >
+              <AlertCircle className="h-5 w-5 shrink-0 mt-0.5 text-[#DC2626]" />
+              <span>{errorMessage}</span>
             </div>
+          )}
 
+          <div>
+            <label
+              htmlFor="register-name"
+              className="block text-[14px] font-medium text-[#0F172A] mb-1.5"
+            >
+              Nama lengkap
+            </label>
+            <Input
+              id="register-name"
+              name="name"
+              type="text"
+              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Contoh: Budi Santoso"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="register-email"
+              className="block text-[14px] font-medium text-[#0F172A] mb-1.5"
+            >
+              Email
+            </label>
+            <Input
+              id="register-email"
+              name="email"
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="nama@domain.com"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="register-phone"
+              className="block text-[14px] font-medium text-[#0F172A] mb-1.5"
+            >
+              Nomor WhatsApp / Telepon
+            </label>
+            <Input
+              id="register-phone"
+              name="phone"
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="081234567890"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="register-role"
+              className="block text-[14px] font-medium text-[#0F172A] mb-1.5"
+            >
+              Peran akun
+            </label>
+            <select
+              id="register-role"
+              value={role}
+              onChange={(e) => setRole(e.target.value as "CUSTOMER" | "TEKNISI" | "ADMIN")}
+              className="w-full h-[48px] px-3.5 py-2.5 rounded-[8px] border border-[#94A3B8] bg-white text-[15px] text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#1D4ED8]"
+            >
+              <option value="CUSTOMER">Pelanggan (Customer)</option>
+              <option value="TEKNISI">Teknisi Lapangan</option>
+              <option value="ADMIN">Admin Helpdesk</option>
+            </select>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 mb-1">
-                Email
+              <label
+                htmlFor="register-password"
+                className="block text-[14px] font-medium text-[#0F172A] mb-1.5"
+              >
+                Kata sandi
               </label>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="nama@domain.com"
-                className="w-full px-3.5 py-2 rounded-lg border border-zinc-300 bg-white text-zinc-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 mb-1">
-                  Nomor Telepon / WA
-                </label>
-                <input
-                  type="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="0812xxxxxxxx"
-                  className="w-full px-3.5 py-2 rounded-lg border border-zinc-300 bg-white text-zinc-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 mb-1">
-                  Peran Akun
-                </label>
-                <select
-                  value={role}
-                  onChange={(e) => setRole(e.target.value as "CUSTOMER" | "TEKNISI" | "ADMIN")}
-                  className="w-full px-3.5 py-2 rounded-lg border border-zinc-300 bg-white text-zinc-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
-                >
-                  <option value="CUSTOMER">Pelanggan (Customer)</option>
-                  <option value="TEKNISI">Teknisi Lapangan</option>
-                  <option value="ADMIN">Admin Helpdesk</option>
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 mb-1">
-                Kata Sandi
-              </label>
-              <input
+              <Input
+                id="register-password"
+                name="password"
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Minimal 6 karakter"
-                className="w-full px-3.5 py-2 rounded-lg border border-zinc-300 bg-white text-zinc-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
               />
             </div>
-
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 mb-1">
-                Ulangi Kata Sandi
+              <label
+                htmlFor="register-confirm-password"
+                className="block text-[14px] font-medium text-[#0F172A] mb-1.5"
+              >
+                Ulangi kata sandi
               </label>
-              <input
+              <Input
+                id="register-confirm-password"
+                name="confirmPassword"
                 type="password"
                 required
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Ketik ulang kata sandi"
-                className="w-full px-3.5 py-2 rounded-lg border border-zinc-300 bg-white text-zinc-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
               />
             </div>
+          </div>
 
-            <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700 text-white" isLoading={isLoading}>
-              Daftar Sekarang
-            </Button>
+          <Button
+            type="submit"
+            variant="primary"
+            size="lg"
+            className="w-full h-[48px] text-[15px] mt-2"
+            isLoading={isLoading}
+          >
+            Daftar Akun
+          </Button>
 
-            <div className="text-center pt-2">
-              <span className="text-xs text-zinc-500">
-                Sudah memiliki akun?{" "}
-                <Link href="/login" className="font-semibold text-emerald-600 hover:underline">
-                  Masuk di sini
-                </Link>
-              </span>
-            </div>
-          </form>
-        )}
-      </CardContent>
-    </Card>
+          <div className="text-center pt-2">
+            <p className="text-[14px] text-[#475569]">
+              Sudah punya akun?{" "}
+              <Link
+                href="/login"
+                className="font-medium text-[#1D4ED8] hover:underline"
+              >
+                Masuk di sini
+              </Link>
+            </p>
+          </div>
+        </form>
+      )}
+    </div>
   );
 }

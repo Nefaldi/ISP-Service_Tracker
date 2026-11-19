@@ -1,11 +1,10 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { AdminUsersTable } from "@/components/shared/admin-users-table";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, Users, UserPlus } from "lucide-react";
+import { ArrowLeft, UserPlus } from "lucide-react";
 
 export const metadata = {
-  title: "Manajemen Pengguna - Admin Helpdesk",
+  title: "Manajemen Pengguna - Service Tracker Admin",
 };
 
 export default async function AdminUsersPage() {
@@ -33,25 +32,25 @@ export default async function AdminUsersPage() {
         <div>
           <Link
             href="/admin"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 mb-2"
+            className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#475569] hover:text-[#0F172A] mb-2"
           >
-            <ArrowLeft className="h-3.5 w-3.5" />
-            <span>Kembali ke Overview</span>
+            <ArrowLeft className="h-4 w-4" />
+            <span>Kembali ke Ikhtisar</span>
           </Link>
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-            <Users className="h-6 w-6 text-purple-600" />
-            <span>Manajemen Pengguna & Staf</span>
+          <h1 className="text-[28px] font-bold tracking-tight text-[#0F172A]">
+            Manajemen Pengguna & Staf
           </h1>
-          <p className="text-sm text-zinc-500">
+          <p className="text-[14px] text-[#475569] mt-1">
             Daftar seluruh akun terdaftar (Admin, Teknisi Lapangan, dan Pelanggan)
           </p>
         </div>
 
-        <Link href="/register">
-          <Button variant="primary" className="gap-2">
-            <UserPlus className="h-4 w-4" />
-            <span>Daftar Pengguna Baru</span>
-          </Button>
+        <Link
+          href="/register"
+          className="h-[40px] px-4 rounded-[8px] bg-[#1D4ED8] hover:bg-[#1E40AF] text-white text-[14px] font-medium inline-flex items-center gap-2 shadow-xs transition-colors"
+        >
+          <UserPlus className="h-4 w-4" />
+          <span>Tambah Akun Baru</span>
         </Link>
       </div>
 

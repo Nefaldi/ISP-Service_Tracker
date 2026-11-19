@@ -2,11 +2,12 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
+import { StatusBadge } from "@/components/shared/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AssignTechnicianDialog } from "@/components/forms/assign-technician-dialog";
 import { formatDateTime } from "@/lib/utils";
-import { Search, Download, ExternalLink, RefreshCw } from "lucide-react";
+import { Search, Download, ExternalLink } from "lucide-react";
 
 export interface TicketRow {
   id: string;
@@ -56,19 +57,10 @@ export function AdminTicketsTable({
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [priorityFilter, setPriorityFilter] = useState("ALL");
-  const [categoryFilter, setCategoryFilter] = useState("ALL");
-
-  // Extract unique categories
-  const categories = useMemo(() => {
-    const set = new Set<string>();
-    initialTickets.forEach((t) => set.add(t.category));
-    return Array.from(set);
-  }, [initialTickets]);
 
   // Filtered tickets
   const filteredTickets = useMemo(() => {
     return initialTickets.filter((ticket) => {
-      // Keyword match
       const keyword = searchTerm.toLowerCase().trim();
       const matchKeyword =
         !keyword ||
@@ -77,20 +69,13 @@ export function AdminTicketsTable({
         ticket.customer.name.toLowerCase().includes(keyword) ||
         (ticket.technician?.name || "").toLowerCase().includes(keyword);
 
-      // Status match
       const matchStatus = statusFilter === "ALL" || ticket.status === statusFilter;
-
-      // Priority match
       const matchPriority =
         priorityFilter === "ALL" || ticket.priority === priorityFilter;
 
-      // Category match
-      const matchCategory =
-        categoryFilter === "ALL" || ticket.category === categoryFilter;
-
-      return matchKeyword && matchStatus && matchPriority && matchCategory;
+      return matchKeyword && matchStatus && matchPriority;
     });
-  }, [initialTickets, searchTerm, statusFilter, priorityFilter, categoryFilter]);
+  }, [initialTickets, searchTerm, statusFilter, priorityFilter]);
 
   // Export CSV handler
   const handleExportCSV = () => {
@@ -105,38 +90,27 @@ export function AdminTicketsTable({
       "Teknisi",
       "Waktu Dibuat",
       "Waktu Selesai",
-      "Durasi SLA (Jam)",
       "Rating CSAT",
-      "Komentar CSAT",
     ];
 
-    const rows = filteredTickets.map((t) => {
-      let slaHours = "-";
-      if (t.resolvedAt) {
-        const start = new Date(t.createdAt).getTime();
-        const end = new Date(t.resolvedAt).getTime();
-        slaHours = ((end - start) / (1000 * 60 * 60)).toFixed(1);
-      }
-
-      return [
-        `"${t.ticketNumber}"`,
-        `"${t.title.replace(/"/g, '""')}"`,
-        `"${t.category}"`,
-        `"${t.priority}"`,
-        `"${t.status}"`,
-        `"${t.customer.name}"`,
-        `"${t.customer.email}"`,
-        `"${t.technician?.name || "-"}"`,
-        `"${formatDateTime(t.createdAt)}"`,
-        `"${t.resolvedAt ? formatDateTime(t.resolvedAt) : "-"}"`,
-        `"${slaHours}"`,
-        `"${t.feedback?.rating ? t.feedback.rating + "/5" : "-"}"`,
-        `"${(t.feedback?.comment || "").replace(/"/g, '""')}"`,
-      ].join(",");
-    });
+    const rows = filteredTickets.map((t) => [
+      `#${t.ticketNumber}`,
+      `"${t.title.replace(/"/g, '""')}"`,
+      `"${t.category}"`,
+      t.priority,
+      t.status,
+      `"${t.customer.name}"`,
+      t.customer.email,
+      `"${t.technician?.name || "Belum ditugaskan"}"`,
+      formatDateTime(t.createdAt),
+      t.resolvedAt ? formatDateTime(t.resolvedAt) : "-",
+      t.feedback?.rating ? `${t.feedback.rating}/5` : "-",
+    ]);
 
     const csvContent =
-      "data:text/csv;charset=utf-8,\uFEFF" + [headers.join(","), ...rows].join("\n");
+      "data:text/csv;charset=utf-8," +
+      [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
+
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
@@ -149,35 +123,30 @@ export function AdminTicketsTable({
     document.body.removeChild(link);
   };
 
-  const handleResetFilters = () => {
-    setSearchTerm("");
-    setStatusFilter("ALL");
-    setPriorityFilter("ALL");
-    setCategoryFilter("ALL");
-  };
-
   return (
     <div className="space-y-4">
       {/* Search & Filter Toolbar */}
-      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs">
-        <div className="flex flex-1 flex-col sm:flex-row items-stretch sm:items-center gap-2">
-          {/* Search Box */}
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
-            <input
-              type="text"
-              placeholder="Cari tiket, judul, atau nama..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        {/* Kolom cari lebar 280px sesuai UI_CONTEXT 4.3 */}
+        <div className="relative w-full sm:w-[280px]">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#64748B]" />
+          <input
+            type="text"
+            aria-label="Cari tiket"
+            placeholder="Cari tiket, pelanggan, teknisi..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full h-[40px] pl-10 pr-3.5 rounded-[8px] border border-[#94A3B8] bg-white text-[14px] text-[#0F172A] placeholder:text-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#1D4ED8]"
+          />
+        </div>
 
-          {/* Status Filter */}
+        {/* Filters & Export */}
+        <div className="flex flex-wrap items-center gap-2">
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="text-xs px-2.5 py-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            aria-label="Filter status tiket"
+            className="h-[40px] px-3 rounded-[8px] border border-[#94A3B8] bg-white text-[13px] text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#1D4ED8]"
           >
             <option value="ALL">Semua Status</option>
             <option value="OPEN">Open</option>
@@ -187,11 +156,11 @@ export function AdminTicketsTable({
             <option value="CLOSED">Closed</option>
           </select>
 
-          {/* Priority Filter */}
           <select
             value={priorityFilter}
             onChange={(e) => setPriorityFilter(e.target.value)}
-            className="text-xs px-2.5 py-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            aria-label="Filter prioritas tiket"
+            className="h-[40px] px-3 rounded-[8px] border border-[#94A3B8] bg-white text-[13px] text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#1D4ED8]"
           >
             <option value="ALL">Semua Prioritas</option>
             <option value="CRITICAL">Critical</option>
@@ -200,136 +169,131 @@ export function AdminTicketsTable({
             <option value="LOW">Low</option>
           </select>
 
-          {/* Category Filter */}
-          <select
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
-            className="text-xs px-2.5 py-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 focus:outline-none focus:ring-1 focus:ring-blue-500 max-w-[160px] truncate"
-          >
-            <option value="ALL">Semua Kategori</option>
-            {categories.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="flex items-center gap-2 shrink-0">
-          {(searchTerm || statusFilter !== "ALL" || priorityFilter !== "ALL" || categoryFilter !== "ALL") && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleResetFilters}
-              className="text-xs text-zinc-500 hover:text-zinc-800"
-            >
-              <RefreshCw className="h-3.5 w-3.5 mr-1" />
-              <span>Reset</span>
-            </Button>
-          )}
-
           <Button
             variant="outline"
             size="sm"
             onClick={handleExportCSV}
-            className="text-xs gap-1.5 border-zinc-300 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800"
+            className="h-[40px] px-3.5 gap-1.5 border-[#94A3B8] text-[#0F172A] hover:bg-[#F1F5F9]"
+            title="Download Rekap CSV"
           >
-            <Download className="h-3.5 w-3.5 text-zinc-600" />
-            <span>Export CSV</span>
+            <Download className="h-4 w-4" />
+            <span className="hidden sm:inline">Export CSV</span>
           </Button>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs">
-        <table className="w-full text-left text-sm">
-          <thead className="border-b border-zinc-200 bg-zinc-50/50 text-xs font-semibold uppercase text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/50">
-            <tr>
-              <th className="px-4 py-3">No. Tiket & Masalah</th>
-              <th className="px-4 py-3">Pelanggan</th>
-              <th className="px-4 py-3">Prioritas</th>
-              <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3">Penugasan Teknisi</th>
-              <th className="px-4 py-3">Waktu Lapor</th>
-              <th className="px-4 py-3 text-right">Aksi</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
-            {filteredTickets.length === 0 ? (
-              <tr>
-                <td colSpan={7} className="px-4 py-10 text-center text-zinc-500 text-xs">
-                  Tidak ditemukan tiket yang sesuai dengan kriteria filter pencarian.
-                </td>
+      {/* Tabel Tiket dalam Kartu Putih dengan overflow-x: auto (UI_CONTEXT 4.3) */}
+      <div className="rounded-[12px] border border-[#E2E8F0] bg-white overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-[#F8FAFC] border-b border-[#E2E8F0]">
+                <th className="py-3.5 px-4 text-[14px] font-medium text-[#475569]">
+                  Tiket
+                </th>
+                <th className="py-3.5 px-4 text-[14px] font-medium text-[#475569]">
+                  Pelanggan
+                </th>
+                <th className="py-3.5 px-4 text-[14px] font-medium text-[#475569]">
+                  Status
+                </th>
+                <th className="py-3.5 px-4 text-[14px] font-medium text-[#475569]">
+                  Teknisi
+                </th>
+                <th className="py-3.5 px-4 text-[14px] font-medium text-[#475569] text-right">
+                  Aksi
+                </th>
               </tr>
-            ) : (
-              filteredTickets.map((t) => (
-                <tr
-                  key={t.id}
-                  className="hover:bg-zinc-50/50 dark:hover:bg-zinc-900/50 transition-colors"
-                >
-                  <td className="px-4 py-3">
-                    <div className="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">
-                      #{t.ticketNumber}
-                    </div>
-                    <div className="font-semibold text-zinc-900 dark:text-zinc-100 line-clamp-1">
-                      {t.title}
-                    </div>
-                    <div className="text-xs text-zinc-500">{t.category}</div>
-                  </td>
-
-                  <td className="px-4 py-3">
-                    <div className="font-medium text-zinc-800 dark:text-zinc-200">
-                      {t.customer.name}
-                    </div>
-                    <div className="text-xs text-zinc-500">{t.customer.email}</div>
-                  </td>
-
-                  <td className="px-4 py-3">
-                    <Badge variant="priority" value={t.priority} />
-                  </td>
-
-                  <td className="px-4 py-3">
-                    <Badge variant="status" value={t.status} />
-                  </td>
-
-                  <td className="px-4 py-3">
-                    {t.status === "CLOSED" ? (
-                      <span className="text-xs text-zinc-500 font-medium">
-                        {t.technician?.name || "Selesai"}
-                      </span>
-                    ) : (
-                      <AssignTechnicianDialog
-                        ticketId={t.id}
-                        currentTechnicianId={t.technicianId}
-                        technicians={technicians}
-                      />
-                    )}
-                  </td>
-
-                  <td className="px-4 py-3 text-xs text-zinc-500 whitespace-nowrap">
-                    {formatDateTime(t.createdAt)}
-                  </td>
-
-                  <td className="px-4 py-3 text-right">
-                    <Link
-                      href={`/customer/track/${t.id}`}
-                      className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 font-medium"
-                    >
-                      <span>Tracker</span>
-                      <ExternalLink className="h-3.5 w-3.5" />
-                    </Link>
+            </thead>
+            <tbody className="divide-y divide-[#E2E8F0]">
+              {filteredTickets.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={5}
+                    className="py-12 text-center text-[14px] text-[#64748B]"
+                  >
+                    Tidak ada tiket yang sesuai dengan pencarian atau filter.
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+              ) : (
+                filteredTickets.map((ticket) => (
+                  <tr
+                    key={ticket.id}
+                    className="hover:bg-[#F8FAFC] transition-colors"
+                  >
+                    <td className="py-3.5 px-4">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-mono text-xs font-bold text-[#1D4ED8]">
+                          #{ticket.ticketNumber}
+                        </span>
+                        <Badge variant="priority" value={ticket.priority} />
+                      </div>
+                      <div className="font-medium text-[15px] text-[#0F172A] line-clamp-1">
+                        {ticket.title}
+                      </div>
+                      <div className="text-[12px] text-[#64748B]">
+                        {formatDateTime(ticket.createdAt)}
+                      </div>
+                    </td>
 
-      <div className="flex items-center justify-between text-xs text-zinc-500 px-1">
-        <span>
-          Menampilkan <strong>{filteredTickets.length}</strong> dari {initialTickets.length} total tiket
-        </span>
+                    <td className="py-3.5 px-4">
+                      <div className="font-medium text-[14px] text-[#0F172A]">
+                        {ticket.customer.name}
+                      </div>
+                      <div className="text-[12px] text-[#64748B]">
+                        {ticket.customer.email}
+                      </div>
+                    </td>
+
+                    <td className="py-3.5 px-4 whitespace-nowrap">
+                      <StatusBadge status={ticket.status} />
+                    </td>
+
+                    <td className="py-3.5 px-4">
+                      {ticket.technician ? (
+                        <div>
+                          <div className="text-[14px] font-medium text-[#0F172A]">
+                            {ticket.technician.name}
+                          </div>
+                          <div className="text-[12px] text-[#64748B]">
+                            {ticket.technician.email}
+                          </div>
+                        </div>
+                      ) : (
+                        <span className="text-[13px] text-[#94A3B8] italic">
+                          Belum ditugaskan
+                        </span>
+                      )}
+                    </td>
+
+                    <td className="py-3.5 px-4 text-right whitespace-nowrap">
+                      {ticket.status === "OPEN" ? (
+                        <AssignTechnicianDialog
+                          ticketId={ticket.id}
+                          ticketNumber={ticket.ticketNumber}
+                          ticketTitle={ticket.title}
+                          currentTechnicianId={ticket.technicianId}
+                          technicians={technicians}
+                        />
+                      ) : (
+                        <Link href={`/customer/track/${ticket.id}`}>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-[36px] text-[13px] border-[#E2E8F0] text-[#0F172A] hover:bg-[#F1F5F9]"
+                          >
+                            <span>Lihat</span>
+                            <ExternalLink className="h-3.5 w-3.5 ml-1 text-[#64748B]" />
+                          </Button>
+                        </Link>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

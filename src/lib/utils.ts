@@ -16,17 +16,34 @@ export function formatDateTime(date: Date | string | number | null | undefined):
 export function getStatusBadgeClass(status: string): string {
   switch (status) {
     case "OPEN":
-      return "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/40 dark:text-blue-300";
+      return "bg-[#FEF3C7] text-[#92400E] border-[#FDE68A]";
     case "ASSIGNED":
-      return "bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/40 dark:text-purple-300";
+      return "bg-[#DBEAFE] text-[#1D4ED8] border-[#BFDBFE]";
     case "IN_PROGRESS":
-      return "bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-900/40 dark:text-amber-300";
+      return "bg-[#EDE9FE] text-[#5B21B6] border-[#DDD6FE]";
     case "RESOLVED":
-      return "bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-300";
+      return "bg-[#D1FAE5] text-[#065F46] border-[#A7F3D0]";
     case "CLOSED":
-      return "bg-zinc-100 text-zinc-800 border-zinc-200 dark:bg-zinc-800 dark:text-zinc-300";
+      return "bg-[#E2E8F0] text-[#334155] border-[#CBD5E1]";
     default:
-      return "bg-gray-100 text-gray-800 border-gray-200";
+      return "bg-[#F1F5F9] text-[#475569] border-[#E2E8F0]";
+  }
+}
+
+export function formatTicketStatus(status: string): string {
+  switch (status) {
+    case "OPEN":
+      return "Open";
+    case "ASSIGNED":
+      return "Assigned";
+    case "IN_PROGRESS":
+      return "In Progress";
+    case "RESOLVED":
+      return "Resolved";
+    case "CLOSED":
+      return "Closed";
+    default:
+      return status;
   }
 }
 

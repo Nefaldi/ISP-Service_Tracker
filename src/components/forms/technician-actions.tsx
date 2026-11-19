@@ -4,11 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { startProgress, resolveTicket, uploadPhotoAction } from "@/actions/ticket.actions";
 import { Button } from "@/components/ui/button";
-import { Play, CheckCircle, UploadCloud } from "lucide-react";
+import { Play, CheckCircle2, UploadCloud, X } from "lucide-react";
 
 interface TechnicianActionsProps {
   ticketId: string;
   status: string;
+  isFullCard?: boolean;
 }
 
 export function TechnicianActions({ ticketId, status }: TechnicianActionsProps) {
@@ -16,7 +17,6 @@ export function TechnicianActions({ ticketId, status }: TechnicianActionsProps) 
   const [isLoading, setIsLoading] = useState(false);
   const [showResolveModal, setShowResolveModal] = useState(false);
   const [resolutionNotes, setResolutionNotes] = useState("");
-  const [resolvedPhotoUrl, setResolvedPhotoUrl] = useState("");
   const [fileToUpload, setFileToUpload] = useState<File | null>(null);
 
   const handleStart = async () => {
@@ -34,7 +34,7 @@ export function TechnicianActions({ ticketId, status }: TechnicianActionsProps) 
     e.preventDefault();
     setIsLoading(true);
 
-    let finalPhotoUrl = resolvedPhotoUrl;
+    let finalPhotoUrl = "";
 
     if (fileToUpload) {
       try {
@@ -58,6 +58,7 @@ export function TechnicianActions({ ticketId, status }: TechnicianActionsProps) 
       resolutionNotes,
       resolvedPhotoUrl: finalPhotoUrl || undefined,
     });
+
     setIsLoading(false);
     if (res.success) {
       setShowResolveModal(false);
@@ -69,16 +70,17 @@ export function TechnicianActions({ ticketId, status }: TechnicianActionsProps) 
   };
 
   return (
-    <div>
+    <div className="w-full">
       {status === "ASSIGNED" && (
         <Button
-          size="sm"
+          type="button"
           variant="primary"
+          size="mobile-action"
           onClick={handleStart}
           isLoading={isLoading}
-          className="gap-1.5"
+          className="h-[52px] bg-[#1D4ED8] hover:bg-[#1E40AF] text-white font-semibold rounded-[10px]"
         >
-          <Play className="h-4 w-4 fill-current" />
+          <Play className="h-5 w-5 fill-current" />
           <span>Mulai Pengerjaan</span>
         </Button>
       )}
@@ -86,92 +88,117 @@ export function TechnicianActions({ ticketId, status }: TechnicianActionsProps) 
       {status === "IN_PROGRESS" && (
         <>
           <Button
-            size="sm"
-            variant="primary"
+            type="button"
+            variant="success"
+            size="mobile-action"
             onClick={() => setShowResolveModal(true)}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5"
+            className="h-[52px] bg-[#047857] hover:bg-[#065F46] text-white font-semibold rounded-[10px]"
           >
-            <CheckCircle className="h-4 w-4" />
-            <span>Selesaikan Tiket</span>
+            <CheckCircle2 className="h-5 w-5" />
+            <span>Tandai Selesai (Resolved)</span>
           </Button>
 
           {showResolveModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
-              <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-2xl dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
-                <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100 mb-2">
-                  Konfirmasi Penyelesaian Masalah
-                </h3>
-                <p className="text-xs text-zinc-500 mb-4">
-                  Laporkan tindakan perbaikan dan unggah foto hasil kerja teknis.
-                </p>
+            <div
+              role="dialog"
+              aria-modal="true"
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs"
+            >
+              <div className="w-full max-w-md rounded-[12px] bg-white border border-[#E2E8F0] p-6 shadow-2xl text-[#0F172A]">
+                <div className="flex items-center justify-between pb-3 border-b border-[#E2E8F0]">
+                  <h3 className="text-[18px] font-semibold text-[#0F172A]">
+                    Bukti Pengerjaan & Selesai
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={() => setShowResolveModal(false)}
+                    aria-label="Tutup dialog penyelesaian"
+                    className="text-[#64748B] hover:text-[#0F172A]"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
 
-                <form onSubmit={handleResolve} className="space-y-4">
+                <form onSubmit={handleResolve} className="space-y-4 pt-4">
+                  {/* Field Catatan teknis (textarea 88px, tanpa resize - UI_CONTEXT 4.4) */}
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 mb-1">
-                      Catatan Teknis Perbaikan
+                    <label
+                      htmlFor="tech-notes"
+                      className="block text-[14px] font-medium text-[#0F172A] mb-1.5"
+                    >
+                      Catatan Teknis
                     </label>
                     <textarea
+                      id="tech-notes"
                       required
-                      rows={3}
-                      placeholder="Contoh: Penggantian konektor FO dan konfigurasi ulang ONT modem"
                       value={resolutionNotes}
                       onChange={(e) => setResolutionNotes(e.target.value)}
-                      className="w-full px-3 py-2 text-sm rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 focus:ring-2 focus:ring-emerald-500 outline-none"
+                      placeholder="Contoh: Penggantian drop core 15m dan konfigurasi ulang redaman optik..."
+                      className="w-full h-[88px] resize-none px-3.5 py-2.5 rounded-[8px] border border-[#94A3B8] bg-white text-[14px] text-[#0F172A] placeholder:text-[#64748B] focus:outline-none focus:ring-2 focus:ring-[#047857]"
                     />
                   </div>
 
+                  {/* Area drop/ambil foto (border putus-putus 2px, tinggi 96px - UI_CONTEXT 4.4) */}
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 mb-1">
-                      Unggah Foto Bukti Hasil Kerja (Supabase Storage / Cloud)
+                    <label
+                      htmlFor="tech-proof-photo"
+                      className="block text-[14px] font-medium text-[#0F172A] mb-1.5"
+                    >
+                      Foto Bukti Hasil Kerja
                     </label>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <label className="flex items-center gap-1.5 px-3 py-1.5 border border-dashed border-zinc-300 dark:border-zinc-700 rounded-lg cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800 text-xs font-medium text-zinc-600 dark:text-zinc-300">
-                          <UploadCloud className="h-4 w-4" />
-                          <span>Pilih Foto Bukti</span>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={(e) => {
-                              if (e.target.files?.[0]) {
-                                setFileToUpload(e.target.files[0]);
-                              }
-                            }}
-                          />
-                        </label>
-                        <span className="text-xs text-zinc-500 truncate max-w-[200px]">
-                          {fileToUpload ? fileToUpload.name : "Belum ada file dipilih"}
-                        </span>
-                      </div>
+
+                    <div className="relative h-[96px] border-2 border-dashed border-[#94A3B8] rounded-[8px] flex flex-col items-center justify-center text-center hover:border-[#047857] transition-colors bg-[#F8FAFC]">
                       <input
-                        type="url"
-                        placeholder="Atau tempel URL gambar eksternal (https://...)"
-                        value={resolvedPhotoUrl}
-                        onChange={(e) => setResolvedPhotoUrl(e.target.value)}
-                        className="w-full px-3 py-1.5 text-xs rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 focus:ring-2 focus:ring-emerald-500 outline-none"
+                        id="tech-proof-photo"
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          if (e.target.files?.[0]) {
+                            setFileToUpload(e.target.files[0]);
+                          }
+                        }}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                       />
+
+                      {fileToUpload ? (
+                        <div className="flex items-center gap-2 text-xs font-semibold text-[#047857] px-2">
+                          <span className="truncate max-w-[240px]">{fileToUpload.name}</span>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setFileToUpload(null);
+                            }}
+                            className="p-1 hover:bg-[#D1FAE5] rounded-full text-[#DC2626]"
+                            aria-label="Hapus foto terpilih"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="pointer-events-none flex flex-col items-center">
+                          <UploadCloud className="h-6 w-6 text-[#64748B] mb-1" />
+                          <span className="text-[13px] font-medium text-[#0F172A]">
+                            Ambil atau pilih foto bukti
+                          </span>
+                          <span className="text-[11px] text-[#64748B]">
+                            Format JPG, PNG (maks. 10MB)
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
 
-                  <div className="flex justify-end gap-2 pt-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowResolveModal(false)}
-                      disabled={isLoading}
-                    >
-                      Batal
-                    </Button>
+                  {/* Tombol aksi utama hijau 52px (UI_CONTEXT 4.4) */}
+                  <div className="pt-2">
                     <Button
                       type="submit"
-                      variant="primary"
-                      size="sm"
+                      variant="success"
+                      size="mobile-action"
                       isLoading={isLoading}
-                      className="bg-emerald-600 hover:bg-emerald-700"
+                      className="h-[52px] bg-[#047857] hover:bg-[#065F46] text-white font-semibold rounded-[10px]"
                     >
-                      Simpan & Selesaikan
+                      Tandai Selesai (Resolved)
                     </Button>
                   </div>
                 </form>
@@ -182,13 +209,15 @@ export function TechnicianActions({ ticketId, status }: TechnicianActionsProps) 
       )}
 
       {status === "RESOLVED" && (
-        <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">
+        <div className="h-[44px] flex items-center justify-center rounded-[8px] bg-[#D1FAE5] text-[#065F46] text-[13px] font-semibold border border-[#A7F3D0]">
           Menunggu Verifikasi Pelanggan
-        </span>
+        </div>
       )}
 
       {status === "CLOSED" && (
-        <span className="text-xs text-zinc-500 font-medium">Selesai & Ditutup</span>
+        <div className="h-[44px] flex items-center justify-center rounded-[8px] bg-[#F1F5F9] text-[#475569] text-[13px] font-semibold border border-[#E2E8F0]">
+          Tiket Telah Selesai & Ditutup
+        </div>
       )}
     </div>
   );

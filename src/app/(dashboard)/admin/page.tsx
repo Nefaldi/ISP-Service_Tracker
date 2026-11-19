@@ -1,175 +1,288 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
+import { StatusBadge } from "@/components/shared/status-badge";
+import { AssignTechnicianDialog } from "@/components/forms/assign-technician-dialog";
 import { formatDateTime } from "@/lib/utils";
-import { Ticket, Clock, Star, ArrowRight, ShieldCheck, Activity, Users, BarChart3 } from "lucide-react";
+import {
+  Clock,
+  Star,
+  Activity,
+  ArrowRight,
+  AlertTriangle,
+  ExternalLink,
+} from "lucide-react";
+
+function getFourHoursAgo() {
+  return new Date(Date.now() - 4 * 60 * 60 * 1000);
+}
 
 export default async function AdminDashboardPage() {
   // Aggregate statistics using Prisma
-  const [totalTickets, openTickets, inProgressTickets, resolvedTickets, feedbacks, recentLogs, totalUsers] =
-    await Promise.all([
-      prisma.ticket.count(),
-      prisma.ticket.count({ where: { status: "OPEN" } }),
-      prisma.ticket.count({ where: { status: "IN_PROGRESS" } }),
-      prisma.ticket.count({ where: { status: { in: ["RESOLVED", "CLOSED"] } } }),
-      prisma.feedback.aggregate({
-        _avg: { rating: true },
-        _count: { rating: true },
-      }),
-      prisma.ticketLog.findMany({
-        take: 6,
-        orderBy: { createdAt: "desc" },
-        include: {
-          ticket: { select: { ticketNumber: true, title: true } },
-          user: { select: { name: true, role: true } },
-        },
-      }),
-      prisma.user.count(),
-    ]);
+  const [
+    openTicketsCount,
+    inProgressTicketsCount,
+    recentTickets,
+    feedbacks,
+    technicians,
+  ] = await Promise.all([
+    prisma.ticket.count({ where: { status: "OPEN" } }),
+    prisma.ticket.count({ where: { status: "IN_PROGRESS" } }),
+    prisma.ticket.findMany({
+      take: 8,
+      orderBy: { createdAt: "desc" },
+      include: {
+        customer: { select: { id: true, name: true, email: true } },
+        technician: { select: { id: true, name: true, email: true } },
+      },
+    }),
+    prisma.feedback.aggregate({
+      _avg: { rating: true },
+      _count: { rating: true },
+    }),
+    prisma.user.findMany({
+      where: { role: "TEKNISI" },
+      select: { id: true, name: true, email: true },
+      orderBy: { name: "asc" },
+    }),
+  ]);
 
-  const avgRating = feedbacks._avg.rating ? feedbacks._avg.rating.toFixed(1) : "0.0";
+  // SLA Warning Count: tickets open/in_progress older than 4 hours
+  const fourHoursAgo = getFourHoursAgo();
+  const slaWarningCount = await prisma.ticket.count({
+    where: {
+      status: { in: ["OPEN", "ASSIGNED", "IN_PROGRESS"] },
+      createdAt: { lt: fourHoursAgo },
+    },
+  });
+
+  const avgCsat = feedbacks._avg.rating ? feedbacks._avg.rating.toFixed(1) : "5.0";
 
   return (
     <div className="space-y-6">
+      {/* Header Konten (UI_CONTEXT 4.3) */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-            <ShieldCheck className="h-7 w-7 text-purple-600" />
-            <span>Dashboard Admin Helpdesk</span>
+          <h1 className="text-[28px] font-bold tracking-tight text-[#0F172A]">
+            Dashboard Helpdesk
           </h1>
-          <p className="text-sm text-zinc-500">
-            Monitoring performa SLA, penugasan teknisi, dan alur siklus hidup tiket
+          <p className="text-[14px] text-[#475569] mt-1">
+            Pantau tiket masuk, penugasan teknisi, dan kepatuhan SLA layanan
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Link href="/admin/reports">
-            <Button variant="outline" className="gap-2">
-              <BarChart3 className="h-4 w-4 text-blue-600" />
-              <span>Laporan SLA</span>
-            </Button>
-          </Link>
-          <Link href="/admin/users">
-            <Button variant="outline" className="gap-2">
-              <Users className="h-4 w-4" />
-              <span>Pengguna ({totalUsers})</span>
-            </Button>
-          </Link>
-          <Link href="/admin/tickets">
-            <Button variant="primary" className="gap-2">
-              <span>Kelola Semua Tiket</span>
-              <ArrowRight className="h-4 w-4" />
-            </Button>
+
+        <div className="flex items-center gap-3">
+          <Link
+            href="/admin/tickets"
+            className="h-[40px] px-4 rounded-[8px] bg-[#1D4ED8] hover:bg-[#1E40AF] text-white text-[14px] font-medium inline-flex items-center gap-2 shadow-xs transition-colors"
+          >
+            <span>Semua Tiket</span>
+            <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </div>
 
-      {/* Metrics Grid */}
+      {/* 4 Kartu Ringkasan (Grid auto-fit min 180px, angka 32px bold - UI_CONTEXT 4.3) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-zinc-500">
-              Total Tiket Masuk
-            </CardTitle>
-            <Ticket className="h-4 w-4 text-zinc-400" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalTickets}</div>
-            <p className="text-xs text-zinc-500 mt-1">{resolvedTickets} tiket terselesaikan</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-zinc-500">
-              Perlu Penugasan (Open)
-            </CardTitle>
-            <Clock className="h-4 w-4 text-blue-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-blue-600">{openTickets}</div>
-            <p className="text-xs text-zinc-500 mt-1">Menunggu penugasan teknisi</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-zinc-500">
-              Sedang Dikerjakan
-            </CardTitle>
-            <Activity className="h-4 w-4 text-amber-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-amber-600">{inProgressTickets}</div>
-            <p className="text-xs text-zinc-500 mt-1">Teknisi aktif di lapangan</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-zinc-500">
-              Kepuasan CSAT
-            </CardTitle>
-            <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
-              <span>{avgRating}</span>
-              <span className="text-sm font-normal text-zinc-500">/ 5.0</span>
+        {/* Tiket Baru (Open) */}
+        <Card className="p-5">
+          <div className="flex items-center justify-between">
+            <span className="text-[14px] font-medium text-[#475569]">
+              Tiket Baru (Open)
+            </span>
+            <div className="h-8 w-8 rounded-full bg-[#FEF3C7] text-[#92400E] flex items-center justify-center">
+              <Clock className="h-4 w-4" />
             </div>
-            <p className="text-xs text-zinc-500 mt-1">
+          </div>
+          <div className="mt-3">
+            <div className="text-[32px] font-bold text-[#0F172A] leading-none">
+              {openTicketsCount}
+            </div>
+            <p className="text-[13px] text-[#64748B] mt-1.5">
+              Menunggu penugasan
+            </p>
+          </div>
+        </Card>
+
+        {/* Sedang Dikerjakan */}
+        <Card className="p-5">
+          <div className="flex items-center justify-between">
+            <span className="text-[14px] font-medium text-[#475569]">
+              Sedang Dikerjakan
+            </span>
+            <div className="h-8 w-8 rounded-full bg-[#EDE9FE] text-[#5B21B6] flex items-center justify-center">
+              <Activity className="h-4 w-4" />
+            </div>
+          </div>
+          <div className="mt-3">
+            <div className="text-[32px] font-bold text-[#0F172A] leading-none">
+              {inProgressTicketsCount}
+            </div>
+            <p className="text-[13px] text-[#64748B] mt-1.5">
+              Teknisi aktif di lapangan
+            </p>
+          </div>
+        </Card>
+
+        {/* Mendekati Batas SLA */}
+        <Card className="p-5 bg-[#EFF6FF] border-[#BFDBFE]">
+          <div className="flex items-center justify-between">
+            <span className="text-[14px] font-medium text-[#1D4ED8]">
+              Mendekati Batas SLA
+            </span>
+            <div className="h-8 w-8 rounded-full bg-[#DBEAFE] text-[#1D4ED8] flex items-center justify-center">
+              <AlertTriangle className="h-4 w-4" />
+            </div>
+          </div>
+          <div className="mt-3">
+            <div className="text-[32px] font-bold text-[#1D4ED8] leading-none">
+              {slaWarningCount}
+            </div>
+            <p className="text-[13px] text-[#1E40AF] mt-1.5">
+              Perlu prioritas penanganan
+            </p>
+          </div>
+        </Card>
+
+        {/* Rata-rata CSAT */}
+        <Card className="p-5">
+          <div className="flex items-center justify-between">
+            <span className="text-[14px] font-medium text-[#475569]">
+              Rata-rata CSAT
+            </span>
+            <div className="h-8 w-8 rounded-full bg-[#FEF3C7] text-[#B45309] flex items-center justify-center">
+              <Star className="h-4 w-4 fill-current" />
+            </div>
+          </div>
+          <div className="mt-3">
+            <div className="text-[32px] font-bold text-[#0F172A] leading-none">
+              {avgCsat} <span className="text-[18px] text-[#64748B] font-normal">/ 5.0</span>
+            </div>
+            <p className="text-[13px] text-[#64748B] mt-1.5">
               Dari {feedbacks._count.rating} ulasan pelanggan
             </p>
-          </CardContent>
+          </div>
         </Card>
       </div>
 
-      {/* Activity Audit Logs */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Activity className="h-5 w-5 text-zinc-600" />
-            <span>Audit Trail & Histori Log Tiket Terbaru</span>
-          </CardTitle>
-          <CardDescription>
-            Pencatatan kepatuhan SLA dan aktivitas penanganan perbaikan sistem
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="divide-y divide-zinc-200 dark:divide-zinc-800">
-            {recentLogs.length === 0 ? (
-              <p className="text-sm text-zinc-500 py-4 text-center">
-                Belum ada aktivitas tercatat di sistem.
-              </p>
-            ) : (
-              recentLogs.map((log) => (
-                <div key={log.id} className="py-3 flex items-start justify-between gap-4">
-                  <div className="space-y-0.5">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-mono font-bold text-blue-600">
-                        #{log.ticket.ticketNumber}
-                      </span>
-                      <Badge variant="default" className="text-[10px] py-0 px-2 uppercase">
-                        {log.action}
-                      </Badge>
-                      <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">
-                        {log.user.name} ({log.user.role})
-                      </span>
-                    </div>
-                    <p className="text-xs text-zinc-600 dark:text-zinc-400">
-                      {log.notes || "Aktivitas diperbarui"}
-                    </p>
-                  </div>
-                  <span className="text-xs text-zinc-400 shrink-0">
-                    {formatDateTime(log.createdAt)}
-                  </span>
-                </div>
-              ))
-            )}
+      {/* Tabel Tiket Terbaru (UI_CONTEXT 4.3) */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-[18px] font-semibold text-[#0F172A]">
+            Tiket Masuk Terbaru
+          </h2>
+          <Link
+            href="/admin/tickets"
+            className="text-[14px] font-medium text-[#1D4ED8] hover:underline"
+          >
+            Lihat semua tiket &rarr;
+          </Link>
+        </div>
+
+        <div className="rounded-[12px] border border-[#E2E8F0] bg-white overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-[#F8FAFC] border-b border-[#E2E8F0]">
+                  <th className="py-3.5 px-4 text-[14px] font-medium text-[#475569]">
+                    Tiket
+                  </th>
+                  <th className="py-3.5 px-4 text-[14px] font-medium text-[#475569]">
+                    Pelanggan
+                  </th>
+                  <th className="py-3.5 px-4 text-[14px] font-medium text-[#475569]">
+                    Status
+                  </th>
+                  <th className="py-3.5 px-4 text-[14px] font-medium text-[#475569]">
+                    Teknisi
+                  </th>
+                  <th className="py-3.5 px-4 text-[14px] font-medium text-[#475569] text-right">
+                    Aksi
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#E2E8F0]">
+                {recentTickets.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={5}
+                      className="py-10 text-center text-[14px] text-[#64748B]"
+                    >
+                      Belum ada data tiket.
+                    </td>
+                  </tr>
+                ) : (
+                  recentTickets.map((ticket) => (
+                    <tr
+                      key={ticket.id}
+                      className="hover:bg-[#F8FAFC] transition-colors"
+                    >
+                      <td className="py-3.5 px-4">
+                        <div className="font-mono text-xs font-bold text-[#1D4ED8]">
+                          #{ticket.ticketNumber}
+                        </div>
+                        <div className="font-medium text-[15px] text-[#0F172A] line-clamp-1">
+                          {ticket.title}
+                        </div>
+                        <div className="text-[12px] text-[#64748B]">
+                          {formatDateTime(ticket.createdAt)}
+                        </div>
+                      </td>
+
+                      <td className="py-3.5 px-4">
+                        <div className="font-medium text-[14px] text-[#0F172A]">
+                          {ticket.customer.name}
+                        </div>
+                        <div className="text-[12px] text-[#64748B]">
+                          {ticket.customer.email}
+                        </div>
+                      </td>
+
+                      <td className="py-3.5 px-4 whitespace-nowrap">
+                        <StatusBadge status={ticket.status} />
+                      </td>
+
+                      <td className="py-3.5 px-4">
+                        {ticket.technician ? (
+                          <span className="text-[14px] font-medium text-[#0F172A]">
+                            {ticket.technician.name}
+                          </span>
+                        ) : (
+                          <span className="text-[13px] text-[#94A3B8] italic">
+                            Belum ditugaskan
+                          </span>
+                        )}
+                      </td>
+
+                      <td className="py-3.5 px-4 text-right whitespace-nowrap">
+                        {ticket.status === "OPEN" ? (
+                          <AssignTechnicianDialog
+                            ticketId={ticket.id}
+                            ticketNumber={ticket.ticketNumber}
+                            ticketTitle={ticket.title}
+                            currentTechnicianId={ticket.technicianId}
+                            technicians={technicians}
+                          />
+                        ) : (
+                          <Link href={`/customer/track/${ticket.id}`}>
+                            <button
+                              type="button"
+                              className="h-[36px] px-3.5 rounded-[8px] border border-[#E2E8F0] text-[#0F172A] text-[13px] font-medium hover:bg-[#F1F5F9] inline-flex items-center gap-1"
+                            >
+                              <span>Lihat</span>
+                              <ExternalLink className="h-3.5 w-3.5 text-[#64748B]" />
+                            </button>
+                          </Link>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

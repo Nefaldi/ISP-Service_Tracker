@@ -1,16 +1,22 @@
-import { Suspense } from "react";
+import Link from "next/link";
 import { RegisterForm } from "@/components/forms/register-form";
 
 export const metadata = {
-  title: "Daftar Akun Baru - Service Tracker & Helpdesk",
+  title: "Daftar Akun - Service Tracker",
 };
 
 export default function RegisterPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center p-4 bg-gradient-to-br from-zinc-100 via-white to-emerald-50/30 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950">
-      <Suspense fallback={<div className="text-sm text-zinc-500">Memuat formulir pendaftaran...</div>}>
-        <RegisterForm />
-      </Suspense>
+    <div className="min-h-screen flex flex-col justify-center items-center px-4 py-12 bg-white">
+      <div className="w-full max-w-[420px] mb-4">
+        <Link
+          href="/"
+          className="text-xs font-bold tracking-wider uppercase text-[#0B2A6F]"
+        >
+          Service Tracker
+        </Link>
+      </div>
+      <RegisterForm />
     </div>
   );
 }

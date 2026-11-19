@@ -1,5 +1,5 @@
 import React from "react";
-import { cn, getPriorityBadgeClass, getStatusBadgeClass } from "@/lib/utils";
+import { cn, getPriorityBadgeClass, getStatusBadgeClass, formatTicketStatus } from "@/lib/utils";
 
 interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   variant?: "status" | "priority" | "default";
@@ -13,10 +13,12 @@ export function Badge({
   children,
   ...props
 }: BadgeProps) {
-  let badgeClass = "bg-zinc-100 text-zinc-800 border-zinc-200 dark:bg-zinc-800 dark:text-zinc-200";
+  let badgeClass = "bg-[#F1F5F9] text-[#475569] border-[#E2E8F0]";
+  let displayText = children || value;
 
   if (variant === "status" && value) {
     badgeClass = getStatusBadgeClass(value);
+    displayText = formatTicketStatus(value);
   } else if (variant === "priority" && value) {
     badgeClass = getPriorityBadgeClass(value);
   }
@@ -24,13 +26,13 @@ export function Badge({
   return (
     <span
       className={cn(
-        "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border",
+        "inline-flex items-center px-2.5 py-0.5 rounded-full text-[13px] font-semibold border leading-tight",
         badgeClass,
         className
       )}
       {...props}
     >
-      {children || value}
+      {displayText}
     </span>
   );
 }

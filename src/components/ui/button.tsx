@@ -3,8 +3,8 @@ import { cn } from "@/lib/utils";
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "outline" | "danger" | "ghost";
-  size?: "sm" | "md" | "lg";
+  variant?: "primary" | "secondary" | "outline" | "success" | "danger" | "ghost";
+  size?: "sm" | "md" | "lg" | "mobile-action";
   isLoading?: boolean;
 }
 
@@ -22,25 +22,28 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const baseStyles =
-      "inline-flex items-center justify-center font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
+      "inline-flex items-center justify-center font-medium rounded-[8px] transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none";
 
     const variantStyles = {
       primary:
-        "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 shadow-sm",
+        "bg-[#1D4ED8] text-white hover:bg-[#1E40AF] focus:ring-[#1D4ED8] shadow-xs active:bg-[#1E3A8A]",
       secondary:
-        "bg-zinc-800 text-white hover:bg-zinc-900 focus:ring-zinc-600 shadow-sm dark:bg-zinc-700 dark:hover:bg-zinc-600",
+        "bg-[#0F172A] text-white hover:bg-[#1E293B] focus:ring-[#0F172A] shadow-xs",
       outline:
-        "border border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-50 focus:ring-blue-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800",
+        "border border-[#1D4ED8] bg-transparent text-[#1D4ED8] hover:bg-[#EFF6FF] focus:ring-[#1D4ED8]",
+      success:
+        "bg-[#047857] text-white hover:bg-[#065F46] focus:ring-[#047857] shadow-xs active:bg-[#064E3B]",
       danger:
-        "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 shadow-sm",
+        "bg-[#DC2626] text-white hover:bg-[#B91C1C] focus:ring-[#DC2626] shadow-xs",
       ghost:
-        "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800",
+        "text-[#475569] hover:bg-[#F1F5F9] hover:text-[#0F172A]",
     };
 
     const sizeStyles = {
-      sm: "text-xs px-2.5 py-1.5 gap-1.5",
-      md: "text-sm px-4 py-2 gap-2",
-      lg: "text-base px-5 py-2.5 gap-2.5",
+      sm: "h-[36px] text-[13px] px-3 gap-1.5",
+      md: "h-[44px] text-[15px] px-4 gap-2",
+      lg: "h-[48px] text-[15px] px-5 gap-2",
+      "mobile-action": "h-[52px] text-[16px] font-semibold px-6 rounded-[10px] gap-2.5 w-full",
     };
 
     return (
@@ -56,6 +59,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
+            aria-hidden="true"
           >
             <circle
               className="opacity-25"

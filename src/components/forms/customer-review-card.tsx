@@ -47,31 +47,31 @@ export function CustomerReviewCard({
 
   if (isClosed || successMsg) {
     return (
-      <Card className="border-emerald-200 bg-emerald-50/50 dark:border-emerald-900 dark:bg-emerald-950/20">
+      <Card className="border-[#A7F3D0] bg-[#D1FAE5]/30">
         <CardContent className="pt-6 text-center">
-          <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-900/60 dark:text-emerald-300">
+          <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-[#D1FAE5] text-[#065F46]">
             <CheckCircle2 className="h-6 w-6" />
           </div>
-          <h4 className="font-semibold text-zinc-900 dark:text-zinc-100">
+          <h4 className="text-[18px] font-semibold text-[#065F46]">
             Tiket Telah Ditutup & Diverifikasi
           </h4>
-          <p className="text-xs text-zinc-500 mt-1">
+          <p className="text-[14px] text-[#475569] mt-1">
             Terima kasih telah memberikan ulasan. Layanan Anda kini telah terselesaikan.
           </p>
-          <div className="flex justify-center gap-1 mt-3">
+          <div className="flex justify-center gap-1.5 mt-3">
             {[1, 2, 3, 4, 5].map((s) => (
               <Star
                 key={s}
                 className={`h-5 w-5 ${
                   s <= (existingRating || rating)
-                    ? "text-yellow-400 fill-yellow-400"
-                    : "text-zinc-300"
+                    ? "text-[#F59E0B] fill-[#F59E0B]"
+                    : "text-[#CBD5E1]"
                 }`}
               />
             ))}
           </div>
           {(existingComment || comment) && (
-            <p className="text-xs text-zinc-600 dark:text-zinc-400 italic mt-2">
+            <p className="text-[14px] text-[#475569] italic mt-2.5">
               &quot;{existingComment || comment}&quot;
             </p>
           )}
@@ -81,62 +81,70 @@ export function CustomerReviewCard({
   }
 
   return (
-    <Card className="border-blue-200 bg-blue-50/30 dark:border-blue-900/50 dark:bg-blue-950/20">
+    <Card className="border-[#BFDBFE] bg-[#EFF6FF]/40">
       <CardHeader>
-        <CardTitle className="text-base text-blue-900 dark:text-blue-300">
-          Verifikasi Penyelesaian & Kepuasan Layanan (CSAT)
+        <CardTitle className="text-[18px] text-[#1D4ED8]">
+          Verifikasi Penyelesaian & Ulasan Kepuasan (CSAT)
         </CardTitle>
-        <CardDescription>
-          Teknisi telah menyelesaikan perbaikan. Berikan rating kepuasan Anda untuk menutup tiket.
+        <CardDescription className="text-[14px] text-[#475569]">
+          Teknisi telah menyelesaikan perbaikan. Mohon periksa hasil kerja dan berikan penilaian kepuasan Anda untuk menutup tiket ini.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleCloseTicket} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-2">
-              Penilaian Kualitas Pengerjaan (1 - 5 Bintang)
+            <label className="block text-[14px] font-medium text-[#0F172A] mb-1.5">
+              Tingkat Kepuasan Layanan
             </label>
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
-                  type="button"
                   key={star}
+                  type="button"
                   onClick={() => setRating(star)}
-                  className="p-1 rounded-md transition-transform hover:scale-110 focus:outline-none"
+                  aria-label={`Beri ${star} bintang`}
+                  className="p-1 text-[#CBD5E1] hover:text-[#F59E0B] transition-colors focus:outline-none"
                 >
                   <Star
                     className={`h-7 w-7 ${
                       star <= rating
-                        ? "text-yellow-400 fill-yellow-400"
-                        : "text-zinc-300 hover:text-yellow-200"
+                        ? "text-[#F59E0B] fill-[#F59E0B]"
+                        : "text-[#CBD5E1]"
                     }`}
                   />
                 </button>
               ))}
+              <span className="text-[14px] font-semibold text-[#0F172A] ml-2">
+                {rating} / 5 Bintang
+              </span>
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
-              Ulasan & Komentar Tambahan (Opsional)
+            <label
+              htmlFor="review-comment"
+              className="block text-[14px] font-medium text-[#0F172A] mb-1.5"
+            >
+              Ulasan / Masukan Tambahan
             </label>
             <textarea
-              rows={2}
+              id="review-comment"
+              rows={3}
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              placeholder="Contoh: Teknisi datang tepat waktu dan koneksi kembali normal."
-              className="w-full px-3 py-2 text-sm rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Bagikan pengalaman penanganan gangguan oleh teknisi kami..."
+              className="w-full px-3.5 py-2.5 rounded-[8px] border border-[#94A3B8] bg-white text-[15px] text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#1D4ED8]"
             />
           </div>
 
           <Button
             type="submit"
             variant="primary"
-            size="sm"
+            size="lg"
+            className="w-full h-[48px] text-[15px]"
             isLoading={isLoading}
-            className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700"
           >
-            Tutup Tiket & Kirim Ulasan
+            Verifikasi Selesai & Kirim Ulasan
           </Button>
         </form>
       </CardContent>

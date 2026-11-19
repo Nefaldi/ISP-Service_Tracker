@@ -1,16 +1,15 @@
-import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { TechnicianTasksList } from "@/components/shared/technician-tasks-list";
-import { ArrowLeft, Wrench } from "lucide-react";
 
 export const metadata = {
-  title: "Daftar Tugas Teknisi - Helpdesk",
+  title: "Tugas Hari Ini - Service Tracker Teknisi",
 };
 
 export default async function TechnicianTasksPage() {
   const session = await auth();
   const techId = session?.user?.id;
+  const techName = session?.user?.name || "Teknisi";
 
   const tasks = await prisma.ticket.findMany({
     where: { technicianId: techId },
@@ -21,22 +20,15 @@ export default async function TechnicianTasksPage() {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
+      {/* Sapaan kecil & Judul "Tugas hari ini" (24px) - UI_CONTEXT 4.4 */}
       <div>
-        <Link
-          href="/technician"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 mb-2"
-        >
-          <ArrowLeft className="h-3.5 w-3.5" />
-          <span>Kembali ke Overview Teknisi</span>
-        </Link>
-        <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-          <Wrench className="h-6 w-6 text-blue-600" />
-          <span>Daftar Seluruh Tugas Teknisi ({tasks.length})</span>
-        </h1>
-        <p className="text-sm text-zinc-500">
-          Kelola penugasan, hubungi pelanggan langsung via WhatsApp/Telpon, dan selesaikan tiket
+        <p className="text-[13px] text-[#475569] font-medium">
+          Halo, {techName}
         </p>
+        <h1 className="text-[24px] font-bold tracking-tight text-[#0F172A]">
+          Tugas hari ini
+        </h1>
       </div>
 
       <TechnicianTasksList initialTasks={tasks} />

@@ -1,11 +1,10 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, BarChart3, Clock, CheckCircle2, Star, TrendingUp, Users } from "lucide-react";
+import { ArrowLeft, Clock, CheckCircle2, Star, Users } from "lucide-react";
 
 export const metadata = {
-  title: "Laporan & Analitik SLA - Admin Helpdesk",
+  title: "Laporan SLA & CSAT - Service Tracker Admin",
 };
 
 export default async function AdminReportsPage() {
@@ -31,7 +30,6 @@ export default async function AdminReportsPage() {
     }),
   ]);
 
-  // Calculations:
   const total = tickets.length;
   const closedTickets = tickets.filter((t) => t.status === "CLOSED" || t.status === "RESOLVED");
 
@@ -60,7 +58,7 @@ export default async function AdminReportsPage() {
   const avgCsat =
     feedbacks.length > 0
       ? (feedbacks.reduce((acc, f) => acc + f.rating, 0) / feedbacks.length).toFixed(1)
-      : "0.0";
+      : "5.0";
 
   const ratingCounts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
   feedbacks.forEach((f) => {
@@ -101,247 +99,244 @@ export default async function AdminReportsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <Link
-            href="/admin"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 mb-2"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" />
-            <span>Kembali ke Overview Admin</span>
-          </Link>
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-            <BarChart3 className="h-6 w-6 text-blue-600" />
-            <span>Laporan Analitik Kepatuhan SLA & Performa Teknisi</span>
-          </h1>
-          <p className="text-sm text-zinc-500">
-            Rekapitulasi komprehensif efisiensi waktu penanganan gangguan dan kepuasan pelanggan
-          </p>
-        </div>
-
-        <Link href="/admin/tickets">
-          <Badge className="px-3 py-1.5 text-xs bg-blue-50 text-blue-700 border-blue-200">
-            Total {total} Tiket Teregistrasi
-          </Badge>
+      {/* Header */}
+      <div>
+        <Link
+          href="/admin"
+          className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#475569] hover:text-[#0F172A] mb-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          <span>Kembali ke Ikhtisar</span>
         </Link>
+        <h1 className="text-[28px] font-bold tracking-tight text-[#0F172A]">
+          Laporan Kepatuhan SLA & Analitik CSAT
+        </h1>
+        <p className="text-[14px] text-[#475569] mt-1">
+          Rekapitulasi durasi penanganan gangguan, performa teknisi lapangan, dan skor kepuasan pelanggan
+        </p>
       </div>
 
-      {/* KPI Cards */}
+      {/* 4 Summary Cards (Grid auto-fit min 180px, angka 32px bold - UI_CONTEXT 2) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="border-t-4 border-t-blue-500">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-medium uppercase text-zinc-500 flex items-center justify-between">
-              <span>Rata-Rata Waktu SLA</span>
-              <Clock className="h-4 w-4 text-blue-500" />
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">
-              {avgSlaHours} <span className="text-sm font-normal text-zinc-500">Jam</span>
+        <Card className="p-5">
+          <div className="flex items-center justify-between">
+            <span className="text-[14px] font-medium text-[#475569]">
+              Rata-rata Waktu SLA
+            </span>
+            <div className="h-8 w-8 rounded-full bg-[#EFF6FF] text-[#1D4ED8] flex items-center justify-center">
+              <Clock className="h-4 w-4" />
             </div>
-            <p className="text-xs text-zinc-500 mt-1">
-              Dari {resolvedCount} tiket yang berhasil diselesaikan
+          </div>
+          <div className="mt-3">
+            <div className="text-[32px] font-bold text-[#0F172A] leading-none">
+              {avgSlaHours} <span className="text-[16px] text-[#64748B] font-normal">Jam</span>
+            </div>
+            <p className="text-[13px] text-[#64748B] mt-1.5">
+              Dari {resolvedCount} tiket yang diselesaikan
             </p>
-          </CardContent>
+          </div>
         </Card>
 
-        <Card className="border-t-4 border-t-emerald-500">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-medium uppercase text-zinc-500 flex items-center justify-between">
-              <span>Tingkat Penyelesaian</span>
-              <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-emerald-600">
+        <Card className="p-5">
+          <div className="flex items-center justify-between">
+            <span className="text-[14px] font-medium text-[#475569]">
+              Tingkat Penyelesaian
+            </span>
+            <div className="h-8 w-8 rounded-full bg-[#D1FAE5] text-[#065F46] flex items-center justify-center">
+              <CheckCircle2 className="h-4 w-4" />
+            </div>
+          </div>
+          <div className="mt-3">
+            <div className="text-[32px] font-bold text-[#0F172A] leading-none">
               {total > 0 ? Math.round((closedTickets.length / total) * 100) : 0}%
             </div>
-            <p className="text-xs text-zinc-500 mt-1">
-              {closedTickets.length} dari {total} tiket terselesaikan
+            <p className="text-[13px] text-[#64748B] mt-1.5">
+              {closedTickets.length} dari {total} tiket selesai
             </p>
-          </CardContent>
+          </div>
         </Card>
 
-        <Card className="border-t-4 border-t-yellow-500">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-medium uppercase text-zinc-500 flex items-center justify-between">
-              <span>Skor Kepuasan CSAT</span>
-              <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1">
-              <span>{avgCsat}</span>
-              <span className="text-sm font-normal text-zinc-500">/ 5.0</span>
+        <Card className="p-5 bg-[#EFF6FF] border-[#BFDBFE]">
+          <div className="flex items-center justify-between">
+            <span className="text-[14px] font-medium text-[#1D4ED8]">
+              Skor Kepuasan CSAT
+            </span>
+            <div className="h-8 w-8 rounded-full bg-[#FEF3C7] text-[#B45309] flex items-center justify-center">
+              <Star className="h-4 w-4 fill-current" />
             </div>
-            <p className="text-xs text-zinc-500 mt-1">
-              Berdasarkan {feedbacks.length} ulasan pelanggan
+          </div>
+          <div className="mt-3">
+            <div className="text-[32px] font-bold text-[#1D4ED8] leading-none">
+              {avgCsat} <span className="text-[16px] text-[#1E40AF] font-normal">/ 5.0</span>
+            </div>
+            <p className="text-[13px] text-[#1E40AF] mt-1.5">
+              Dari {feedbacks.length} feedback pelanggan
             </p>
-          </CardContent>
+          </div>
         </Card>
 
-        <Card className="border-t-4 border-t-purple-500">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-medium uppercase text-zinc-500 flex items-center justify-between">
-              <span>Teknisi Aktif</span>
-              <Users className="h-4 w-4 text-purple-500" />
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-purple-600">{technicians.length}</div>
-            <p className="text-xs text-zinc-500 mt-1">Staf operasional lapangan</p>
-          </CardContent>
+        <Card className="p-5">
+          <div className="flex items-center justify-between">
+            <span className="text-[14px] font-medium text-[#475569]">
+              Teknisi Aktif
+            </span>
+            <div className="h-8 w-8 rounded-full bg-[#EDE9FE] text-[#5B21B6] flex items-center justify-center">
+              <Users className="h-4 w-4" />
+            </div>
+          </div>
+          <div className="mt-3">
+            <div className="text-[32px] font-bold text-[#0F172A] leading-none">
+              {technicians.length}
+            </div>
+            <p className="text-[13px] text-[#64748B] mt-1.5">
+              Staf teknisi lapangan terdaftar
+            </p>
+          </div>
         </Card>
       </div>
 
-      {/* Technician Performance Matrix */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <TrendingUp className="h-5 w-5 text-blue-600" />
-            <span>Matriks Kinerja & Kecepatan Teknisi Lapangan</span>
-          </CardTitle>
-          <CardDescription>
-            Evaluasi beban kerja, rasio penyelesaian, dan rating kepuasan pelanggan masing-masing teknisi
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead className="border-b border-zinc-200 bg-zinc-50/50 text-xs font-semibold uppercase text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/50">
-                <tr>
-                  <th className="px-4 py-3">Nama Teknisi</th>
-                  <th className="px-4 py-3">Kontak</th>
-                  <th className="px-4 py-3">Total Ditugaskan</th>
-                  <th className="px-4 py-3">Selesai</th>
-                  <th className="px-4 py-3">Rasio Penyelesaian</th>
-                  <th className="px-4 py-3">Rata-Rata CSAT</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
-                {techPerformance.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="px-4 py-8 text-center text-zinc-500 text-xs">
-                      Belum ada teknisi yang terdaftar di sistem.
-                    </td>
+      {/* Grid: Matriks Performa Teknisi & Distribusi Rating CSAT */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        {/* Matriks Performa Teknisi (Span 2) */}
+        <div className="lg:col-span-2 space-y-6">
+          <div className="rounded-[12px] border border-[#E2E8F0] bg-white overflow-hidden">
+            <div className="p-4 sm:p-5 border-b border-[#E2E8F0]">
+              <h2 className="text-[18px] font-semibold text-[#0F172A]">
+                Matriks Produktivitas Teknisi
+              </h2>
+              <p className="text-[14px] text-[#475569] mt-0.5">
+                Beban penugasan, persentase keberhasilan perbaikan, dan skor kepuasan individu
+              </p>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-[#F8FAFC] border-b border-[#E2E8F0]">
+                    <th className="py-3 px-4 text-[13px] font-medium text-[#475569]">
+                      Nama Teknisi
+                    </th>
+                    <th className="py-3 px-4 text-[13px] font-medium text-[#475569] text-center">
+                      Ditugaskan
+                    </th>
+                    <th className="py-3 px-4 text-[13px] font-medium text-[#475569] text-center">
+                      Terselesaikan
+                    </th>
+                    <th className="py-3 px-4 text-[13px] font-medium text-[#475569] text-center">
+                      Rasio Sukses
+                    </th>
+                    <th className="py-3 px-4 text-[13px] font-medium text-[#475569] text-right">
+                      Rata-rata Rating
+                    </th>
                   </tr>
-                ) : (
-                  techPerformance.map((tech) => (
-                    <tr key={tech.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-900/50 transition-colors">
-                      <td className="px-4 py-3">
-                        <div className="font-semibold text-zinc-900 dark:text-zinc-100">{tech.name}</div>
-                        <div className="text-xs text-zinc-500">{tech.email}</div>
-                      </td>
-                      <td className="px-4 py-3 text-xs text-zinc-600 dark:text-zinc-400">
-                        {tech.phone || "-"}
-                      </td>
-                      <td className="px-4 py-3 font-semibold text-zinc-800 dark:text-zinc-200">
-                        {tech.totalAssigned} Tugas
-                      </td>
-                      <td className="px-4 py-3 text-emerald-600 font-semibold">
-                        {tech.completed} Tiket
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
-                          <div className="flex-1 w-24 bg-zinc-200 dark:bg-zinc-800 h-2 rounded-full overflow-hidden">
-                            <div
-                              className="bg-emerald-500 h-full rounded-full"
-                              style={{ width: `${tech.completionRate}%` }}
-                            />
-                          </div>
-                          <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-                            {tech.completionRate}%
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3">
-                        {tech.avgRating !== "-" ? (
-                          <div className="inline-flex items-center gap-1 text-xs font-bold text-yellow-600 bg-yellow-50 dark:bg-yellow-950/40 px-2 py-0.5 rounded-full border border-yellow-200 dark:border-yellow-900">
-                            <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
-                            <span>{tech.avgRating} / 5.0</span>
-                          </div>
-                        ) : (
-                          <span className="text-xs text-zinc-400 italic">Belum ada rating</span>
-                        )}
+                </thead>
+                <tbody className="divide-y divide-[#E2E8F0]">
+                  {techPerformance.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="py-8 text-center text-sm text-[#64748B]">
+                        Belum ada staf teknisi yang terdaftar.
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  ) : (
+                    techPerformance.map((tech) => (
+                      <tr key={tech.id} className="hover:bg-[#F8FAFC]">
+                        <td className="py-3.5 px-4">
+                          <span className="font-semibold text-[14px] text-[#0F172A] block">
+                            {tech.name}
+                          </span>
+                          <span className="text-[12px] text-[#64748B]">
+                            {tech.email}
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-4 text-center text-[14px] font-medium text-[#0F172A]">
+                          {tech.totalAssigned}
+                        </td>
+                        <td className="py-3.5 px-4 text-center text-[14px] font-semibold text-[#065F46]">
+                          {tech.completed}
+                        </td>
+                        <td className="py-3.5 px-4 text-center">
+                          <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-semibold bg-[#EFF6FF] text-[#1D4ED8]">
+                            {tech.completionRate}%
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-4 text-right">
+                          <div className="inline-flex items-center gap-1 font-semibold text-[14px] text-[#0F172A]">
+                            <Star className="h-4 w-4 text-[#F59E0B] fill-[#F59E0B]" />
+                            <span>{tech.avgRating}</span>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
-      {/* Category Breakdown & CSAT Distribution Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Category Breakdown */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Distribusi Kategori Masalah Terbanyak</CardTitle>
-            <CardDescription>
-              Frekuensi pelaporan berdasarkan tipe kerusakan jaringan dan hardware
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {Object.entries(categoryMap).length === 0 ? (
-              <p className="text-xs text-zinc-500 py-4 text-center">Belum ada data kategori.</p>
-            ) : (
-              Object.entries(categoryMap)
-                .sort((a, b) => b[1] - a[1])
-                .map(([category, count]) => {
-                  const pct = total > 0 ? Math.round((count / total) * 100) : 0;
-                  return (
-                    <div key={category} className="space-y-1">
-                      <div className="flex justify-between text-xs font-semibold text-zinc-800 dark:text-zinc-200">
-                        <span>{category}</span>
-                        <span>{count} tiket ({pct}%)</span>
-                      </div>
-                      <div className="w-full bg-zinc-100 dark:bg-zinc-800 h-2 rounded-full overflow-hidden">
-                        <div
-                          className="bg-blue-600 h-full rounded-full transition-all duration-300"
-                          style={{ width: `${pct}%` }}
-                        />
-                      </div>
+        {/* CSAT Rating Breakdown Card */}
+        <div id="csat" className="space-y-6">
+          <Card>
+            <CardHeader className="border-b border-[#E2E8F0] pb-3 mb-4">
+              <CardTitle className="text-[18px]">Distribusi Bintang CSAT</CardTitle>
+              <CardDescription className="text-[14px]">
+                Sebaran penilaian kepuasan dari pelanggan yang telah memverifikasi tiket
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {[5, 4, 3, 2, 1].map((star) => {
+                const count = ratingCounts[star as 1 | 2 | 3 | 4 | 5];
+                const pct = feedbacks.length > 0 ? Math.round((count / feedbacks.length) * 100) : 0;
+
+                return (
+                  <div key={star} className="flex items-center gap-3">
+                    <div className="flex items-center gap-1 w-16 text-[13px] font-medium text-[#0F172A]">
+                      <span>{star}</span>
+                      <Star className="h-3.5 w-3.5 text-[#F59E0B] fill-[#F59E0B]" />
                     </div>
-                  );
-                })
-            )}
-          </CardContent>
-        </Card>
+                    <div className="flex-1 h-2 rounded-full bg-[#E2E8F0] overflow-hidden">
+                      <div
+                        className="h-full bg-[#F59E0B] rounded-full"
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                    <div className="w-12 text-right text-[12px] text-[#64748B]">
+                      {count} ({pct}%)
+                    </div>
+                  </div>
+                );
+              })}
+            </CardContent>
+          </Card>
 
-        {/* CSAT Distribution */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Distribusi Bintang Kepuasan (CSAT)</CardTitle>
-            <CardDescription>
-              Penilaian kualitas penyelesaian oleh pelanggan yang telah menutup tiket
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {[5, 4, 3, 2, 1].map((stars) => {
-              const count = ratingCounts[stars as 1 | 2 | 3 | 4 | 5];
-              const pct = feedbacks.length > 0 ? Math.round((count / feedbacks.length) * 100) : 0;
-              return (
-                <div key={stars} className="flex items-center gap-3 text-xs">
-                  <div className="flex items-center gap-1 w-20 font-semibold text-zinc-700 dark:text-zinc-300">
-                    <span>{stars}</span>
-                    <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
+          {/* Breakdown Kategori Tiket */}
+          <Card>
+            <CardHeader className="border-b border-[#E2E8F0] pb-3 mb-4">
+              <CardTitle className="text-[18px]">Breakdown Kategori Gangguan</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {Object.entries(categoryMap).map(([cat, count]) => {
+                const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+                return (
+                  <div key={cat} className="space-y-1">
+                    <div className="flex items-center justify-between text-[13px]">
+                      <span className="font-medium text-[#0F172A]">{cat}</span>
+                      <span className="text-[#64748B]">
+                        {count} ({pct}%)
+                      </span>
+                    </div>
+                    <div className="h-2 rounded-full bg-[#E2E8F0] overflow-hidden">
+                      <div
+                        className="h-full bg-[#1D4ED8] rounded-full"
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
                   </div>
-                  <div className="flex-1 bg-zinc-100 dark:bg-zinc-800 h-2 rounded-full overflow-hidden">
-                    <div
-                      className="bg-yellow-400 h-full rounded-full"
-                      style={{ width: `${pct}%` }}
-                    />
-                  </div>
-                  <span className="w-16 text-right font-medium text-zinc-500">
-                    {count} ({pct}%)
-                  </span>
-                </div>
-              );
-            })}
-          </CardContent>
-        </Card>
+                );
+              })}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

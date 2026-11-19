@@ -1,20 +1,16 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import { SSEListener } from "@/components/shared/sse-listener";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
-  title: "Web Service Tracker & Helpdesk Management",
+  title: "Service Tracker - Manajemen Tiket Helpdesk Berbasis Role",
   description:
     "Sistem Informasi Web Service Tracker dan Manajemen Tiket Helpdesk Berbasis Role (Unified Modern Monolith)",
 };
@@ -25,11 +21,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html
-      lang="id"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100">
+    <html lang="id" className={`${inter.variable} h-full antialiased`}>
+      <body className="min-h-full flex flex-col bg-[#F6F7F9] text-[#0F172A] font-sans">
         <main className="flex-1 flex flex-col">{children}</main>
         <SSEListener />
       </body>
