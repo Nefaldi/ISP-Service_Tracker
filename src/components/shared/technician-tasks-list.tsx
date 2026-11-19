@@ -11,7 +11,6 @@ import {
   MessageSquare,
   Clock,
   CheckCircle2,
-  AlertTriangle,
   ImageIcon,
   FileText,
   Search,
@@ -94,63 +93,62 @@ export function TechnicianTasksList({
     <div className="space-y-4">
       {/* Search and Tabs Toolbar (Consistent with Customer Tickets List) */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-3 border-b border-[#E2E8F0]">
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
           <button
             type="button"
             onClick={() => setFilterTab("ACTIVE")}
-            className={`h-[36px] px-3.5 rounded-[8px] text-[13px] font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 cursor-pointer ${
+            className={`h-[36px] px-3.5 rounded-[8px] text-[13px] font-semibold whitespace-nowrap transition-colors flex items-center justify-center cursor-pointer ${
               filterTab === "ACTIVE"
-                ? "bg-[#1D4ED8] text-white"
-                : "bg-[#F1F5F9] text-[#475569] hover:bg-[#E2E8F0]"
+                ? "bg-[#1D4ED8] text-white shadow-2xs"
+                : "bg-[#F1F5F9] text-[#475569] hover:bg-[#E2E8F0] hover:text-[#0F172A]"
             }`}
           >
-            <Clock className="h-4 w-4" />
-            <span>Sedang Berjalan</span>
+            Sedang Berjalan
           </button>
 
           <button
             type="button"
             onClick={() => setFilterTab("ASSIGNED")}
-            className={`h-[36px] px-3.5 rounded-[8px] text-[13px] font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 cursor-pointer ${
+            className={`h-[36px] px-3.5 rounded-[8px] text-[13px] font-semibold whitespace-nowrap transition-colors flex items-center justify-center cursor-pointer ${
               filterTab === "ASSIGNED"
-                ? "bg-[#1D4ED8] text-white"
-                : "bg-[#F1F5F9] text-[#475569] hover:bg-[#E2E8F0]"
+                ? "bg-[#1D4ED8] text-white shadow-2xs"
+                : "bg-[#F1F5F9] text-[#475569] hover:bg-[#E2E8F0] hover:text-[#0F172A]"
             }`}
           >
-            <span>Ditugaskan</span>
+            Ditugaskan
           </button>
 
           <button
             type="button"
             onClick={() => setFilterTab("IN_PROGRESS")}
-            className={`h-[36px] px-3.5 rounded-[8px] text-[13px] font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 cursor-pointer ${
+            className={`h-[36px] px-3.5 rounded-[8px] text-[13px] font-semibold whitespace-nowrap transition-colors flex items-center justify-center cursor-pointer ${
               filterTab === "IN_PROGRESS"
-                ? "bg-[#5B21B6] text-white"
-                : "bg-[#F1F5F9] text-[#475569] hover:bg-[#E2E8F0]"
+                ? "bg-[#1D4ED8] text-white shadow-2xs"
+                : "bg-[#F1F5F9] text-[#475569] hover:bg-[#E2E8F0] hover:text-[#0F172A]"
             }`}
           >
-            <AlertTriangle className="h-4 w-4" />
-            <span>Dikerjakan</span>
+            Dikerjakan
           </button>
 
           <button
             type="button"
             onClick={() => setFilterTab("RESOLVED")}
-            className={`h-[36px] px-3.5 rounded-[8px] text-[13px] font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 cursor-pointer ${
+            className={`h-[36px] px-3.5 rounded-[8px] text-[13px] font-semibold whitespace-nowrap transition-colors flex items-center justify-center cursor-pointer ${
               filterTab === "RESOLVED"
-                ? "bg-[#047857] text-white"
-                : "bg-[#F1F5F9] text-[#475569] hover:bg-[#E2E8F0]"
+                ? "bg-[#1D4ED8] text-white shadow-2xs"
+                : "bg-[#F1F5F9] text-[#475569] hover:bg-[#E2E8F0] hover:text-[#0F172A]"
             }`}
           >
-            <CheckCircle2 className="h-4 w-4" />
-            <span>Riwayat Selesai</span>
+            Riwayat Selesai
           </button>
 
           <button
             type="button"
             onClick={() => setFilterTab("ALL")}
-            className={`h-[36px] px-2.5 text-[13px] font-medium text-[#64748B] hover:text-[#0F172A] cursor-pointer ${
-              filterTab === "ALL" ? "underline font-bold text-[#0F172A]" : ""
+            className={`h-[36px] px-3.5 rounded-[8px] text-[13px] font-semibold whitespace-nowrap transition-colors flex items-center justify-center cursor-pointer ${
+              filterTab === "ALL"
+                ? "bg-[#1D4ED8] text-white shadow-2xs"
+                : "bg-[#F1F5F9] text-[#475569] hover:bg-[#E2E8F0] hover:text-[#0F172A]"
             }`}
           >
             Semua

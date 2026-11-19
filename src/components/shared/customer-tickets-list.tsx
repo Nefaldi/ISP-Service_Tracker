@@ -8,8 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import { formatDateTime } from "@/lib/utils";
 import {
   Search,
-  Clock,
-  CheckCircle2,
   Inbox,
   ChevronDown,
   Check,
@@ -129,36 +127,36 @@ export function CustomerTicketsList({
     <div className="space-y-4">
       {/* Search and Tabs Filter */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-3 border-b border-[#E2E8F0]">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
           <button
             type="button"
             onClick={() => setTab("ACTIVE")}
-            className={`h-[36px] px-3.5 rounded-[8px] text-[13px] font-semibold transition-colors flex items-center gap-1.5 cursor-pointer ${
+            className={`h-[36px] px-3.5 rounded-[8px] text-[13px] font-semibold whitespace-nowrap transition-colors flex items-center justify-center cursor-pointer ${
               tab === "ACTIVE"
-                ? "bg-[#1D4ED8] text-white"
-                : "bg-[#F1F5F9] text-[#475569] hover:bg-[#E2E8F0]"
+                ? "bg-[#1D4ED8] text-white shadow-2xs"
+                : "bg-[#F1F5F9] text-[#475569] hover:bg-[#E2E8F0] hover:text-[#0F172A]"
             }`}
           >
-            <Clock className="h-4 w-4" />
-            <span>Sedang Berjalan</span>
+            Sedang Berjalan
           </button>
           <button
             type="button"
             onClick={() => setTab("HISTORY")}
-            className={`h-[36px] px-3.5 rounded-[8px] text-[13px] font-semibold transition-colors flex items-center gap-1.5 cursor-pointer ${
+            className={`h-[36px] px-3.5 rounded-[8px] text-[13px] font-semibold whitespace-nowrap transition-colors flex items-center justify-center cursor-pointer ${
               tab === "HISTORY"
-                ? "bg-[#0F172A] text-white"
-                : "bg-[#F1F5F9] text-[#475569] hover:bg-[#E2E8F0]"
+                ? "bg-[#1D4ED8] text-white shadow-2xs"
+                : "bg-[#F1F5F9] text-[#475569] hover:bg-[#E2E8F0] hover:text-[#0F172A]"
             }`}
           >
-            <CheckCircle2 className="h-4 w-4" />
-            <span>Riwayat Selesai</span>
+            Riwayat Selesai
           </button>
           <button
             type="button"
             onClick={() => setTab("ALL")}
-            className={`h-[36px] px-2.5 text-[13px] font-medium text-[#64748B] hover:text-[#0F172A] cursor-pointer ${
-              tab === "ALL" ? "underline font-bold text-[#0F172A]" : ""
+            className={`h-[36px] px-3.5 rounded-[8px] text-[13px] font-semibold whitespace-nowrap transition-colors flex items-center justify-center cursor-pointer ${
+              tab === "ALL"
+                ? "bg-[#1D4ED8] text-white shadow-2xs"
+                : "bg-[#F1F5F9] text-[#475569] hover:bg-[#E2E8F0] hover:text-[#0F172A]"
             }`}
           >
             Semua
