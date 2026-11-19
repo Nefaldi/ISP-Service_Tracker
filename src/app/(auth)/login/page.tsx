@@ -1,11 +1,11 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { LoginForm } from "@/components/forms/login-form";
+import { AuthContainer } from "@/components/forms/auth-container";
 import { Wrench, User, ShieldCheck } from "lucide-react";
 
 export const metadata = {
-  title: "Masuk - Service Tracker",
+  title: "Masuk & Registrasi - Service Tracker",
 };
 
 export default function LoginPage() {
@@ -65,7 +65,7 @@ export default function LoginPage() {
 
       {/* Form Panel (Kanan) */}
       <div className="flex flex-col justify-center items-center px-6 py-12 lg:px-12 bg-white">
-        <div className="lg:hidden w-full max-w-[380px] mb-6">
+        <div className="lg:hidden w-full max-w-[420px] mb-6">
           <Link
             href="/"
             className="text-xs font-bold tracking-wider uppercase text-[#0B2A6F]"
@@ -76,10 +76,10 @@ export default function LoginPage() {
 
         <Suspense
           fallback={
-            <div className="text-sm text-[#475569]">Memuat formulir masuk...</div>
+            <div className="text-sm text-[#475569]">Memuat formulir autentikasi...</div>
           }
         >
-          <LoginForm />
+          <AuthContainer initialTab="login" />
         </Suspense>
       </div>
     </div>

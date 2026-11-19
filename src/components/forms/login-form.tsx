@@ -8,7 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AlertCircle, User, Wrench, Shield } from "lucide-react";
 
-export function LoginForm() {
+interface LoginFormProps {
+  onSwitchToRegister?: () => void;
+}
+
+export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/";
@@ -21,7 +25,7 @@ export function LoginForm() {
     urlError === "Configuration"
       ? "Konfigurasi server sedang diperbarui. Silakan muat ulang halaman."
       : urlError === "CredentialsSignin"
-      ? "Email atau kata sandi tidak sesuai, atau database Supabase sedang dijeda (paused)."
+      ? "Email atau kata sandi tidak sesuai, atau koneksi database sedang dijeda."
       : urlError
       ? "Sesi telah berakhir atau hak akses tidak diizinkan."
       : null
@@ -74,8 +78,8 @@ export function LoginForm() {
   };
 
   return (
-    <div className="w-full max-w-[380px] mx-auto py-8">
-      <div className="mb-8">
+    <div className="w-full max-w-[380px] mx-auto py-2">
+      <div className="mb-6">
         <h1 className="text-[28px] font-bold text-[#0F172A] tracking-tight">
           Masuk ke akun Anda
         </h1>
@@ -146,12 +150,22 @@ export function LoginForm() {
         <div className="text-center pt-2">
           <p className="text-[14px] text-[#475569]">
             Belum punya akun?{" "}
-            <Link
-              href="/register"
-              className="font-medium text-[#1D4ED8] hover:underline"
-            >
-              Daftar sebagai pelanggan
-            </Link>
+            {onSwitchToRegister ? (
+              <button
+                type="button"
+                onClick={onSwitchToRegister}
+                className="font-medium text-[#1D4ED8] hover:underline cursor-pointer"
+              >
+                Daftar sekarang
+              </button>
+            ) : (
+              <Link
+                href="/register"
+                className="font-medium text-[#1D4ED8] hover:underline"
+              >
+                Daftar sekarang
+              </Link>
+            )}
           </p>
         </div>
       </form>
@@ -159,7 +173,7 @@ export function LoginForm() {
       {/* Demo Quick-Fill Section */}
       <div className="mt-8 pt-6 border-t border-[#E2E8F0]">
         <p className="text-xs font-semibold uppercase tracking-wider text-[#64748B] text-center mb-3">
-          Akun Demo Cepat (Klik untuk mengisi):
+          Pilihan Akun Demo:
         </p>
         <div className="grid grid-cols-3 gap-2">
           <button

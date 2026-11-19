@@ -8,7 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AlertCircle, CheckCircle2, ArrowRight } from "lucide-react";
 
-export function RegisterForm() {
+interface RegisterFormProps {
+  onSwitchToLogin?: () => void;
+}
+
+export function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}) {
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -50,7 +54,11 @@ export function RegisterForm() {
       if (res.success) {
         setIsSuccess(true);
         setTimeout(() => {
-          router.push(`/login?email=${encodeURIComponent(email)}`);
+          if (onSwitchToLogin) {
+            onSwitchToLogin();
+          } else {
+            router.push(`/login?email=${encodeURIComponent(email)}`);
+          }
         }, 1500);
       } else {
         setErrorMessage(res.error || "Gagal mendaftarkan akun.");
@@ -63,7 +71,7 @@ export function RegisterForm() {
   };
 
   return (
-    <div className="w-full max-w-[420px] mx-auto py-8">
+    <div className="w-full max-w-[380px] mx-auto py-2">
       <div className="mb-6">
         <h1 className="text-[28px] font-bold text-[#0F172A] tracking-tight">
           Daftar akun baru
@@ -82,15 +90,27 @@ export function RegisterForm() {
             Pendaftaran Berhasil!
           </h4>
           <p className="text-[14px] text-[#1D4ED8]">
-            Akun Anda telah terdaftar. Sedang mengalihkan ke halaman masuk...
+            Akun Anda telah terdaftar. Sedang mengalihkan ke formulir masuk...
           </p>
           <div className="pt-2">
-            <Link href="/login">
-              <Button size="sm" variant="primary" className="gap-2">
+            {onSwitchToLogin ? (
+              <Button
+                size="sm"
+                variant="primary"
+                className="gap-2"
+                onClick={onSwitchToLogin}
+              >
                 <span>Masuk Sekarang</span>
                 <ArrowRight className="h-4 w-4" />
               </Button>
-            </Link>
+            ) : (
+              <Link href="/login">
+                <Button size="sm" variant="primary" className="gap-2">
+                  <span>Masuk Sekarang</span>
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       ) : (
@@ -171,7 +191,7 @@ export function RegisterForm() {
               onChange={(e) => setRole(e.target.value as "CUSTOMER" | "TEKNISI" | "ADMIN")}
               className="w-full h-[48px] px-3.5 py-2.5 rounded-[8px] border border-[#94A3B8] bg-white text-[15px] text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#1D4ED8]"
             >
-              <option value="CUSTOMER">Pelanggan (Customer)</option>
+              <option value="CUSTOMER">Pelanggan</option>
               <option value="TEKNISI">Teknisi Lapangan</option>
               <option value="ADMIN">Admin Helpdesk</option>
             </select>
@@ -227,12 +247,22 @@ export function RegisterForm() {
           <div className="text-center pt-2">
             <p className="text-[14px] text-[#475569]">
               Sudah punya akun?{" "}
-              <Link
-                href="/login"
-                className="font-medium text-[#1D4ED8] hover:underline"
-              >
-                Masuk di sini
-              </Link>
+              {onSwitchToLogin ? (
+                <button
+                  type="button"
+                  onClick={onSwitchToLogin}
+                  className="font-medium text-[#1D4ED8] hover:underline cursor-pointer"
+                >
+                  Masuk di sini
+                </button>
+              ) : (
+                <Link
+                  href="/login"
+                  className="font-medium text-[#1D4ED8] hover:underline"
+                >
+                  Masuk di sini
+                </Link>
+              )}
             </p>
           </div>
         </form>
