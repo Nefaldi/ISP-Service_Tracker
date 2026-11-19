@@ -130,10 +130,10 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
         <button
           type="button"
           onClick={() => signOut({ callbackUrl: "/login" })}
-          className="w-full flex items-center gap-2 px-3 py-2 text-[13px] font-medium text-[#BFDBFE] hover:bg-[#1E3A8A] hover:text-white rounded-[8px] transition-colors"
+          className="w-full flex items-center justify-center gap-2 px-3 py-2 text-[13px] font-semibold text-white bg-red-600/90 hover:bg-red-700 rounded-[8px] transition-colors shadow-xs cursor-pointer"
         >
           <LogOut className="h-4 w-4" />
-          <span>Keluar</span>
+          <span>Keluar dari Akun</span>
         </button>
       </div>
     </div>
@@ -141,7 +141,7 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
 
   return (
     <>
-      {/* Mobile Top Bar with Hamburger */}
+      {/* Mobile Top Bar with Hamburger & Direct Logout */}
       <div className="md:hidden flex items-center justify-between bg-[#0B2A6F] text-white px-4 py-3 border-b border-[#1E3A8A]">
         <div className="flex items-center gap-2">
           <button
@@ -154,9 +154,20 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
           </button>
           <span className="font-bold text-[16px]">Service Tracker</span>
         </div>
-        <span className="text-[12px] bg-[#1E3A8A] px-2.5 py-0.5 rounded-full text-[#BFDBFE]">
-          Admin
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-[12px] bg-[#1E3A8A] px-2.5 py-0.5 rounded-full text-[#BFDBFE]">
+            Admin
+          </span>
+          <button
+            type="button"
+            onClick={() => signOut({ callbackUrl: "/login" })}
+            title="Keluar"
+            aria-label="Keluar dari akun admin"
+            className="p-1.5 rounded-[6px] text-red-300 hover:bg-red-900/50 hover:text-white transition-colors cursor-pointer"
+          >
+            <LogOut className="h-4 w-4" />
+          </button>
+        </div>
       </div>
 
       {/* Mobile Slide-out Drawer */}
